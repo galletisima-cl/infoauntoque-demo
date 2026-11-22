@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
   };
   console.log("TRACK " + JSON.stringify(ev));
 
-  const URL_ = process.env.SUPABASE_URL;
+  const URL_ = String(process.env.SUPABASE_URL||"").trim().replace(/\/rest\/v1\/?$/,"").replace(/\/+$/,"");
   const KEY = process.env.SUPABASE_SERVICE_KEY;
   if (URL_ && KEY) {
     try {
@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
         },
         body: JSON.stringify(ev)
       });
-      if (!r.ok) console.error("TRACK_DB_ERROR " + r.status);
+      if (!r.ok) console.error("TRACK_DB_ERROR " + r.status + " " + (await r.text()).slice(0,300));
     } catch (e) {
       console.error("TRACK_DB_ERROR " + e.message);
     }

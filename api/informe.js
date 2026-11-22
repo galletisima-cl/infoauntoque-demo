@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
   const { n = "demo", k = "", dias = "7" } = req.query || {};
   const TOKEN = process.env.INFORME_TOKEN;
   if (!TOKEN || k !== TOKEN) { res.status(401).send("No autorizado"); return; }
-  const URL_ = process.env.SUPABASE_URL, KEY = process.env.SUPABASE_SERVICE_KEY;
+  const URL_ = String(process.env.SUPABASE_URL||"").trim().replace(/\/rest\/v1\/?$/,"").replace(/\/+$/,""), KEY = process.env.SUPABASE_SERVICE_KEY;
   if (!URL_ || !KEY) { res.status(500).send("Falta configurar la base de datos"); return; }
 
   const nd = Math.min(Math.max(parseInt(dias, 10) || 7, 1), 90);
@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
   let rows = [];
   try {
     const r = await fetch(url, { headers: { apikey: KEY, Authorization: "Bearer " + KEY } });
-    if (!r.ok) { res.status(502).send("Error al leer la base de datos (" + r.status + ")"); return; }
+    if (!r.ok) { const msg = (await r.text()).slice(0,300).replace(/</g,"&lt;"); res.status(502).send("Error al leer la base de datos (" + r.status + "): " + msg + " | host: " + URL_.replace(/^https?:\/\//,"").split("/")[0]); return; }
     rows = await r.json();
   } catch (e) { res.status(502).send("Error al leer la base de datos"); return; }
 
