@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
   res.status(200).send(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="30">
 <title>Informe · ${esc(neg)}</title>
 <style>
 body{margin:0;font-family:system-ui,sans-serif;background:#0b1020;color:#eef1ff;padding:20px}
