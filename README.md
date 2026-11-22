@@ -10,7 +10,7 @@ Página estática + funciones serverless que guardan eventos anónimos y muestra
 - `p` = id de la pieza (mesa1, caja, barbero1...)
 
 ## Guardar eventos (Supabase)
-1. Crea un proyecto en supabase.com y ejecuta `supabase/schema.sql` en SQL Editor.
+1. Usa un proyecto de Supabase existente (o crea uno) y ejecuta `supabase/schema.sql` en SQL Editor. La tabla se llama `infoauntoque_eventos`, así no choca con otras tablas del proyecto.
 2. En Vercel → proyecto → Settings → Environment Variables, agrega:
    - `SUPABASE_URL` (Project Settings → API → Project URL)
    - `SUPABASE_SERVICE_KEY` (clave `service_role`; es secreta, nunca la pegues en un chat ni en el código)

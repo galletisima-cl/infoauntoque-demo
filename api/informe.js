@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
   const nd = Math.min(Math.max(parseInt(dias, 10) || 7, 1), 90);
   const neg = String(n).toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40) || "demo";
   const desde = new Date(Date.now() - nd * 86400000).toISOString();
-  const url = URL_ + "/rest/v1/eventos?select=evento,origen,pieza,dispositivo,created_at" +
+  const url = URL_ + "/rest/v1/infoauntoque_eventos?select=evento,origen,pieza,dispositivo,created_at" +
     "&negocio=eq." + encodeURIComponent(neg) + "&created_at=gte." + encodeURIComponent(desde) +
     "&order=created_at.desc&limit=10000";
 

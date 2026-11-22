@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
   const KEY = process.env.SUPABASE_SERVICE_KEY;
   if (URL_ && KEY) {
     try {
-      const r = await fetch(URL_ + "/rest/v1/eventos", {
+      const r = await fetch(URL_ + "/rest/v1/infoauntoque_eventos", {
         method: "POST",
         headers: {
           apikey: KEY,
