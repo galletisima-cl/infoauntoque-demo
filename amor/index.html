@@ -225,7 +225,7 @@ button:disabled{opacity:.5;cursor:default}
 {
 const $=s=>document.querySelector(s);
 const KB=1024,MB=1048576,QUOTA=15*MB,API='/api/regalo';
-const fmt=b=>b<MB?Math.max(1,Math.round(b/KB))+' KB':(b/MB).toFixed(1)+' MB';
+const fmt=b=>b<=0?'0 KB':b<MB?Math.max(1,Math.round(b/KB))+' KB':(b/MB).toFixed(1)+' MB';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store={get(){try{return JSON.parse(localStorage.getItem('amor_ed'))}catch(e){return null}},set(v){try{v?localStorage.setItem('amor_ed',JSON.stringify(v)):localStorage.removeItem('amor_ed')}catch(e){}}};
 
