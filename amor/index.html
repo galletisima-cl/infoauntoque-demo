@@ -97,7 +97,7 @@ button:disabled{opacity:.5;cursor:default}
 @keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 .lock{font-size:15px;color:var(--mute)}
 .hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:30}
-.hearts span{position:absolute;top:-40px;color:var(--red);animation:fall linear forwards}
+.hearts span{position:absolute;top:-40px;color:#ff8fa3;text-shadow:0 0 1px #7a0a1c;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(260deg);opacity:.2}}
 .hide{display:none!important}
 .tag{display:inline-block;font-size:13px;background:var(--soft);padding:4px 10px;border-radius:999px;margin-bottom:10px}
@@ -111,6 +111,7 @@ button:disabled{opacity:.5;cursor:default}
   <div class="quota" id="quotaTop"><span id="estado">Sin guardar</span><span>·</span><span>Espacio</span><span class="bar"><i id="qBar"></i></span><span id="qTxt">0 KB de 15 MB</span></div>
 </header>
 
+<script>if(/[?&]r=/.test(location.search))document.write('<style>#crear,.tabs,#quotaTop{display:none}</style>')</script>
 <main id="crear" class="wrap">
   <span class="tag">Demo · los textos de ejemplo se pueden cambiar</span>
   <div class="msg" id="aviso"></div>
