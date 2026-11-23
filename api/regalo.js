@@ -6,7 +6,7 @@
 // Requiere SUPABASE_URL y SUPABASE_SERVICE_KEY (las mismas de /api/track).
 const crypto = require("crypto");
 
-const URL_ = process.env.SUPABASE_URL;
+const URL_ = String(process.env.SUPABASE_URL || "").trim().replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
 const KEY = process.env.SUPABASE_SERVICE_KEY;
 const BUCKET = "amor";
 const CUOTA = 15 * 1048576;       // 15 MB por regalo
