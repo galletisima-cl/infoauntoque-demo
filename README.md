@@ -26,3 +26,16 @@ Muestra toques, clics por botón, origen NFC/QR, piezas, horas y días. Anónimo
 
 ## Personalizar
 Edita el objeto NEGOCIO al inicio del script en `index.html`.
+
+## Regalo de amor (`/amor`)
+Regalo digital para parejas con QR: fotos, canción, carta, línea del tiempo, voz, video, preguntas y sorpresa final. Todavía sin cobro (todos quedan en estado `borrador`).
+
+1. En Supabase → SQL Editor ejecuta `supabase/amor.sql` (crea la tabla `amor_regalos` y el bucket `amor`).
+2. Usa las mismas variables `SUPABASE_URL` y `SUPABASE_SERVICE_KEY` de arriba; no hace falta ninguna nueva.
+3. Redeploy.
+
+- Crear o editar: `https://TU-PROYECTO.vercel.app/amor/`
+- Link del regalo (el que va en el QR): `/amor/?r=SLUG`
+- Link secreto de edición: `/amor/?editar=ID&k=TOKEN` (se muestra al guardar y queda recordado en ese navegador)
+
+Las fotos, la voz y el video se comprimen en el celular y se suben directo a Supabase Storage con un link firmado; `/api/regalo` controla el tope de 15 MB por regalo y 8 MB por archivo.

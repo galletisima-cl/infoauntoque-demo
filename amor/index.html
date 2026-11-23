@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Regalo de amor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: tierno, íntimo, con calma; pocas tintas.
+   IDEA: una carta de San Valentín que se abre: sobre con sello de corazón, papel, álbum.
+   PICTURE: el sobre lacrado que se abre al tocar el corazón; dentro, la historia de la pareja.
+   COLOUR y TYPE: carmesí dominante, rosa suave de apoyo, blanco papel; Dancing Script para nombres, DM Serif para títulos, DM Sans para texto.
+   LAYOUT: editor en una columna tranquila con barra de cuota fija; el regalo es un recorrido vertical a pantalla completa. */
+:root{color-scheme:light dark;--bg:light-dark(#fff0f3,#170409);--ink:light-dark(#3b0a16,#ffe6ec);--red:light-dark(#c8102e,#ff4d6d);--card:light-dark(#fff,#260910);--soft:light-dark(#ffd6df,#3d0f1b);--mute:light-dark(#86495a,#d79aa8);--line:light-dark(#f3b8c6,#5a1a2a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "DM Sans",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"DM Serif Display",Georgia,serif;font-weight:400;line-height:1.05;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(32px,6vw,48px)}h2{font-size:clamp(26px,4vw,34px)}h3{font-size:20px}
+.script{font-family:"Dancing Script",cursive;font-weight:700}
+a{color:var(--red)}
+.top{position:sticky;top:0;z-index:20;background:var(--red);color:#fff;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:10px max(4vw,14px)}
+.top .brand{font-family:"Dancing Script",cursive;font-size:26px;font-weight:700;margin-inline-end:auto}
+.tabs{display:flex;gap:6px}
+.tabs a{color:#fff;text-decoration:none;padding:10px 16px;border-radius:999px;min-height:44px;display:inline-flex;align-items:center;font-weight:500}
+.tabs a.on{background:#fff;color:var(--red)}
+.quota{flex-basis:100%;display:flex;align-items:center;gap:10px;font-size:13px}
+.bar{flex:1;height:8px;border-radius:9px;background:rgba(255,255,255,.3);overflow:hidden}
+.bar i{display:block;height:100%;background:#fff;width:0;transition:width .4s}
+.wrap{max-width:760px;margin:0 auto;padding:clamp(20px,4vw,48px) max(4vw,14px) 80px}
+.sec{background:var(--card);border-radius:22px;padding:clamp(18px,3vw,28px);margin-bottom:18px;box-shadow:0 1px 0 var(--line),0 12px 30px -22px rgba(120,0,30,.35)}
+.sec p.hint{color:var(--mute);font-size:14px;margin:.2em 0 1em}
+label{display:block;font-weight:500;font-size:14px;margin:12px 0 4px}
+input[type=text],input[type=date],input[type=url],textarea{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
+textarea{min-height:150px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+@media(max-width:600px){.row{grid-template-columns:minmax(0,1fr)}}
+button,.btn{font:inherit;font-weight:500;min-height:44px;padding:10px 18px;border-radius:999px;border:0;background:var(--red);color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+button.ghost{background:var(--soft);color:var(--ink)}
+button.x{background:none;color:var(--mute);padding:6px 10px;min-height:44px}
+button:disabled{opacity:.5;cursor:default}
+.file{position:relative;overflow:hidden}.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:14px}
+.ph{background:var(--bg);border-radius:14px;overflow:hidden;font-size:12px}
+.ph img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover}
+.ph .m{padding:6px 8px;display:flex;justify-content:space-between;align-items:center;gap:4px;color:var(--mute)}
+.ph input{border:0;border-top:1px solid var(--line);border-radius:0;padding:8px;font-size:14px}
+.save{color:var(--red);font-weight:700;white-space:nowrap}
+.note{font-size:13px;color:var(--mute);margin-top:8px}
+.msg{font-size:14px;margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft)}
+.msg:empty{display:none}
+.list>div{display:grid;grid-template-columns:150px minmax(0,1fr) 44px;gap:8px;margin-bottom:8px;align-items:center}
+@media(max-width:600px){.list>div{grid-template-columns:minmax(0,1fr) 44px}.list>div input[type=date]{grid-column:1/-1}}
+.q{border:1.5px dashed var(--line);border-radius:16px;padding:12px;margin-bottom:10px}
+.qr{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+.qr .code{background:#fff;padding:14px;border-radius:18px;width:200px}
+.qr .code svg{display:block;width:100%;height:auto}
+.meter{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 12px;font-size:14px;align-items:center}
+.meter .b{height:8px;border-radius:9px;background:var(--soft);overflow:hidden}.meter .b i{display:block;height:100%;background:var(--red)}
+.meter span:last-child,.meter .v{text-align:right;white-space:nowrap}
+/* ---- Regalo ---- */
+#regalo{display:none}
+.scene{min-height:92vh;display:grid;place-items:center;padding:48px max(5vw,16px);text-align:center;position:relative}
+.scene>div{max-width:640px;width:100%}
+.s-env{background:radial-gradient(ellipse at 50% 30%,var(--soft),var(--bg) 70%)}
+.env{width:min(360px,80vw);margin:20px auto 10px;display:block;cursor:pointer;border:0;background:none;padding:0;min-height:0}
+.env svg{width:100%;height:auto;display:block}
+.env .flap{transform-origin:50% 0;transition:transform .9s cubic-bezier(.6,.1,.2,1)}
+.env.open .flap{transform:scaleY(-1)}
+.env .seal{transition:opacity .4s}.env.open .seal{opacity:0}
+.big{font-size:clamp(44px,10vw,76px);line-height:1}
+.s-red{background:var(--red);color:#fff}
+.s-red .lbl{color:#ffd6df}
+.count{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:22px}
+.count div{background:rgba(255,255,255,.14);border-radius:16px;padding:14px 4px}
+.count b{display:block;font:400 clamp(28px,6vw,44px)/1 "DM Serif Display",serif}
+.count small{font-size:13px;color:#ffd6df}
+.album{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 4px 16px;scrollbar-width:none}
+.album figure{flex:0 0 min(78vw,380px);scroll-snap-align:center;margin:0;background:var(--card);padding:12px 12px 16px;border-radius:6px;box-shadow:0 14px 30px -18px rgba(120,0,30,.5)}
+.album figure:nth-child(odd){transform:rotate(-1.5deg)}.album figure:nth-child(even){transform:rotate(1.5deg)}
+.album img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;border-radius:2px}
+.album figcaption{font-family:"Dancing Script",cursive;font-size:22px;margin-top:8px}
+.nav{display:flex;gap:10px;justify-content:center}
+.paper{background:var(--card);text-align:left;padding:clamp(22px,5vw,44px);border-radius:6px;box-shadow:0 20px 40px -26px rgba(120,0,30,.5);white-space:pre-wrap;font-size:17px;background-image:repeating-linear-gradient(transparent 0 31px,var(--line) 31px 32px);line-height:32px}
+.tl{text-align:left;list-style:none;padding:0;margin:0;border-inline-start:2px solid var(--red);margin-inline-start:12px}
+.tl li{position:relative;padding:0 0 22px 24px}
+.tl li::before{content:"♥";position:absolute;left:-10px;top:-2px;color:var(--red);background:var(--bg);line-height:1.2;font-size:18px}
+.tl time{display:block;font-size:13px;color:var(--mute);white-space:nowrap}
+.media{width:100%;border-radius:16px;border:0;background:#000}
+.embed{aspect-ratio:16/9;width:100%;border:0;border-radius:16px}
+.spot{height:152px;width:100%;border:0;border-radius:16px}
+.opts{display:grid;gap:10px;margin-top:16px}
+.opts button{background:var(--card);color:var(--ink);border:1.5px solid var(--line);justify-content:center;font-size:17px}
+.shake{animation:sh .4s}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.lock{font-size:15px;color:var(--mute)}
+.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:30}
+.hearts span{position:absolute;top:-40px;color:var(--red);animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(260deg);opacity:.2}}
+.hide{display:none!important}
+.tag{display:inline-block;font-size:13px;background:var(--soft);padding:4px 10px;border-radius:999px;margin-bottom:10px}
+@media(prefers-reduced-motion:reduce){.hearts{display:none}.env .flap{transition:none}*{animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="brand">Con amor</span>
+  <nav class="tabs"><a href="#crear" id="tCrear">Crear regalo</a><a href="#regalo" id="tRegalo">Ver regalo</a></nav>
+  <div class="quota" id="quotaTop"><span id="estado">Sin guardar</span><span>·</span><span>Espacio</span><span class="bar"><i id="qBar"></i></span><span id="qTxt">0 KB de 15 MB</span></div>
+</header>
+
+<main id="crear" class="wrap">
+  <span class="tag">Demo · los textos de ejemplo se pueden cambiar</span>
+  <div class="msg" id="aviso"></div>
+  <h1>Arma tu regalo de San Valentín</h1>
+  <p class="hint" style="color:var(--mute)">Todo se comprime en tu celular antes de subirse: fotos a WebP, notas de voz a 32 kbps y videos a 720p.</p>
+
+  <section class="sec">
+    <h2>Ustedes</h2>
+    <div class="row">
+      <div><label for="fDe">De</label><input type="text" id="fDe"></div>
+      <div><label for="fPara">Para</label><input type="text" id="fPara"></div>
+    </div>
+    <label for="fFecha">¿Desde cuándo están juntos?</label><input type="date" id="fFecha">
+  </section>
+
+  <section class="sec">
+    <h2>Álbum de fotos</h2>
+    <p class="hint">Hasta 20 fotos. Se reducen a 1600 px y WebP al 75 %, más una miniatura de 400 px.</p>
+    <span class="btn file">Agregar fotos<input type="file" id="inFotos" accept="image/*" multiple></span>
+    <div class="msg" id="msgFotos"></div>
+    <div class="grid" id="gridFotos"></div>
+  </section>
+
+  <section class="sec">
+    <h2>Su canción</h2>
+    <p class="hint">Pega un link de Spotify o YouTube. No se sube ningún archivo, así que no ocupa espacio.</p>
+    <label for="fCancion">Link de la canción</label><input type="url" id="fCancion" placeholder="https://open.spotify.com/track/…">
+    <div class="note" id="songOk"></div>
+  </section>
+
+  <section class="sec">
+    <h2>Video</h2>
+    <p class="hint">Lo más liviano es un link de YouTube "no listado". También puedes subir un video de hasta 30 segundos: se comprime a 720p.</p>
+    <label for="fYt">Link de YouTube</label><input type="url" id="fYt" placeholder="https://youtu.be/…">
+    <p class="note">o</p>
+    <span class="btn file">Subir video (máx. 30 s)<input type="file" id="inVideo" accept="video/*"></span>
+    <button class="x hide" id="delVideo">Quitar video</button>
+    <div class="msg" id="msgVideo"></div>
+  </section>
+
+  <section class="sec">
+    <h2>Nota de voz</h2>
+    <p class="hint">Hasta 1 minuto, grabada en Opus a 32 kbps (un minuto pesa unos 250 KB).</p>
+    <button id="btnRec">Grabar</button>
+    <span class="btn file ghost" style="background:var(--soft);color:var(--ink)">Subir audio<input type="file" id="inVoz" accept="audio/*"></span>
+    <button class="x hide" id="delVoz">Quitar</button>
+    <div class="msg" id="msgVoz"></div>
+    <audio controls class="hide" id="prevVoz" style="width:100%;margin-top:10px"></audio>
+  </section>
+
+  <section class="sec">
+    <h2>La carta</h2>
+    <p class="hint">Escríbela tú o parte desde una idea. En la versión final esto lo redacta la IA.</p>
+    <button class="ghost" id="btnIdea">Darme una idea</button>
+    <label for="fCarta">Carta</label><textarea id="fCarta"></textarea>
+  </section>
+
+  <section class="sec">
+    <h2>Línea del tiempo</h2>
+    <div class="list" id="listTL"></div>
+    <button class="ghost" id="addTL">Agregar momento</button>
+  </section>
+
+  <section class="sec">
+    <h2>Preguntas para desbloquear la sorpresa</h2>
+    <p class="hint">Tu pareja tiene que acertar todas para ver el último regalo.</p>
+    <div id="listQ"></div>
+    <button class="ghost" id="addQ">Agregar pregunta</button>
+  </section>
+
+  <section class="sec">
+    <h2>El último regalo</h2>
+    <label for="fFinal">Mensaje secreto</label><textarea id="fFinal" style="min-height:100px"></textarea>
+  </section>
+
+  <section class="sec">
+    <h2>Peso del regalo</h2>
+    <div class="meter" id="meter"></div>
+  </section>
+
+  <section class="sec">
+    <h2>Guardar y compartir</h2>
+    <div id="sinGuardar">
+      <p class="hint">Al guardar se crea tu regalo con su QR y un link secreto para seguir editándolo. Después se guarda solo cada vez que cambias algo.</p>
+      <button id="btnSave">Guardar regalo</button>
+      <p class="note" id="saveMsg"></p>
+    </div>
+    <div id="guardado" class="hide">
+      <div class="qr">
+        <div class="code" id="qr"></div>
+        <div>
+          <p style="margin:0 0 6px">Link del regalo (va en el QR):</p>
+          <p style="margin:0 0 12px;word-break:break-all"><b id="link"></b></p>
+          <button id="copy">Copiar link</button>
+          <a class="btn ghost" href="#regalo" style="background:var(--soft);color:var(--ink)">Ver como tu pareja</a>
+          <p class="note" id="copied"></p>
+        </div>
+      </div>
+      <label>Tu link para editar (es secreto, guárdalo)</label>
+      <p style="margin:0 0 10px;word-break:break-all;font-size:14px" id="linkEd"></p>
+      <button class="ghost" id="copyEd">Copiar link de edición</button>
+      <button class="x" id="nuevo">Empezar otro regalo</button>
+    </div>
+  </section>
+</main>
+
+<div id="regalo"></div>
+<div class="hearts" id="hearts"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+{
+const $=s=>document.querySelector(s);
+const KB=1024,MB=1048576,QUOTA=15*MB,API='/api/regalo';
+const fmt=b=>b<MB?Math.max(1,Math.round(b/KB))+' KB':(b/MB).toFixed(1)+' MB';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={get(){try{return JSON.parse(localStorage.getItem('amor_ed'))}catch(e){return null}},set(v){try{v?localStorage.setItem('amor_ed',JSON.stringify(v)):localStorage.removeItem('amor_ed')}catch(e){}}};
+
+const S={
+  de:'Matías',para:'Sofía',fecha:'2021-02-14',cancion:'',yt:'',
+  fotos:[],video:null,voz:null,
+  carta:'Sofía:\n\nHay días en que todavía no creo la suerte que tengo. Gracias por reírte de mis chistes malos, por esperarme siempre con un café y por hacer de cualquier martes algo especial.\n\nTe elegiría otra vez, todas las veces.\n\nTuyo,\nMatías',
+  tl:[{f:'2021-02-14',t:'Nuestra primera cita, en la costanera'},{f:'2022-01-08',t:'Primer viaje juntos al sur'},{f:'2023-09-02',t:'Nos fuimos a vivir juntos'},{f:'2025-02-14',t:'Adoptamos a Canela'}],
+  qs:[{q:'¿Dónde fue nuestra primera cita?',ok:'En la costanera',no:'En el cine|En un café'},{q:'¿Cómo se llama nuestra perrita?',ok:'Canela',no:'Luna|Mora'}],
+  final:'Prepara una maleta chica: el viernes nos vamos tres días a Pucón. Ya está todo reservado. Te amo.'
+};
+let ED=null,online=false,RECIP=false;
+
+/* ---------- servidor ---------- */
+async function api(body){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(j.error||'Error '+r.status);
+  return j;
+}
+const pack=()=>({de:S.de,para:S.para,fecha:S.fecha,cancion:S.cancion,yt:S.yt,carta:S.carta,final:S.final,tl:S.tl,qs:S.qs,
+  fotos:S.fotos.filter(f=>f.ruta&&f.mini).map(f=>({ruta:f.ruta,mini:f.mini,cap:f.cap,peso:f.size,orig:f.orig})),
+  video:S.video?.ruta?{ruta:S.video.ruta,peso:S.video.size,orig:S.video.orig}:null,
+  voz:S.voz?.ruta?{ruta:S.voz.ruta,peso:S.voz.size,orig:S.voz.orig}:null});
+function unpack(d,base){
+  for(const k of['de','para','fecha','cancion','yt','carta','final'])S[k]=d[k]||'';
+  S.tl=d.tl||[];S.qs=d.qs||[];
+  S.fotos=(d.fotos||[]).map(f=>({ruta:f.ruta,mini:f.mini,url:base+f.ruta,thumb:base+f.mini,size:f.peso,orig:f.orig,cap:f.cap||''}));
+  const m=x=>x&&{ruta:x.ruta,url:base+x.ruta,size:x.peso,orig:x.orig};
+  S.video=m(d.video);S.voz=m(d.voz);
+}
+const estado=t=>{$('#estado').textContent=t};
+async function ensure(){
+  if(ED)return ED;
+  if(!online)throw new Error('Modo prueba: aquí no hay servidor, así que no se guarda.');
+  estado('Creando…');
+  const j=await api({accion:'crear',datos:pack()});
+  ED={id:j.id,token:j.token,slug:j.slug};store.set(ED);showSaved();estado('Guardado ✓');
+  return ED;
+}
+let tSave,saving=false,again=false;
+function scheduleSave(){if(!ED||!online)return;estado('Cambios sin guardar');clearTimeout(tSave);tSave=setTimeout(save,1200)}
+async function save(){
+  if(saving){again=true;return}
+  saving=true;estado('Guardando…');
+  try{await api({accion:'guardar',id:ED.id,token:ED.token,datos:pack()});estado('Guardado ✓')}
+  catch(e){estado('No se pudo guardar: '+e.message)}
+  saving=false;if(again){again=false;save()}
+}
+async function upload(blob,clase){
+  const e=await ensure();
+  const tipo=(blob.type||'').split(';')[0];
+  const j=await api({accion:'subir',id:e.id,token:e.token,tipo,bytes:blob.size,clase});
+  const r=await fetch(j.subida,{method:'PUT',headers:{'Content-Type':tipo,'x-upsert':'false'},body:blob});
+  if(!r.ok)throw new Error('La subida falló ('+r.status+')');
+  return j.ruta;
+}
+function borrar(...rutas){rutas=rutas.filter(Boolean);if(ED&&online&&rutas.length)api({accion:'borrar',id:ED.id,token:ED.token,rutas}).catch(()=>{})}
+
+/* ---------- cuota ---------- */
+const used=()=>S.fotos.reduce((a,f)=>a+f.size,0)+(S.video?.size||0)+(S.voz?.size||0);
+const orig=()=>S.fotos.reduce((a,f)=>a+(f.orig||f.size),0)+(S.video?.orig||S.video?.size||0)+(S.voz?.orig||S.voz?.size||0);
+function renderQuota(){
+  const u=used(),p=Math.min(100,u/QUOTA*100);
+  $('#qBar').style.width=p+'%';$('#qTxt').textContent=fmt(u)+' de 15 MB';
+  const rows=[['Fotos',S.fotos.reduce((a,f)=>a+f.size,0)],['Video',S.video?.size||0],['Voz',S.voz?.size||0]];
+  const o=orig();
+  $('#meter').innerHTML=rows.map(([n,b])=>`<span>${n}</span><span class="b"><i style="width:${Math.min(100,b/QUOTA*100)}%"></i></span><span>${fmt(b)}</span>`).join('')+
+   `<span><b>Total</b></span><span class="note" style="margin:0">${o>u?'Sin comprimir habría pesado '+fmt(o)+' · ahorro '+Math.round((1-u/o)*100)+' %':''}</span><span><b>${fmt(u)}</b></span>`;
+}
+const room=b=>used()+b<=QUOTA;
+
+/* ---------- fotos ---------- */
+async function shrink(file,max,q){
+  const bmp=await createImageBitmap(file);
+  const k=Math.min(1,max/Math.max(bmp.width,bmp.height));
+  const c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
+  c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+  let b=await new Promise(r=>c.toBlob(r,'image/webp',q));
+  if(!b||b.type!=='image/webp')b=await new Promise(r=>c.toBlob(r,'image/jpeg',q+.05));
+  return b;
+}
+function renderFotos(){
+  $('#gridFotos').innerHTML=S.fotos.length?S.fotos.map((f,i)=>`<div class="ph"><img src="${f.thumb}" alt=""><div class="m"><span>${f.subiendo?'subiendo…':fmt(f.orig||f.size)+' → <span class="save">'+fmt(f.size)+'</span>'}</span><button class="x" data-del="${i}" aria-label="Quitar foto">✕</button></div><input type="text" data-cap="${i}" value="${esc(f.cap)}" placeholder="Pie de foto"></div>`).join(''):'<p class="note">Aún no hay fotos.</p>';
+  renderQuota();
+}
+$('#gridFotos').addEventListener('click',e=>{const i=e.target.dataset.del;if(i!=null){const f=S.fotos.splice(+i,1)[0];borrar(f.ruta,f.mini);renderFotos();scheduleSave()}});
+$('#gridFotos').addEventListener('input',e=>{const i=e.target.dataset.cap;if(i!=null)S.fotos[+i].cap=e.target.value});
+$('#inFotos').addEventListener('change',async e=>{
+  const files=[...e.target.files];e.target.value='';const m=$('#msgFotos');
+  let ok=0,before=0,after=0;
+  for(const f of files){
+    if(S.fotos.length>=20){m.textContent='Llegaste al máximo de 20 fotos.';break}
+    m.textContent=`Comprimiendo ${ok+1} de ${files.length}…`;
+    let full,th;
+    try{full=await shrink(f,1600,.75);th=await shrink(f,400,.7)}catch(err){m.textContent='No se pudo leer '+f.name+'. Prueba con JPG o PNG.';continue}
+    if(!room(full.size+th.size)){m.textContent='No queda espacio para esta foto (tope 15 MB).';break}
+    const it={url:URL.createObjectURL(full),thumb:URL.createObjectURL(th),size:full.size+th.size,orig:f.size,cap:'',subiendo:online};
+    S.fotos.push(it);renderFotos();
+    if(online){
+      try{m.textContent=`Subiendo ${ok+1} de ${files.length}…`;it.ruta=await upload(full,'foto');it.mini=await upload(th,'mini');it.subiendo=false}
+      catch(err){S.fotos.splice(S.fotos.indexOf(it),1);borrar(it.ruta);renderFotos();m.textContent=err.message;break}
+    }
+    ok++;before+=f.size;after+=full.size+th.size;renderFotos();
+  }
+  if(ok){m.textContent=`${ok} foto${ok>1?'s':''}: ${fmt(before)} → ${fmt(after)} (ahorro ${Math.round((1-after/before)*100)} %).`+(online?'':' Modo prueba: no se guardan.');scheduleSave()}
+});
+
+/* ---------- canción y YouTube ---------- */
+const ytId=u=>(u.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/)||[])[1];
+const spot=u=>{const m=u.match(/open\.spotify\.com\/(?:intl-\w+\/)?(track|album|playlist)\/(\w+)/);return m&&`https://open.spotify.com/embed/${m[1]}/${m[2]}`};
+function songInfo(){const u=S.cancion.trim();$('#songOk').textContent=!u?'':spot(u)?'Spotify reconocido ✓':ytId(u)?'YouTube reconocido ✓':'No reconozco ese link: usa uno de Spotify o YouTube.'}
+
+/* ---------- video ---------- */
+async function shrinkVideo(file,onp){
+  const src=URL.createObjectURL(file),v=document.createElement('video');
+  v.src=src;v.playsInline=true;v.preload='auto';
+  await new Promise((r,j)=>{v.onloadedmetadata=r;v.onerror=()=>j('read')});
+  if(v.duration>30.5)throw'dur';
+  const k=Math.min(1,720/Math.min(v.videoWidth,v.videoHeight));
+  const c=document.createElement('canvas');c.width=Math.round(v.videoWidth*k/2)*2;c.height=Math.round(v.videoHeight*k/2)*2;
+  const ctx=c.getContext('2d'),cs=c.captureStream(30);
+  try{const ac=new AudioContext(),s=ac.createMediaElementSource(v),d=ac.createMediaStreamDestination();s.connect(d);d.stream.getAudioTracks().forEach(t=>cs.addTrack(t))}catch(e){}
+  const mime=['video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm'].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported(t));
+  if(!mime)throw'rec';
+  const rec=new MediaRecorder(cs,{mimeType:mime,videoBitsPerSecond:1200000,audioBitsPerSecond:64000}),parts=[];
+  rec.ondataavailable=e=>e.data.size&&parts.push(e.data);
+  const stopped=new Promise(r=>rec.onstop=r);
+  let raf;const draw=()=>{ctx.drawImage(v,0,0,c.width,c.height);onp(v.currentTime/v.duration);raf=requestAnimationFrame(draw)};
+  rec.start(1000);await v.play();draw();
+  await new Promise(r=>v.onended=r);cancelAnimationFrame(raf);rec.stop();await stopped;URL.revokeObjectURL(src);
+  return new Blob(parts,{type:mime.split(';')[0]});
+}
+$('#inVideo').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;const m=$('#msgVideo');
+  if(f.size>200*MB){m.textContent='Ese video es muy pesado. Usa uno más corto o un link de YouTube.';return}
+  m.textContent='Comprimiendo a 720p… se procesa en tiempo real, no cierres la pantalla.';
+  let blob;
+  try{blob=await shrinkVideo(f,p=>m.textContent=`Comprimiendo a 720p… ${Math.round(p*100)} %`)}
+  catch(err){
+    if(err==='dur'){m.textContent='El video dura más de 30 segundos. Recórtalo o usa un link de YouTube.';return}
+    if(f.size<=6*MB)blob=f;else{m.textContent='Este navegador no pudo comprimir el video. Prueba con uno de menos de 6 MB o con un link de YouTube.';return}
+  }
+  if(!room(blob.size-(S.video?.size||0))){m.textContent=`Comprimido quedó en ${fmt(blob.size)} y supera el espacio disponible.`;return}
+  const it={url:URL.createObjectURL(blob),size:blob.size,orig:f.size};
+  if(online){
+    try{m.textContent=`Subiendo video (${fmt(blob.size)})…`;it.ruta=await upload(blob,'video')}
+    catch(err){m.textContent=err.message;return}
+  }
+  if(S.video)borrar(S.video.ruta);
+  S.video=it;showVideo();m.textContent=`Video listo: ${fmt(f.size)} → ${fmt(blob.size)}.`;renderQuota();scheduleSave();
+});
+const showVideo=()=>$('#delVideo').classList.toggle('hide',!S.video);
+$('#delVideo').onclick=()=>{borrar(S.video?.ruta);S.video=null;$('#msgVideo').textContent='';showVideo();renderQuota();scheduleSave()};
+
+/* ---------- voz ---------- */
+let recV=null,tmr=null;
+function showVoz(){const a=$('#prevVoz');if(S.voz){a.src=S.voz.url;a.classList.remove('hide')}else{a.removeAttribute('src');a.classList.add('hide')}$('#delVoz').classList.toggle('hide',!S.voz)}
+async function setVoz(blob,o,label){
+  const m=$('#msgVoz'),it={url:URL.createObjectURL(blob),size:blob.size,orig:o};
+  if(online){try{m.textContent='Subiendo nota de voz…';it.ruta=await upload(blob,'voz')}catch(e){m.textContent=e.message;return}}
+  if(S.voz)borrar(S.voz.ruta);
+  S.voz=it;showVoz();m.textContent=label;renderQuota();scheduleSave();
+}
+$('#btnRec').onclick=async()=>{
+  const b=$('#btnRec'),m=$('#msgVoz');
+  if(recV){recV.stop();return}
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mime=['audio/webm;codecs=opus','audio/ogg;codecs=opus','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t));
+    recV=new MediaRecorder(st,{mimeType:mime,audioBitsPerSecond:32000});const parts=[];let s=0;
+    recV.ondataavailable=e=>parts.push(e.data);
+    recV.onstop=()=>{clearInterval(tmr);st.getTracks().forEach(t=>t.stop());const bl=new Blob(parts,{type:mime.split(';')[0]});recV=null;b.textContent='Grabar de nuevo';setVoz(bl,bl.size,`Nota de ${s} s grabada: ${fmt(bl.size)}.`)};
+    recV.start();b.textContent='Detener (0 s)';
+    tmr=setInterval(()=>{s++;b.textContent=`Detener (${s} s)`;if(s>=60)recV.stop()},1000);
+  }catch(e){m.textContent='Aquí no se puede usar el micrófono. Sube un audio grabado con tu celular.'}
+};
+$('#inVoz').addEventListener('change',e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;const m=$('#msgVoz');
+  const a=new Audio(URL.createObjectURL(f));
+  a.onloadedmetadata=()=>{
+    if(a.duration>61){m.textContent='La nota dura más de 1 minuto.';return}
+    if(f.size>1.5*MB){m.textContent=`El audio pesa ${fmt(f.size)}. Grábalo desde aquí y quedará en unos 250 KB.`;return}
+    setVoz(f,f.size,`Audio de ${Math.round(a.duration)} s: ${fmt(f.size)}.`);
+  };
+  a.onerror=()=>m.textContent='No pude leer ese audio.';
+});
+$('#delVoz').onclick=()=>{borrar(S.voz?.ruta);S.voz=null;showVoz();$('#msgVoz').textContent='';renderQuota();scheduleSave()};
+
+/* ---------- carta ---------- */
+const ideas=[
+  (d,p)=>`${p}:\n\nGracias por cada día a tu lado. Contigo aprendí que el amor está en lo simple: un mensaje a mitad del día, una mano en el auto, una risa en la cocina.\n\nFeliz día del amor.\n${d}`,
+  (d,p)=>`${p}, mi persona favorita:\n\nSi pudiera volver al día en que te conocí, haría todo igual, solo para llegar otra vez hasta aquí.\n\nTe amo hoy y te voy a amar mañana.\n${d}`,
+  (d,p)=>`Para ${p}:\n\nNo necesito un día especial para decírtelo, pero hoy quiero dejarlo por escrito: eres mi lugar seguro, mi equipo y mi mejor aventura.\n\nCon todo mi amor,\n${d}`
+];let idea=0;
+$('#btnIdea').onclick=()=>{S.carta=ideas[idea++%ideas.length](S.de||'Yo',S.para||'Mi amor');$('#fCarta').value=S.carta;scheduleSave()};
+
+/* ---------- línea del tiempo y preguntas ---------- */
+function renderTL(){$('#listTL').innerHTML=S.tl.map((x,i)=>`<div><input type="date" data-tl="${i}" data-k="f" value="${esc(x.f)}" aria-label="Fecha"><input type="text" data-tl="${i}" data-k="t" value="${esc(x.t)}" aria-label="Momento"><button class="x" data-dtl="${i}" aria-label="Quitar">✕</button></div>`).join('')}
+$('#listTL').addEventListener('input',e=>{const d=e.target.dataset;if(d.tl!=null)S.tl[+d.tl][d.k]=e.target.value});
+$('#listTL').addEventListener('click',e=>{const i=e.target.dataset.dtl;if(i!=null){S.tl.splice(+i,1);renderTL();scheduleSave()}});
+$('#addTL').onclick=()=>{S.tl.push({f:'',t:''});renderTL()};
+function renderQ(){$('#listQ').innerHTML=S.qs.map((x,i)=>`<div class="q"><label>Pregunta ${i+1}</label><input type="text" data-q="${i}" data-k="q" value="${esc(x.q)}"><div class="row"><div><label>Respuesta correcta</label><input type="text" data-q="${i}" data-k="ok" value="${esc(x.ok)}"></div><div><label>Respuestas falsas (sepáralas con |)</label><input type="text" data-q="${i}" data-k="no" value="${esc(x.no)}"></div></div><button class="x" data-dq="${i}">Quitar pregunta</button></div>`).join('')}
+$('#listQ').addEventListener('input',e=>{const d=e.target.dataset;if(d.q!=null)S.qs[+d.q][d.k]=e.target.value});
+$('#listQ').addEventListener('click',e=>{const i=e.target.dataset.dq;if(i!=null){S.qs.splice(+i,1);renderQ();scheduleSave()}});
+$('#addQ').onclick=()=>{S.qs.push({q:'',ok:'',no:''});renderQ()};
+
+/* ---------- campos simples, guardado y QR ---------- */
+const F={'#fDe':'de','#fPara':'para','#fFecha':'fecha','#fCancion':'cancion','#fYt':'yt','#fCarta':'carta','#fFinal':'final'};
+for(const[id,k]of Object.entries(F))$(id).addEventListener('input',e=>{S[k]=e.target.value;if(k==='cancion')songInfo()});
+const fill=()=>{for(const[id,k]of Object.entries(F))$(id).value=S[k]||''};
+$('#crear').addEventListener('input',e=>{if(e.target.type!=='file')scheduleSave()});
+const giftUrl=()=>location.origin+location.pathname+'?r='+ED.slug;
+function showSaved(){
+  $('#sinGuardar').classList.toggle('hide',!!ED);$('#guardado').classList.toggle('hide',!ED);
+  if(!ED)return;
+  const url=giftUrl();$('#link').textContent=url;
+  $('#linkEd').textContent=location.origin+location.pathname+'?editar='+ED.id+'&k='+ED.token;
+  try{const q=qrcode(0,'M');q.addData(url);q.make();$('#qr').innerHTML=q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){$('#qr').textContent='QR no disponible'}
+}
+$('#btnSave').onclick=async()=>{const m=$('#saveMsg');try{await ensure();await save();m.textContent=''}catch(e){m.textContent=e.message}};
+const copiar=async(txt,el)=>{try{await navigator.clipboard.writeText(txt);el.textContent='Copiado.'}catch(e){el.textContent='No se pudo copiar; selecciónalo a mano.'}};
+$('#copy').onclick=()=>copiar($('#link').textContent,$('#copied'));
+$('#copyEd').onclick=()=>copiar($('#linkEd').textContent,$('#copied'));
+$('#nuevo').onclick=()=>{store.set(null);location.href=location.pathname};
+
+/* ---------- el regalo ---------- */
+function together(){
+  const s=new Date(S.fecha+'T00:00:00'),n=new Date();if(!S.fecha||isNaN(s))return null;
+  let ms=n-s;if(ms<0)ms=0;
+  return {d:Math.floor(ms/864e5),h:Math.floor(ms/36e5)%24,m:Math.floor(ms/6e4)%60,s:Math.floor(ms/1e3)%60};
+}
+function rain(n){
+  const h=$('#hearts');
+  for(let i=0;i<n;i++){const s=document.createElement('span');s.textContent='♥';s.style.left=Math.random()*100+'vw';s.style.fontSize=12+Math.random()*26+'px';s.style.animationDuration=3+Math.random()*3+'s';s.style.animationDelay=Math.random()*1.5+'s';h.appendChild(s);setTimeout(()=>s.remove(),7000)}
+}
+const fecha=f=>new Date(f+'T00:00:00').toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
+let tick;
+function renderRegalo(){
+  const r=$('#regalo'),sp=spot(S.cancion||''),yS=ytId(S.cancion||''),yV=ytId(S.yt||'');
+  const fotos=S.fotos.filter(f=>!f.subiendo);const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+  const qs=S.qs.filter(q=>q.q&&q.ok);const tl=S.tl.filter(x=>x.t);
+  r.innerHTML=`
+  <section class="scene s-env"><div>
+    <p class="script" style="font-size:28px;margin:0">Para ${esc(S.para)}</p>
+    <button class="env" id="env" aria-label="Abrir el sobre">
+      <svg viewBox="0 0 360 250"><rect x="10" y="40" width="340" height="200" rx="12" fill="#c8102e"/><path d="M10 236 L180 120 L350 236Z" fill="#a50d26"/><path d="M10 50 L10 236 L150 140Z M350 50 L350 236 L210 140Z" fill="#b30f2a"/>
+      <rect x="40" y="20" width="280" height="150" rx="6" fill="#fff"/><text x="180" y="95" text-anchor="middle" font-family="Dancing Script,cursive" font-size="30" fill="#c8102e">Te amo</text>
+      <path class="flap" d="M10 50 Q10 40 22 40 L338 40 Q350 40 350 50 L180 160Z" fill="#e0193b"/>
+      <g class="seal"><circle cx="180" cy="152" r="28" fill="#7a0a1c"/><path d="M180 168c-16-11-15-24-6-24 3 0 5 2 6 5 1-3 3-5 6-5 9 0 10 13-6 24z" fill="#ffd6df"/></g></svg>
+    </button>
+    <p style="color:var(--mute)" id="envTxt">Toca el sello para abrir tu regalo</p>
+    <p class="script" style="font-size:22px">de ${esc(S.de)}</p>
+  </div></section>
+  <div id="inside" class="hide">
+  ${together()?`<section class="scene s-red"><div><p class="lbl">Llevamos juntos</p><div class="count"><div><b id="cD">0</b><small>días</small></div><div><b id="cH">0</b><small>horas</small></div><div><b id="cM">0</b><small>minutos</small></div><div><b id="cS">0</b><small>segundos</small></div></div><p class="lbl" style="margin-top:18px">desde el ${fecha(S.fecha)}</p></div></section>`:''}
+  ${sp||yS?`<section class="scene"><div><h2>Nuestra canción</h2>${sp?`<iframe class="spot" src="${sp}" allow="encrypted-media" loading="lazy"></iframe>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yS}" allowfullscreen loading="lazy"></iframe>`}<p class="note"><a href="${esc(S.cancion)}">Abrir la canción</a></p></div></section>`:''}
+  ${fotos.length?`<section class="scene"><div><h2>Nuestros momentos</h2><div class="album" id="album">${fotos.map(f=>`<figure><img src="${f.url}" alt="${esc(f.cap)}" loading="lazy"><figcaption>${esc(f.cap)}</figcaption></figure>`).join('')}</div><div class="nav"><button class="ghost" id="prev" aria-label="Foto anterior">←</button><button class="ghost" id="next" aria-label="Foto siguiente">→</button></div></div></section>`:''}
+  ${S.carta?`<section class="scene"><div><h2>Una carta para ti</h2><div class="paper">${esc(S.carta)}</div></div></section>`:''}
+  ${tl.length?`<section class="scene"><div><h2>Nuestra historia</h2><ul class="tl">${tl.sort((a,b)=>a.f<b.f?-1:1).map(x=>`<li><time>${x.f?fecha(x.f):''}</time>${esc(x.t)}</li>`).join('')}</ul></div></section>`:''}
+  ${S.voz?`<section class="scene"><div><h2>Escúchame</h2><p style="color:var(--mute)">Te dejé un mensaje con mi voz</p><audio controls src="${S.voz.url}" style="width:100%"></audio></div></section>`:''}
+  ${S.video||yV?`<section class="scene"><div><h2>Un video para ti</h2>${S.video?`<video class="media" controls playsinline src="${S.video.url}"></video>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yV}" allowfullscreen loading="lazy"></iframe><p class="note"><a href="${esc(S.yt)}">Abrir en YouTube</a></p>`}</div></section>`:''}
+  <section class="scene s-env"><div id="quiz"></div></section>
+  </div>`;
+  const env=$('#env');
+  env.onclick=()=>{if(env.classList.contains('open'))return;env.classList.add('open');$('#envTxt').textContent='Desliza hacia abajo ↓';$('#inside').classList.remove('hide');rain(26);setTimeout(()=>($('.s-red')||$('#inside')).scrollIntoView({behavior:'smooth'}),900)};
+  const al=$('#album');
+  if(al){const go=d=>al.scrollBy({left:d*al.clientWidth*.8,behavior:'smooth'});$('#prev').onclick=()=>go(-1);$('#next').onclick=()=>go(1);al.tabIndex=0;al.onkeydown=e=>{if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1)}}
+  clearInterval(tick);
+  const upd=()=>{const t=together();if(!t||!$('#cD'))return;$('#cD').textContent=t.d.toLocaleString('es-CL');$('#cH').textContent=t.h;$('#cM').textContent=t.m;$('#cS').textContent=t.s};
+  upd();tick=setInterval(upd,1000);
+  let qi=0;
+  const showFinal=()=>{$('#quiz').innerHTML=`<p class="script" style="font-size:30px;margin:0">El último regalo</p><h2 class="big" style="color:var(--red)">♥</h2><div class="paper" style="text-align:center;white-space:pre-wrap">${esc(S.final)}</div>`;rain(60)};
+  const showQ=()=>{
+    if(qi>=qs.length){showFinal();return}
+    const q=qs[qi],opts=shuffle([q.ok,...String(q.no).split('|').map(s=>s.trim()).filter(Boolean)]);
+    $('#quiz').innerHTML=`<p class="lock">Pregunta ${qi+1} de ${qs.length} para desbloquear tu sorpresa</p><h2>${esc(q.q)}</h2><div class="opts">${opts.map(o=>`<button data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><p class="note" id="qMsg"></p>`;
+    $('#quiz .opts').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+      if(b.dataset.o===q.ok){qi++;showQ()}else{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('#qMsg').textContent='Casi… inténtalo otra vez.'}};
+  };
+  if(qs.length)showQ();else showFinal();
+}
+
+/* ---------- vistas y carga ---------- */
+function route(){
+  const g=RECIP||location.hash==='#regalo';
+  $('#crear').style.display=g?'none':'';$('#regalo').style.display=g?'block':'none';$('#quotaTop').style.display=g?'none':'';
+  $('.tabs').style.display=RECIP?'none':'';
+  $('#tCrear').classList.toggle('on',!g);$('#tRegalo').classList.toggle('on',g);
+  if(g)renderRegalo();else clearInterval(tick);
+  scrollTo(0,0);
+}
+function renderAll(){fill();renderFotos();renderTL();renderQ();songInfo();showVideo();showVoz();showSaved();route()}
+addEventListener('hashchange',()=>{if(!RECIP)route()});
+async function init(){
+  const p=new URLSearchParams(location.search),aviso=$('#aviso');
+  try{const r=await fetch(API+'?ping=1');online=r.ok}catch(e){online=false}
+  if(p.get('r')){
+    RECIP=true;
+    try{
+      const r=await fetch(API+'?r='+encodeURIComponent(p.get('r')));const j=await r.json();
+      if(!r.ok)throw new Error(j.error||'No se encontró el regalo');
+      unpack(j.datos,j.base);renderAll();
+    }catch(e){$('#crear').style.display='none';$('.tabs').style.display='none';$('#quotaTop').style.display='none';$('#regalo').style.display='block';$('#regalo').innerHTML=`<section class="scene s-env"><div><h1>Ups</h1><p>${esc(e.message)}</p></div></section>`}
+    return;
+  }
+  const ed=p.get('editar')&&p.get('k')?{id:p.get('editar'),token:p.get('k')}:store.get();
+  if(!online)aviso.textContent='Modo prueba: esta página no está conectada al servidor, así que nada se guarda.';
+  else if(ed){
+    try{
+      const r=await fetch(API+'?id='+encodeURIComponent(ed.id)+'&k='+encodeURIComponent(ed.token));const j=await r.json();
+      if(!r.ok)throw new Error(j.error);
+      ED={id:j.id,token:ed.token,slug:j.slug};store.set(ED);unpack(j.datos,j.base);estado('Guardado ✓');
+      if(p.get('editar'))history.replaceState(null,'',location.pathname+location.hash);
+    }catch(e){aviso.textContent='No se pudo abrir el regalo guardado: '+e.message;store.set(null)}
+  }
+  renderAll();
+}
+init();
+}
+</script>
+</body>
+</html>
