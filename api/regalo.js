@@ -23,6 +23,9 @@ const hash = t => crypto.createHash("sha256").update(String(t)).digest("hex");
 const rand = n => crypto.randomBytes(n).toString("hex");
 const esId = s => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(String(s || ""));
 const RUTA = /^[0-9a-f-]{36}\/[a-z]+-[0-9a-f]+\.[a-z0-9]+$/;
+const TEMAS = ["pasion", "pastel", "noche", "vintage"];
+const CIUDADES = ["arica", "antofagasta", "laserena", "valparaiso", "santiago", "concepcion", "temuco", "puertomontt", "puntaarenas"];
+const tel = t => String(t || "").replace(/[^\d+ ]/g, "").slice(0, 20);
 
 async function llamar(base, path, opt = {}) {
   const r = await fetch(URL_ + base + path, Object.assign({}, opt, {
@@ -71,7 +74,32 @@ function limpiar(d, id) {
     cancion: txt(d.cancion, 300), yt: txt(d.yt, 300),
     carta: txt(d.carta, 5000), final: txt(d.final, 1500),
     tl: lista(d.tl, 30).map(x => ({ f: fecha(x.f), t: txt(x.t, 200) })),
-    qs: lista(d.qs, 10).map(x => ({ q: txt(x.q, 200), ok: txt(x.ok, 100), no: txt(x.no, 300) })),
+    qs: lista(d.qs, 10).map(x => {
+      // Formato nuevo: { q, ops: [4 opciones], ok: índice }. El antiguo { q, ok: texto, no: "a|b" } se convierte.
+      const ops = Array.isArray(x.ops)
+        ? x.ops.slice(0, 4).map(o => txt(o, 100))
+        : [x.ok, ...String(x.no || "").split("|")].map(o => txt(String(o || "").trim(), 100)).slice(0, 4);
+      while (ops.length < 4) ops.push("");
+      const ok = Array.isArray(x.ops) ? Math.min(3, Math.max(0, Math.round(+x.ok || 0))) : 0;
+      return { q: txt(x.q, 200), ops, ok };
+    }),
+    telDe: tel(d.telDe), telPara: tel(d.telPara),
+    tema: TEMAS.includes(d.tema) ? d.tema : "pasion",
+    cielo: {
+      on: !!(d.cielo && d.cielo.on),
+      ciudad: d.cielo && CIUDADES.includes(d.cielo.ciudad) ? d.cielo.ciudad : "santiago",
+      f: fecha(d.cielo && d.cielo.f),
+      h: /^\d{2}:\d{2}$/.test((d.cielo && d.cielo.h) || "") ? d.cielo.h : "22:00"
+    },
+    wrapped: !!d.wrapped,
+    medidor: { on: !!(d.medidor && d.medidor.on), txt: txt(d.medidor && d.medidor.txt, 140) },
+    ruleta: {
+      on: !!(d.ruleta && d.ruleta.on),
+      items: (Array.isArray(d.ruleta && d.ruleta.items) ? d.ruleta.items : []).slice(0, 8).map(x => txt(x, 40))
+    },
+    citas: (Array.isArray(d.citas) ? d.citas : []).slice(0, 15).map(x => txt(x, 80)).filter(Boolean),
+    cartas: lista(d.cartas, 5).map(x => ({ t: txt(x.t, 60), x: txt(x.x, 1000) })),
+    razones: lista(d.razones, 10).map(r => ({ t: txt(r.t, 160), ruta: ruta(r.ruta), peso: ruta(r.ruta) ? num(r.peso) : 0, orig: ruta(r.ruta) ? num(r.orig) : 0 })),
     fotos: lista(d.fotos, 20)
       .filter(f => ruta(f.ruta) && ruta(f.mini))
       .map(f => ({ ruta: f.ruta, mini: f.mini, cap: txt(f.cap, 120), peso: num(f.peso), orig: num(f.orig) })),

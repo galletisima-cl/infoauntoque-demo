@@ -102,6 +102,80 @@ button:disabled{opacity:.5;cursor:default}
 .hide{display:none!important}
 .tag{display:inline-block;font-size:13px;background:var(--soft);padding:4px 10px;border-radius:999px;margin-bottom:10px}
 @media(prefers-reduced-motion:reduce){.hearts{display:none}.env .flap{transition:none}*{animation:none!important}}
+/* ---- Temas del regalo ---- */
+#regalo{background:var(--bg);color:var(--ink)}
+body[data-tema=pastel]{color-scheme:light;--bg:#fff5f8;--ink:#5a2a3a;--red:#d9577a;--card:#fff;--soft:#ffe0ea;--mute:#9c6474;--line:#f6c6d3}
+body[data-tema=noche]{color-scheme:dark;--bg:#0f0b24;--ink:#f1eaff;--red:#d6336c;--card:#1c1640;--soft:#2b2357;--mute:#b3a8d9;--line:#3b3170}
+body[data-tema=vintage]{color-scheme:light;--bg:#f6ece0;--ink:#3d2418;--red:#8c2f39;--card:#fffaf3;--soft:#ead7c3;--mute:#86604e;--line:#d9c0a8}
+.temas{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.temas label{margin:0;display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer;min-height:52px}
+.temas input{accent-color:var(--red);width:18px;height:18px}
+.temas label:has(input:checked){border-color:var(--red);background:var(--soft)}
+.dots{display:inline-flex}.dots i{width:16px;height:16px;border-radius:50%;margin-inline-start:-4px;border:2px solid #fff}
+.sw{display:flex;align-items:center;gap:10px;margin:6px 0}
+.sw input{width:20px;height:20px;accent-color:var(--red)}
+.sw label{margin:0;font-weight:500}
+select{font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:100%}
+input[type=time],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:600px){.row3{grid-template-columns:minmax(0,1fr)}}
+.ops{display:grid;gap:8px;margin-top:8px}
+.ops div{display:grid;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:6px}
+.ops input[type=radio]{width:22px;height:22px;accent-color:var(--red);justify-self:center}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{margin:0;display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:44px;font-weight:400}
+.chips input{accent-color:var(--red);width:18px;height:18px}
+.chips label:has(input:checked){border-color:var(--red);background:var(--soft)}
+.rz{display:grid;grid-template-columns:84px minmax(0,1fr) 44px;gap:10px;align-items:center;margin-bottom:10px}
+.rz .pic{width:84px;height:84px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-size:12px;color:var(--mute);overflow:hidden;position:relative;text-align:center}
+.rz .pic img{width:100%;height:100%;object-fit:cover}
+.rz .pic input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.carta-wa{border:1.5px dashed var(--line);border-radius:16px;padding:12px;margin-bottom:10px}
+.wa{background:#1f8f4e!important;color:#fff!important}
+.sky{width:100%;max-width:520px;margin:0 auto;display:block;aspect-ratio:1}
+.skyprev{max-width:280px;margin-top:12px}
+/* ---- Regalo: secciones nuevas ---- */
+.deck{position:relative;max-width:380px;margin:0 auto;perspective:1000px}
+.rcard{background:var(--card);border-radius:20px;padding:12px 12px 20px;box-shadow:0 20px 40px -22px rgba(60,0,20,.55);cursor:pointer;border:0;width:100%;display:block;color:var(--ink);font:inherit;text-align:center}
+.rcard img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;display:block}
+.rcard .n{font-family:"Dancing Script",cursive;font-size:24px;color:var(--red);margin:12px 0 2px}
+.rcard p{margin:0;font-size:18px;line-height:1.4}
+.rcard.noimg{padding:48px 22px;min-height:240px;display:grid;place-content:center}
+.flip{animation:flip .55s cubic-bezier(.2,.7,.2,1)}
+@keyframes flip{from{transform:rotateY(80deg) scale(.92);opacity:0}to{transform:none;opacity:1}}
+.pips{display:flex;gap:6px;justify-content:center;margin:14px 0}
+.pips i{width:8px;height:8px;border-radius:50%;background:var(--line)}.pips i.on{background:var(--red)}
+.s-sky{background:radial-gradient(circle at 50% 40%,#1b1446,#07061a 75%);color:#f1eaff}
+.s-sky .lbl{color:#cfc6f5}
+.heartm{width:min(240px,60vw);display:block;margin:10px auto}
+.pct{font:400 clamp(44px,12vw,80px)/1 "DM Serif Display",serif;color:var(--red)}
+.wheel-wrap{position:relative;width:min(340px,82vw);margin:10px auto}
+.wheel-wrap svg{width:100%;height:auto;display:block}
+.wheel{transition:transform 4.2s cubic-bezier(.12,.75,.12,1);transform-box:view-box;transform-origin:160px 160px}
+.pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:26px solid var(--ink);z-index:2}
+.premio{font-size:20px;min-height:1.6em;margin-top:14px}
+.citas{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;text-align:left}
+.cita{background:var(--card);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;justify-content:space-between;box-shadow:0 1px 0 var(--line)}
+.cita p{margin:0;font-size:17px}
+.cita .btn,.cita button{align-self:flex-start;font-size:15px;min-height:44px}
+.cita.elegida{outline:2px solid var(--red)}
+.wrapped-cta{background:linear-gradient(135deg,var(--red),#7a0a1c);color:#fff;border-radius:24px;padding:28px}
+.wrapped-cta button{background:#fff;color:#7a0a1c;font-weight:700}
+.story{position:fixed;inset:0;z-index:40;background:#120208;color:#fff;display:grid;grid-template-rows:auto 1fr;padding:max(env(safe-area-inset-top),12px) 14px 20px}
+.story .bars{display:flex;gap:4px}
+.story .bars i{flex:1;height:3px;background:rgba(255,255,255,.3);border-radius:3px;overflow:hidden}
+.story .bars i b{display:block;height:100%;width:0;background:#fff}
+.story .bars i.done b{width:100%}
+.story .bars i.run b{animation:fillb var(--d) linear forwards}
+@keyframes fillb{to{width:100%}}
+.story .top2{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.story .close{background:none;color:#fff;font-size:26px;padding:4px 12px}
+.slide{display:grid;place-content:center;text-align:center;padding:20px;cursor:pointer;border-radius:24px;margin-top:10px;animation:pop .5s ease}
+.slide .k{font:400 clamp(56px,16vw,120px)/1 "DM Serif Display",serif}
+.slide .t{font-size:clamp(20px,5vw,28px);max-width:520px;margin:14px auto 0;line-height:1.3}
+.slide .s{font-size:15px;opacity:.8;margin-top:10px}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.foot{padding:30px 16px 60px;text-align:center}
 </style>
 </head>
 <body>
@@ -125,6 +199,16 @@ button:disabled{opacity:.5;cursor:default}
       <div><label for="fPara">Para</label><input type="text" id="fPara"></div>
     </div>
     <label for="fFecha">¿Desde cuándo están juntos?</label><input type="date" id="fFecha">
+    <div class="row">
+      <div><label for="fTelDe">Tu WhatsApp (para que te responda)</label><input type="tel" id="fTelDe" placeholder="9 1234 5678" inputmode="tel"></div>
+      <div><label for="fTelPara">WhatsApp de tu pareja (para mandarle cartas)</label><input type="tel" id="fTelPara" placeholder="9 1234 5678" inputmode="tel"></div>
+    </div>
+    <p class="note">Los números son opcionales. Sin número, WhatsApp te deja elegir el contacto.</p>
+  </section>
+
+  <section class="sec">
+    <h2>Tema visual</h2>
+    <div class="temas" id="temas"></div>
   </section>
 
   <section class="sec">
@@ -133,6 +217,14 @@ button:disabled{opacity:.5;cursor:default}
     <span class="btn file">Agregar fotos<input type="file" id="inFotos" accept="image/*" multiple></span>
     <div class="msg" id="msgFotos"></div>
     <div class="grid" id="gridFotos"></div>
+  </section>
+
+  <section class="sec">
+    <h2>10 razones por las que te amo</h2>
+    <p class="hint">Cada razón con su foto. Tu pareja las verá como tarjetas que se dan vuelta una a una.</p>
+    <div id="listRz"></div>
+    <button class="ghost" id="addRz">Agregar razón</button>
+    <div class="msg" id="msgRz"></div>
   </section>
 
   <section class="sec">
@@ -164,9 +256,21 @@ button:disabled{opacity:.5;cursor:default}
 
   <section class="sec">
     <h2>La carta</h2>
-    <p class="hint">Escríbela tú o parte desde una idea. En la versión final esto lo redacta la IA.</p>
+    <p class="hint">Escríbela tú o parte desde una idea (hay 6). En la versión final esto lo redacta la IA.</p>
     <button class="ghost" id="btnIdea">Darme una idea</button>
     <label for="fCarta">Carta</label><textarea id="fCarta"></textarea>
+  </section>
+
+  <section class="sec">
+    <h2>Mapa de estrellas</h2>
+    <p class="hint">El cielo que había sobre su ciudad esa noche, calculado con las estrellas más brillantes.</p>
+    <div class="sw"><input type="checkbox" id="fCieloOn"><label for="fCieloOn">Mostrar el mapa de estrellas</label></div>
+    <div class="row3">
+      <div><label for="fCiudad">Ciudad</label><select id="fCiudad"></select></div>
+      <div><label for="fCieloF">Noche</label><input type="date" id="fCieloF"></div>
+      <div><label for="fCieloH">Hora</label><input type="time" id="fCieloH"></div>
+    </div>
+    <div class="skyprev" id="skyPrev"></div>
   </section>
 
   <section class="sec">
@@ -176,8 +280,27 @@ button:disabled{opacity:.5;cursor:default}
   </section>
 
   <section class="sec">
+    <h2>Juegos</h2>
+    <div class="sw"><input type="checkbox" id="fWrapped"><label for="fWrapped">Wrapped: resumen animado de su relación</label></div>
+    <div class="sw"><input type="checkbox" id="fMedOn"><label for="fMedOn">Medidor de amor</label></div>
+    <label for="fMedTxt">Mensaje cuando el medidor revienta</label><input type="text" id="fMedTxt">
+    <div class="sw" style="margin-top:16px"><input type="checkbox" id="fRuletaOn"><label for="fRuletaOn">Rueda de la fortuna</label></div>
+    <p class="note">Premios de la rueda (hasta 8):</p>
+    <div id="listRuleta"></div>
+    <button class="ghost" id="addPremio">Agregar premio</button>
+  </section>
+
+  <section class="sec">
+    <h2>Ideas de citas románticas</h2>
+    <p class="hint">Elige las que le quieres proponer. Tu pareja podrá elegir una y avisarte por WhatsApp.</p>
+    <div class="chips" id="chipsCitas"></div>
+    <label for="fCitaNueva">Agregar una idea propia</label>
+    <div style="display:flex;gap:8px"><input type="text" id="fCitaNueva" placeholder="Ej: volver al lugar donde nos conocimos"><button class="ghost" id="addCita">Agregar</button></div>
+  </section>
+
+  <section class="sec">
     <h2>Preguntas para desbloquear la sorpresa</h2>
-    <p class="hint">Tu pareja tiene que acertar todas para ver el último regalo.</p>
+    <p class="hint">Escribe hasta 4 opciones y marca la correcta. Tu pareja tiene que acertar todas para ver el último regalo.</p>
     <div id="listQ"></div>
     <button class="ghost" id="addQ">Agregar pregunta</button>
   </section>
@@ -185,6 +308,13 @@ button:disabled{opacity:.5;cursor:default}
   <section class="sec">
     <h2>El último regalo</h2>
     <label for="fFinal">Mensaje secreto</label><textarea id="fFinal" style="min-height:100px"></textarea>
+  </section>
+
+  <section class="sec">
+    <h2>Cartas por WhatsApp</h2>
+    <p class="hint">Cartas cortas para mandarle cuando quieras. Cada botón abre WhatsApp con la carta lista para enviar.</p>
+    <div id="listCartas"></div>
+    <button class="ghost" id="addCarta">Agregar carta</button>
   </section>
 
   <section class="sec">
@@ -206,6 +336,7 @@ button:disabled{opacity:.5;cursor:default}
           <p style="margin:0 0 6px">Link del regalo (va en el QR):</p>
           <p style="margin:0 0 12px;word-break:break-all"><b id="link"></b></p>
           <button id="copy">Copiar link</button>
+          <a class="btn wa" id="waRegalo" target="_blank" rel="noopener">Enviar por WhatsApp</a>
           <a class="btn ghost" href="#regalo" style="background:var(--soft);color:var(--ink)">Ver como tu pareja</a>
           <p class="note" id="copied"></p>
         </div>
@@ -230,15 +361,41 @@ const fmt=b=>b<=0?'0 KB':b<MB?Math.max(1,Math.round(b/KB))+' KB':(b/MB).toFixed(
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store={get(){try{return JSON.parse(localStorage.getItem('amor_ed'))}catch(e){return null}},set(v){try{v?localStorage.setItem('amor_ed',JSON.stringify(v)):localStorage.removeItem('amor_ed')}catch(e){}}};
 
+/* ---------- catálogos ---------- */
+const TEMAS=[['pasion','Pasión',['#c8102e','#ffd6df','#3b0a16']],['pastel','Pastel',['#d9577a','#ffe0ea','#fff5f8']],['noche','Noche',['#0f0b24','#d6336c','#b3a8d9']],['vintage','Vintage',['#8c2f39','#ead7c3','#3d2418']]];
+const CIUDADES={arica:['Arica',-18.48,-70.31,'America/Santiago'],antofagasta:['Antofagasta',-23.65,-70.40,'America/Santiago'],laserena:['La Serena',-29.90,-71.25,'America/Santiago'],valparaiso:['Valparaíso',-33.05,-71.62,'America/Santiago'],santiago:['Santiago',-33.45,-70.67,'America/Santiago'],concepcion:['Concepción',-36.83,-73.05,'America/Santiago'],temuco:['Temuco',-38.74,-72.60,'America/Santiago'],puertomontt:['Puerto Montt',-41.47,-72.94,'America/Santiago'],puntaarenas:['Punta Arenas',-53.16,-70.91,'America/Punta_Arenas']};
+const CITAS=['Picnic al atardecer','Noche de películas con cabritas','Cocinar juntos una receta nueva','Subir un cerro a ver la ciudad','Desayuno en la cama','Escapada de fin de semana','Ver las estrellas lejos de la ciudad','Clase de baile juntos','Ir a la playa a ver el atardecer','Tarde de juegos de mesa','Recorrer una feria y probar algo nuevo','Cena a la luz de las velas'];
+const IDEAS=[
+  (d,p)=>`${p}:\n\nGracias por cada día a tu lado. Contigo aprendí que el amor está en lo simple: un mensaje a mitad del día, una mano en el auto, una risa en la cocina.\n\nFeliz día del amor.\n${d}`,
+  (d,p)=>`${p}, mi persona favorita:\n\nSi pudiera volver al día en que te conocí, haría todo igual, solo para llegar otra vez hasta aquí.\n\nTe amo hoy y te voy a amar mañana.\n${d}`,
+  (d,p)=>`Para ${p}:\n\nNo necesito un día especial para decírtelo, pero hoy quiero dejarlo por escrito: eres mi lugar seguro, mi equipo y mi mejor aventura.\n\nCon todo mi amor,\n${d}`,
+  (d,p)=>`${p}:\n\nMe gusta cómo me miras cuando crees que no me doy cuenta, cómo cantas mal en el auto y cómo haces que cualquier plan aburrido termine siendo mi favorito.\n\nGracias por elegirme todos los días. Yo también te elijo.\n${d}`,
+  (d,p)=>`Querida/o ${p}:\n\nHemos pasado por días buenos y otros no tanto, y en todos estuviste. Eso es lo que más admiro de nosotros: que siempre volvemos a encontrarnos.\n\nPor muchos años más de abrazos largos y conversaciones hasta tarde.\n${d}`,
+  (d,p)=>`${p}:\n\nHice una lista de las cosas que amo de ti y me quedé sin papel. Así que te dejo la versión corta: todo.\n\nGracias por hacer mi vida más bonita y más divertida.\nTe amo, ${d}`
+];
+/* Estrellas brillantes: nombre, AR (horas), Dec (grados), magnitud */
+const STARS=[['Sirio',6.752,-16.72,-1.46],['Canopus',6.399,-52.70,-.74],['Alfa Centauri',14.660,-60.83,-.27],['Arturo',14.261,19.18,-.05],['Vega',18.616,38.78,.03],['Capella',5.278,46.00,.08],['Rigel',5.242,-8.20,.13],['Proción',7.655,5.22,.34],['Achernar',1.629,-57.24,.46],['Betelgeuse',5.919,7.41,.5],['Hadar',14.064,-60.37,.61],['Altair',19.846,8.87,.76],['Acrux',12.443,-63.10,.77],['Aldebarán',4.599,16.51,.86],['Antares',16.490,-26.43,.96],['Espiga',13.420,-11.16,.97],['Pólux',7.755,28.03,1.14],['Fomalhaut',22.961,-29.62,1.16],['Deneb',20.690,45.28,1.25],['Mimosa',12.795,-59.69,1.25],['Régulo',10.140,11.97,1.35],['Adhara',6.977,-28.97,1.5],['Cástor',7.577,31.89,1.58],['Gacrux',12.519,-57.11,1.59],['Shaula',17.560,-37.10,1.62],['Bellatrix',5.419,6.35,1.64],['Elnath',5.438,28.61,1.65],['Miaplacidus',9.220,-69.72,1.68],['Alnilam',5.604,-1.20,1.69],['Alnair',22.137,-46.96,1.74],['Alnitak',5.679,-1.94,1.77],['Alioth',12.900,55.96,1.77],['Dubhe',11.062,61.75,1.79],['Mirfak',3.405,49.86,1.79],['Wezen',7.140,-26.39,1.83],['Kaus Australis',18.403,-34.38,1.85],['Sargas',17.622,-43.00,1.86],['Avior',8.375,-59.51,1.86],['Alkaid',13.792,49.31,1.86],['Menkalinan',5.992,44.95,1.9],['Atria',16.811,-69.03,1.91],['Alhena',6.629,16.40,1.93],['Peacock',20.427,-56.74,1.94],['Polaris',2.530,89.26,1.98],['Mirzam',6.378,-17.96,1.98],['Alphard',9.460,-8.66,1.98],['Hamal',2.120,23.46,2.0],['Diphda',.727,-17.99,2.04],['Nunki',18.921,-26.30,2.05],['Menkent',14.111,-36.37,2.06],['Saiph',5.796,-9.67,2.06],['Suhail',9.133,-43.43,2.21],['Mintaka',5.533,-.30,2.23],['Dschubba',16.006,-22.62,2.3],['Épsilon Escorpión',16.836,-34.29,2.3],['Lesath',17.513,-37.30,2.7],['Delta Cruz',12.252,-58.75,2.8]];
+const LINES=[['Acrux','Gacrux'],['Mimosa','Delta Cruz'],['Alfa Centauri','Hadar'],['Betelgeuse','Bellatrix'],['Bellatrix','Mintaka'],['Mintaka','Alnilam'],['Alnilam','Alnitak'],['Alnitak','Saiph'],['Saiph','Rigel'],['Rigel','Mintaka'],['Betelgeuse','Alnitak'],['Dschubba','Antares'],['Antares','Épsilon Escorpión'],['Épsilon Escorpión','Sargas'],['Sargas','Shaula'],['Shaula','Lesath']];
+
 const S={
-  de:'Matías',para:'Sofía',fecha:'2021-02-14',cancion:'',yt:'',
-  fotos:[],video:null,voz:null,
+  de:'Matías',para:'Sofía',fecha:'2021-02-14',cancion:'',yt:'',telDe:'',telPara:'',tema:'pasion',
+  fotos:[],video:null,voz:null,razones:[
+    {t:'Porque me haces reír incluso en los días malos.'},{t:'Porque siempre me esperas con un café.'},{t:'Porque contigo cualquier martes es especial.'}],
   carta:'Sofía:\n\nHay días en que todavía no creo la suerte que tengo. Gracias por reírte de mis chistes malos, por esperarme siempre con un café y por hacer de cualquier martes algo especial.\n\nTe elegiría otra vez, todas las veces.\n\nTuyo,\nMatías',
+  cielo:{on:true,ciudad:'santiago',f:'2021-02-14',h:'22:00'},
   tl:[{f:'2021-02-14',t:'Nuestra primera cita, en la costanera'},{f:'2022-01-08',t:'Primer viaje juntos al sur'},{f:'2023-09-02',t:'Nos fuimos a vivir juntos'},{f:'2025-02-14',t:'Adoptamos a Canela'}],
-  qs:[{q:'¿Dónde fue nuestra primera cita?',ok:'En la costanera',no:'En el cine|En un café'},{q:'¿Cómo se llama nuestra perrita?',ok:'Canela',no:'Luna|Mora'}],
-  final:'Prepara una maleta chica: el viernes nos vamos tres días a Pucón. Ya está todo reservado. Te amo.'
+  wrapped:true,medidor:{on:true,txt:'Error: mi amor por ti no cabe en ningún medidor.'},
+  ruleta:{on:true,items:['Un masaje de 15 minutos','Desayuno en la cama','Tú eliges la película','Cena que tú elijas','Un día sin lavar la loza','Una carta escrita a mano','Salida sorpresa','Un abrazo de un minuto']},
+  citas:['Picnic al atardecer','Ver las estrellas lejos de la ciudad','Cocinar juntos una receta nueva'],
+  qs:[{q:'¿Dónde fue nuestra primera cita?',ops:['En la costanera','En el cine','En un café',''],ok:0},{q:'¿Cómo se llama nuestra perrita?',ops:['Luna','Canela','Mora',''],ok:1}],
+  final:'Prepara una maleta chica: el viernes nos vamos tres días a Pucón. Ya está todo reservado. Te amo.',
+  cartas:[{t:'Abre cuando me extrañes',x:'Cierra los ojos y piensa en nuestro último abrazo. Ya falta menos para el próximo. Te amo.'},{t:'Buenos días, mi amor',x:'Que tengas un día lindo. Acuérdate de que alguien está pensando en ti y sonriendo.'}]
 };
 let ED=null,online=false,RECIP=false;
+
+/* ---------- WhatsApp ---------- */
+const tel=t=>{let d=String(t||'').replace(/\D/g,'');if(d.length===9&&d[0]==='9')d='56'+d;else if(d.length===8)d='569'+d;return d};
+const wa=(t,msg)=>'https://wa.me/'+tel(t)+'?text='+encodeURIComponent(msg);
 
 /* ---------- servidor ---------- */
 async function api(body){
@@ -247,13 +404,20 @@ async function api(body){
   if(!r.ok)throw new Error(j.error||'Error '+r.status);
   return j;
 }
+const med=x=>x?.ruta?{ruta:x.ruta,peso:x.size,orig:x.orig}:null;
 const pack=()=>({de:S.de,para:S.para,fecha:S.fecha,cancion:S.cancion,yt:S.yt,carta:S.carta,final:S.final,tl:S.tl,qs:S.qs,
+  telDe:S.telDe,telPara:S.telPara,tema:S.tema,cielo:S.cielo,wrapped:S.wrapped,medidor:S.medidor,ruleta:S.ruleta,citas:S.citas,cartas:S.cartas,
+  razones:S.razones.map(r=>({t:r.t,ruta:r.ruta||null,peso:r.size||0,orig:r.orig||0})),
   fotos:S.fotos.filter(f=>f.ruta&&f.mini).map(f=>({ruta:f.ruta,mini:f.mini,cap:f.cap,peso:f.size,orig:f.orig})),
-  video:S.video?.ruta?{ruta:S.video.ruta,peso:S.video.size,orig:S.video.orig}:null,
-  voz:S.voz?.ruta?{ruta:S.voz.ruta,peso:S.voz.size,orig:S.voz.orig}:null});
+  video:med(S.video),voz:med(S.voz)});
 function unpack(d,base){
-  for(const k of['de','para','fecha','cancion','yt','carta','final'])S[k]=d[k]||'';
-  S.tl=d.tl||[];S.qs=d.qs||[];
+  for(const k of['de','para','fecha','cancion','yt','carta','final','telDe','telPara'])S[k]=d[k]||'';
+  S.tema=d.tema||'pasion';S.tl=d.tl||[];
+  S.qs=(d.qs||[]).map(q=>q.ops?q:{q:q.q,ops:[q.ok,...String(q.no||'').split('|')].map(s=>s.trim()).concat(['','','']).slice(0,4),ok:0});
+  S.cielo=Object.assign({on:false,ciudad:'santiago',f:d.fecha||'',h:'22:00'},d.cielo||{});
+  S.wrapped=!!d.wrapped;S.medidor=Object.assign({on:false,txt:''},d.medidor||{});S.ruleta=Object.assign({on:false,items:[]},d.ruleta||{});
+  S.citas=d.citas||[];S.cartas=d.cartas||[];
+  S.razones=(d.razones||[]).map(r=>({t:r.t||'',ruta:r.ruta||null,url:r.ruta?base+r.ruta:null,size:r.peso||0,orig:r.orig||0}));
   S.fotos=(d.fotos||[]).map(f=>({ruta:f.ruta,mini:f.mini,url:base+f.ruta,thumb:base+f.mini,size:f.peso,orig:f.orig,cap:f.cap||''}));
   const m=x=>x&&{ruta:x.ruta,url:base+x.ruta,size:x.peso,orig:x.orig};
   S.video=m(d.video);S.voz=m(d.voz);
@@ -287,19 +451,20 @@ async function upload(blob,clase){
 function borrar(...rutas){rutas=rutas.filter(Boolean);if(ED&&online&&rutas.length)api({accion:'borrar',id:ED.id,token:ED.token,rutas}).catch(()=>{})}
 
 /* ---------- cuota ---------- */
-const used=()=>S.fotos.reduce((a,f)=>a+f.size,0)+(S.video?.size||0)+(S.voz?.size||0);
-const orig=()=>S.fotos.reduce((a,f)=>a+(f.orig||f.size),0)+(S.video?.orig||S.video?.size||0)+(S.voz?.orig||S.voz?.size||0);
+const sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
+const used=()=>sum(S.fotos,f=>f.size)+sum(S.razones,r=>r.size||0)+(S.video?.size||0)+(S.voz?.size||0);
+const orig=()=>sum(S.fotos,f=>f.orig||f.size)+sum(S.razones,r=>r.orig||r.size||0)+(S.video?.orig||S.video?.size||0)+(S.voz?.orig||S.voz?.size||0);
 function renderQuota(){
   const u=used(),p=Math.min(100,u/QUOTA*100);
   $('#qBar').style.width=p+'%';$('#qTxt').textContent=fmt(u)+' de 15 MB';
-  const rows=[['Fotos',S.fotos.reduce((a,f)=>a+f.size,0)],['Video',S.video?.size||0],['Voz',S.voz?.size||0]];
+  const rows=[['Fotos',sum(S.fotos,f=>f.size)],['Razones',sum(S.razones,r=>r.size||0)],['Video',S.video?.size||0],['Voz',S.voz?.size||0]];
   const o=orig();
   $('#meter').innerHTML=rows.map(([n,b])=>`<span>${n}</span><span class="b"><i style="width:${Math.min(100,b/QUOTA*100)}%"></i></span><span>${fmt(b)}</span>`).join('')+
    `<span><b>Total</b></span><span class="note" style="margin:0">${o>u?'Sin comprimir habría pesado '+fmt(o)+' · ahorro '+Math.round((1-u/o)*100)+' %':''}</span><span><b>${fmt(u)}</b></span>`;
 }
 const room=b=>used()+b<=QUOTA;
 
-/* ---------- fotos ---------- */
+/* ---------- compresión ---------- */
 async function shrink(file,max,q){
   const bmp=await createImageBitmap(file);
   const k=Math.min(1,max/Math.max(bmp.width,bmp.height));
@@ -309,6 +474,8 @@ async function shrink(file,max,q){
   if(!b||b.type!=='image/webp')b=await new Promise(r=>c.toBlob(r,'image/jpeg',q+.05));
   return b;
 }
+
+/* ---------- fotos ---------- */
 function renderFotos(){
   $('#gridFotos').innerHTML=S.fotos.length?S.fotos.map((f,i)=>`<div class="ph"><img src="${f.thumb}" alt=""><div class="m"><span>${f.subiendo?'subiendo…':fmt(f.orig||f.size)+' → <span class="save">'+fmt(f.size)+'</span>'}</span><button class="x" data-del="${i}" aria-label="Quitar foto">✕</button></div><input type="text" data-cap="${i}" value="${esc(f.cap)}" placeholder="Pie de foto"></div>`).join(''):'<p class="note">Aún no hay fotos.</p>';
   renderQuota();
@@ -333,6 +500,24 @@ $('#inFotos').addEventListener('change',async e=>{
     ok++;before+=f.size;after+=full.size+th.size;renderFotos();
   }
   if(ok){m.textContent=`${ok} foto${ok>1?'s':''}: ${fmt(before)} → ${fmt(after)} (ahorro ${Math.round((1-after/before)*100)} %).`+(online?'':' Modo prueba: no se guardan.');scheduleSave()}
+});
+
+/* ---------- 10 razones ---------- */
+function renderRz(){
+  $('#listRz').innerHTML=S.razones.map((r,i)=>`<div class="rz"><div class="pic">${r.url?`<img src="${r.url}" alt="">`:r.subiendo?'subiendo…':'+ foto'}<input type="file" accept="image/*" data-rzf="${i}" aria-label="Foto de la razón ${i+1}"></div><div><label style="margin-top:0" for="rz${i}">Razón ${i+1}</label><input type="text" id="rz${i}" data-rz="${i}" value="${esc(r.t)}" maxlength="160"></div><button class="x" data-drz="${i}" aria-label="Quitar razón">✕</button></div>`).join('');
+  $('#addRz').disabled=S.razones.length>=10;renderQuota();
+}
+$('#addRz').onclick=()=>{if(S.razones.length<10){S.razones.push({t:''});renderRz()}};
+$('#listRz').addEventListener('input',e=>{const i=e.target.dataset.rz;if(i!=null)S.razones[+i].t=e.target.value});
+$('#listRz').addEventListener('click',e=>{const i=e.target.dataset.drz;if(i!=null){const r=S.razones.splice(+i,1)[0];borrar(r.ruta);renderRz();scheduleSave()}});
+$('#listRz').addEventListener('change',async e=>{
+  const i=e.target.dataset.rzf;if(i==null)return;const f=e.target.files[0];if(!f)return;const r=S.razones[+i],m=$('#msgRz');
+  let b;try{b=await shrink(f,1080,.75)}catch(err){m.textContent='No se pudo leer esa foto.';return}
+  if(!room(b.size-(r.size||0))){m.textContent='No queda espacio para esta foto.';return}
+  const old=r.ruta;r.subiendo=true;renderRz();
+  if(online){try{r.ruta=await upload(b,'razon')}catch(err){r.subiendo=false;renderRz();m.textContent=err.message;return}}
+  borrar(old);r.subiendo=false;r.url=URL.createObjectURL(b);r.size=b.size;r.orig=f.size;
+  m.textContent=`Foto lista: ${fmt(f.size)} → ${fmt(b.size)}.`;renderRz();scheduleSave();
 });
 
 /* ---------- canción y YouTube ---------- */
@@ -372,10 +557,7 @@ $('#inVideo').addEventListener('change',async e=>{
   }
   if(!room(blob.size-(S.video?.size||0))){m.textContent=`Comprimido quedó en ${fmt(blob.size)} y supera el espacio disponible.`;return}
   const it={url:URL.createObjectURL(blob),size:blob.size,orig:f.size};
-  if(online){
-    try{m.textContent=`Subiendo video (${fmt(blob.size)})…`;it.ruta=await upload(blob,'video')}
-    catch(err){m.textContent=err.message;return}
-  }
+  if(online){try{m.textContent=`Subiendo video (${fmt(blob.size)})…`;it.ruta=await upload(blob,'video')}catch(err){m.textContent=err.message;return}}
   if(S.video)borrar(S.video.ruta);
   S.video=it;showVideo();m.textContent=`Video listo: ${fmt(f.size)} → ${fmt(blob.size)}.`;renderQuota();scheduleSave();
 });
@@ -417,27 +599,103 @@ $('#inVoz').addEventListener('change',e=>{
 $('#delVoz').onclick=()=>{borrar(S.voz?.ruta);S.voz=null;showVoz();$('#msgVoz').textContent='';renderQuota();scheduleSave()};
 
 /* ---------- carta ---------- */
-const ideas=[
-  (d,p)=>`${p}:\n\nGracias por cada día a tu lado. Contigo aprendí que el amor está en lo simple: un mensaje a mitad del día, una mano en el auto, una risa en la cocina.\n\nFeliz día del amor.\n${d}`,
-  (d,p)=>`${p}, mi persona favorita:\n\nSi pudiera volver al día en que te conocí, haría todo igual, solo para llegar otra vez hasta aquí.\n\nTe amo hoy y te voy a amar mañana.\n${d}`,
-  (d,p)=>`Para ${p}:\n\nNo necesito un día especial para decírtelo, pero hoy quiero dejarlo por escrito: eres mi lugar seguro, mi equipo y mi mejor aventura.\n\nCon todo mi amor,\n${d}`
-];let idea=0;
-$('#btnIdea').onclick=()=>{S.carta=ideas[idea++%ideas.length](S.de||'Yo',S.para||'Mi amor');$('#fCarta').value=S.carta;scheduleSave()};
+let idea=0;
+$('#btnIdea').onclick=()=>{S.carta=IDEAS[idea++%IDEAS.length](S.de||'Yo',S.para||'Mi amor');$('#fCarta').value=S.carta;scheduleSave()};
 
-/* ---------- línea del tiempo y preguntas ---------- */
+/* ---------- temas ---------- */
+$('#temas').innerHTML=TEMAS.map(([k,n,c])=>`<label><input type="radio" name="tema" value="${k}"><span class="dots">${c.map(x=>`<i style="background:${x}"></i>`).join('')}</span>${n}</label>`).join('');
+$('#temas').addEventListener('change',e=>{S.tema=e.target.value;scheduleSave()});
+
+/* ---------- mapa de estrellas ---------- */
+$('#fCiudad').innerHTML=Object.entries(CIUDADES).map(([k,c])=>`<option value="${k}">${c[0]}</option>`).join('');
+function zonedUtc(f,h,tz){
+  const [Y,M,D]=f.split('-').map(Number),[hh,mm]=(h||'22:00').split(':').map(Number);
+  const guess=Date.UTC(Y,M-1,D,hh,mm);
+  const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).formatToParts(new Date(guess)).map(x=>[x.type,x.value]));
+  const asTz=Date.UTC(+p.year,+p.month-1,+p.day,+p.hour%24,+p.minute);
+  return guess-(asTz-guess);
+}
+function skySvg(c,big){
+  const city=CIUDADES[c.ciudad]||CIUDADES.santiago,f=c.f||S.fecha;
+  if(!f)return '<p class="note">Elige una fecha.</p>';
+  const ms=zonedUtc(f,c.h,city[3]),jd=ms/864e5+2440587.5,R=Math.PI/180;
+  const gmst=((280.46061837+360.98564736629*(jd-2451545))%360+360)%360,lst=gmst+city[2],lat=city[1]*R;
+  const W=500,cx=250,cy=250,rad=230,pos={};
+  let dots='',labels='';
+  for(const [n,ra,dec,mag] of STARS){
+    const H=(lst-ra*15)*R,d=dec*R;
+    const alt=Math.asin(Math.sin(d)*Math.sin(lat)+Math.cos(d)*Math.cos(lat)*Math.cos(H));
+    if(alt<=0)continue;
+    const az=Math.atan2(-Math.sin(H)*Math.cos(d),Math.sin(d)*Math.cos(lat)-Math.cos(d)*Math.sin(lat)*Math.cos(H));
+    const r=rad*(1-alt/(Math.PI/2)),x=cx-r*Math.sin(az),y=cy-r*Math.cos(az);pos[n]=[x,y];
+    const s=Math.max(1.1,3.6-mag*1.05);
+    dots+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${s.toFixed(2)}" fill="#fff" opacity="${(1-Math.max(0,mag)/4).toFixed(2)}"/>`;
+    if(big&&mag<1.3)labels+=`<text x="${(x+s+4).toFixed(1)}" y="${(y+4).toFixed(1)}" font-size="12" fill="#cfc6f5">${n}</text>`;
+  }
+  const lines=LINES.filter(([a,b])=>pos[a]&&pos[b]).map(([a,b])=>`<line x1="${pos[a][0].toFixed(1)}" y1="${pos[a][1].toFixed(1)}" x2="${pos[b][0].toFixed(1)}" y2="${pos[b][1].toFixed(1)}"/>`).join('');
+  const card=(t,x,y)=>`<text x="${x}" y="${y}" font-size="13" fill="#9d93c7" text-anchor="middle">${t}</text>`;
+  return `<svg class="sky" viewBox="0 0 ${W} ${W}" role="img" aria-label="Mapa de estrellas de ${city[0]}"><defs><radialGradient id="sk"><stop offset="0" stop-color="#241a5c"/><stop offset="1" stop-color="#0a0820"/></radialGradient></defs><circle cx="${cx}" cy="${cy}" r="${rad+6}" fill="url(#sk)" stroke="#c9b8ff" stroke-opacity=".5"/><g stroke="#a99be6" stroke-opacity=".55" stroke-width="1">${lines}</g>${dots}${labels}${card('N',cx,16)}${card('S',cx,W-4)}${card('E',10,cy+4)}${card('O',W-10,cy+4)}</svg>`;
+}
+const skyPrev=()=>{$('#skyPrev').innerHTML=S.cielo.on?skySvg(S.cielo,false):''};
+$('#fCieloOn').onchange=e=>{S.cielo.on=e.target.checked;skyPrev();scheduleSave()};
+$('#fCiudad').onchange=e=>{S.cielo.ciudad=e.target.value;skyPrev();scheduleSave()};
+$('#fCieloF').oninput=e=>{S.cielo.f=e.target.value;skyPrev()};
+$('#fCieloH').oninput=e=>{S.cielo.h=e.target.value;skyPrev()};
+
+/* ---------- línea del tiempo ---------- */
 function renderTL(){$('#listTL').innerHTML=S.tl.map((x,i)=>`<div><input type="date" data-tl="${i}" data-k="f" value="${esc(x.f)}" aria-label="Fecha"><input type="text" data-tl="${i}" data-k="t" value="${esc(x.t)}" aria-label="Momento"><button class="x" data-dtl="${i}" aria-label="Quitar">✕</button></div>`).join('')}
 $('#listTL').addEventListener('input',e=>{const d=e.target.dataset;if(d.tl!=null)S.tl[+d.tl][d.k]=e.target.value});
 $('#listTL').addEventListener('click',e=>{const i=e.target.dataset.dtl;if(i!=null){S.tl.splice(+i,1);renderTL();scheduleSave()}});
 $('#addTL').onclick=()=>{S.tl.push({f:'',t:''});renderTL()};
-function renderQ(){$('#listQ').innerHTML=S.qs.map((x,i)=>`<div class="q"><label>Pregunta ${i+1}</label><input type="text" data-q="${i}" data-k="q" value="${esc(x.q)}"><div class="row"><div><label>Respuesta correcta</label><input type="text" data-q="${i}" data-k="ok" value="${esc(x.ok)}"></div><div><label>Respuestas falsas (sepáralas con |)</label><input type="text" data-q="${i}" data-k="no" value="${esc(x.no)}"></div></div><button class="x" data-dq="${i}">Quitar pregunta</button></div>`).join('')}
-$('#listQ').addEventListener('input',e=>{const d=e.target.dataset;if(d.q!=null)S.qs[+d.q][d.k]=e.target.value});
+
+/* ---------- juegos ---------- */
+$('#fWrapped').onchange=e=>{S.wrapped=e.target.checked;scheduleSave()};
+$('#fMedOn').onchange=e=>{S.medidor.on=e.target.checked;scheduleSave()};
+$('#fMedTxt').oninput=e=>{S.medidor.txt=e.target.value};
+$('#fRuletaOn').onchange=e=>{S.ruleta.on=e.target.checked;scheduleSave()};
+function renderRuleta(){$('#listRuleta').innerHTML=S.ruleta.items.map((x,i)=>`<div style="display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px;margin-bottom:8px"><input type="text" data-pr="${i}" value="${esc(x)}" maxlength="40" aria-label="Premio ${i+1}"><button class="x" data-dpr="${i}" aria-label="Quitar premio">✕</button></div>`).join('');$('#addPremio').disabled=S.ruleta.items.length>=8}
+$('#listRuleta').addEventListener('input',e=>{const i=e.target.dataset.pr;if(i!=null)S.ruleta.items[+i]=e.target.value});
+$('#listRuleta').addEventListener('click',e=>{const i=e.target.dataset.dpr;if(i!=null){S.ruleta.items.splice(+i,1);renderRuleta();scheduleSave()}});
+$('#addPremio').onclick=()=>{if(S.ruleta.items.length<8){S.ruleta.items.push('');renderRuleta()}};
+
+/* ---------- citas ---------- */
+function renderCitas(){
+  const all=[...new Set([...CITAS,...S.citas])];
+  $('#chipsCitas').innerHTML=all.map((c,i)=>`<label><input type="checkbox" data-cita="${esc(c)}" ${S.citas.includes(c)?'checked':''}>${esc(c)}</label>`).join('');
+}
+$('#chipsCitas').addEventListener('change',e=>{const c=e.target.dataset.cita;if(c==null)return;S.citas=e.target.checked?[...S.citas,c]:S.citas.filter(x=>x!==c);scheduleSave()});
+$('#addCita').onclick=()=>{const v=$('#fCitaNueva').value.trim();if(v&&!S.citas.includes(v)&&S.citas.length<15){S.citas.push(v);$('#fCitaNueva').value='';renderCitas();scheduleSave()}};
+
+/* ---------- preguntas ---------- */
+function renderQ(){$('#listQ').innerHTML=S.qs.map((x,i)=>`<div class="q"><label for="q${i}">Pregunta ${i+1}</label><input type="text" id="q${i}" data-q="${i}" value="${esc(x.q)}"><p class="note" style="margin:10px 0 0">Opciones (marca la correcta):</p><div class="ops">${[0,1,2,3].map(j=>`<div><input type="radio" name="ok${i}" data-qok="${i}" value="${j}" ${x.ok===j?'checked':''} aria-label="Opción ${j+1} es la correcta"><input type="text" data-qo="${i}" data-j="${j}" value="${esc(x.ops[j]||'')}" placeholder="Opción ${j+1}${j>1?' (opcional)':''}"></div>`).join('')}</div><button class="x" data-dq="${i}">Quitar pregunta</button></div>`).join('')}
+$('#listQ').addEventListener('input',e=>{const d=e.target.dataset;if(d.q!=null)S.qs[+d.q].q=e.target.value;if(d.qo!=null)S.qs[+d.qo].ops[+d.j]=e.target.value});
+$('#listQ').addEventListener('change',e=>{const d=e.target.dataset;if(d.qok!=null){S.qs[+d.qok].ok=+e.target.value;scheduleSave()}});
 $('#listQ').addEventListener('click',e=>{const i=e.target.dataset.dq;if(i!=null){S.qs.splice(+i,1);renderQ();scheduleSave()}});
-$('#addQ').onclick=()=>{S.qs.push({q:'',ok:'',no:''});renderQ()};
+$('#addQ').onclick=()=>{if(S.qs.length<10){S.qs.push({q:'',ops:['','','',''],ok:0});renderQ()}};
+
+/* ---------- cartas por WhatsApp ---------- */
+const firma=()=>S.de?`\n\n— ${S.de}`:'';
+function renderCartas(){
+  $('#listCartas').innerHTML=S.cartas.map((c,i)=>`<div class="carta-wa"><label for="ct${i}" style="margin-top:0">Título</label><input type="text" id="ct${i}" data-ct="${i}" data-k="t" value="${esc(c.t)}" maxlength="60"><label for="cx${i}">Carta</label><textarea id="cx${i}" data-ct="${i}" data-k="x" style="min-height:90px" maxlength="1000">${esc(c.x)}</textarea><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><a class="btn wa" data-wa="${i}" target="_blank" rel="noopener">Enviar por WhatsApp</a><button class="x" data-dct="${i}">Quitar</button></div></div>`).join('');
+  $('#addCarta').disabled=S.cartas.length>=5;updWa();
+}
+function updWa(){
+  document.querySelectorAll('[data-wa]').forEach(a=>{const c=S.cartas[+a.dataset.wa];a.href=wa(S.telPara,`💌 ${c.t}\n\n${c.x}${firma()}`)});
+  if(ED)$('#waRegalo').href=wa(S.telPara,`${S.para?S.para+', t':'T'}e preparé un regalo 💝 Ábrelo aquí: ${giftUrl()}`);
+}
+$('#listCartas').addEventListener('input',e=>{const d=e.target.dataset;if(d.ct!=null){S.cartas[+d.ct][d.k]=e.target.value;updWa()}});
+$('#listCartas').addEventListener('click',e=>{const i=e.target.dataset.dct;if(i!=null){S.cartas.splice(+i,1);renderCartas();scheduleSave()}});
+$('#addCarta').onclick=()=>{if(S.cartas.length<5){S.cartas.push({t:'',x:''});renderCartas()}};
 
 /* ---------- campos simples, guardado y QR ---------- */
-const F={'#fDe':'de','#fPara':'para','#fFecha':'fecha','#fCancion':'cancion','#fYt':'yt','#fCarta':'carta','#fFinal':'final'};
-for(const[id,k]of Object.entries(F))$(id).addEventListener('input',e=>{S[k]=e.target.value;if(k==='cancion')songInfo()});
-const fill=()=>{for(const[id,k]of Object.entries(F))$(id).value=S[k]||''};
+const F={'#fDe':'de','#fPara':'para','#fFecha':'fecha','#fCancion':'cancion','#fYt':'yt','#fCarta':'carta','#fFinal':'final','#fTelDe':'telDe','#fTelPara':'telPara'};
+for(const[id,k]of Object.entries(F))$(id).addEventListener('input',e=>{S[k]=e.target.value;if(k==='cancion')songInfo();if(k==='telPara'||k==='de'||k==='para')updWa()});
+function fill(){
+  for(const[id,k]of Object.entries(F))$(id).value=S[k]||'';
+  const t=document.querySelector(`#temas input[value="${S.tema}"]`)||document.querySelector('#temas input');t.checked=true;
+  $('#fCieloOn').checked=!!S.cielo.on;$('#fCiudad').value=S.cielo.ciudad;$('#fCieloF').value=S.cielo.f||'';$('#fCieloH').value=S.cielo.h||'22:00';
+  $('#fWrapped').checked=!!S.wrapped;$('#fMedOn').checked=!!S.medidor.on;$('#fMedTxt').value=S.medidor.txt||'';$('#fRuletaOn').checked=!!S.ruleta.on;
+}
 $('#crear').addEventListener('input',e=>{if(e.target.type!=='file')scheduleSave()});
 const giftUrl=()=>location.origin+location.pathname+'?r='+ED.slug;
 function showSaved(){
@@ -446,6 +704,7 @@ function showSaved(){
   const url=giftUrl();$('#link').textContent=url;
   $('#linkEd').textContent=location.origin+location.pathname+'?editar='+ED.id+'&k='+ED.token;
   try{const q=qrcode(0,'M');q.addData(url);q.make();$('#qr').innerHTML=q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){$('#qr').textContent='QR no disponible'}
+  updWa();
 }
 $('#btnSave').onclick=async()=>{const m=$('#saveMsg');try{await ensure();await save();m.textContent=''}catch(e){m.textContent=e.message}};
 const copiar=async(txt,el)=>{try{await navigator.clipboard.writeText(txt);el.textContent='Copiado.'}catch(e){el.textContent='No se pudo copiar; selecciónalo a mano.'}};
@@ -454,47 +713,123 @@ $('#copyEd').onclick=()=>copiar($('#linkEd').textContent,$('#copied'));
 $('#nuevo').onclick=()=>{store.set(null);location.href=location.pathname};
 
 /* ---------- el regalo ---------- */
+const DAY=864e5;
 function together(){
   const s=new Date(S.fecha+'T00:00:00'),n=new Date();if(!S.fecha||isNaN(s))return null;
-  let ms=n-s;if(ms<0)ms=0;
-  return {d:Math.floor(ms/864e5),h:Math.floor(ms/36e5)%24,m:Math.floor(ms/6e4)%60,s:Math.floor(ms/1e3)%60};
+  let ms=Math.max(0,n-s);
+  return {d:Math.floor(ms/DAY),h:Math.floor(ms/36e5)%24,m:Math.floor(ms/6e4)%60,s:Math.floor(ms/1e3)%60,ms};
 }
 function rain(n){
   const h=$('#hearts');
   for(let i=0;i<n;i++){const s=document.createElement('span');s.textContent='♥';s.style.left=Math.random()*100+'vw';s.style.fontSize=12+Math.random()*26+'px';s.style.animationDuration=3+Math.random()*3+'s';s.style.animationDelay=Math.random()*1.5+'s';h.appendChild(s);setTimeout(()=>s.remove(),7000)}
 }
 const fecha=f=>new Date(f+'T00:00:00').toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
+const num=n=>Math.round(n).toLocaleString('es-CL');
+function nextAnniv(){
+  if(!S.fecha)return null;const [,m,d]=S.fecha.split('-').map(Number),now=new Date();
+  let a=new Date(now.getFullYear(),m-1,d);if(a<new Date(now.getFullYear(),now.getMonth(),now.getDate()))a=new Date(now.getFullYear()+1,m-1,d);
+  return Math.round((a-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/DAY);
+}
+function slides(){
+  const t=together(),out=[],tl=S.tl.filter(x=>x.t&&x.f).sort((a,b)=>a.f<b.f?-1:1),rz=S.razones.filter(r=>r.t);
+  const bg=['#c8102e','#7a0a1c','#d6336c','#4a1f8c','#b3123b','#0f0b24','#8c2f39'];
+  if(t){out.push({k:num(t.d),t:'días juntos',s:`desde el ${fecha(S.fecha)}`});out.push({k:num(t.ms/36e5),t:'horas compartidas',s:`y unos ${num(t.d*100800/1e6)} millones de latidos (aprox.)`})}
+  if(tl.length)out.push({k:tl.length,t:`momentos que marcaron nuestra historia`,s:`el primero: ${tl[0].t}`});
+  if(S.fotos.length)out.push({k:S.fotos.length,t:'fotos que guardamos para este regalo'});
+  if(S.cancion)out.push({k:'♫',t:'Nuestra canción sonó más que cualquier otra',s:'dale play cuando llegues a ella'});
+  if(rz.length)out.push({k:rz.length,t:'razones por las que te amo',s:'te las muestro más abajo'});
+  const na=nextAnniv();if(na!=null)out.push({k:na===0?'¡Hoy!':na,t:na===0?'es nuestro aniversario':'días para nuestro próximo aniversario'});
+  out.push({k:'♥',t:'Y esto recién empieza',s:`${S.de} + ${S.para}`});
+  return out.map((x,i)=>({...x,bg:bg[i%bg.length]}));
+}
+function openWrapped(){
+  const list=slides();let i=0,timer;const D=4500;
+  const el=document.createElement('div');el.className='story';el.setAttribute('role','dialog');el.setAttribute('aria-label','Nuestro Wrapped');
+  document.body.appendChild(el);document.body.style.overflow='hidden';
+  const close=()=>{clearTimeout(timer);el.remove();document.body.style.overflow='';removeEventListener('keydown',key)};
+  const show=()=>{
+    if(i>=list.length){close();rain(30);return}if(i<0)i=0;const x=list[i];
+    el.innerHTML=`<div><div class="bars">${list.map((_,j)=>`<i class="${j<i?'done':j===i?'run':''}" style="--d:${D}ms"><b></b></i>`).join('')}</div><div class="top2"><span class="script" style="font-size:22px">Nuestro Wrapped</span><button class="close" aria-label="Cerrar">✕</button></div></div><div class="slide" style="background:${x.bg}"><div class="k">${esc(x.k)}</div><div class="t">${esc(x.t)}</div>${x.s?`<div class="s">${esc(x.s)}</div>`:''}</div>`;
+    el.querySelector('.close').onclick=e=>{e.stopPropagation();close()};
+    el.querySelector('.slide').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();i+=(e.clientX-r.left)<r.width/3?-1:1;show()};
+    clearTimeout(timer);timer=setTimeout(()=>{i++;show()},D);
+  };
+  const key=e=>{if(e.key==='Escape')close();if(e.key==='ArrowRight'){i++;show()}if(e.key==='ArrowLeft'){i--;show()}};
+  addEventListener('keydown',key);show();
+}
+function wheelSvg(items){
+  const n=items.length,cols=['var(--red)','var(--soft)'],R=150,c=160;let g='';
+  items.forEach((t,i)=>{
+    const a0=(i/n)*2*Math.PI-Math.PI/2,a1=((i+1)/n)*2*Math.PI-Math.PI/2,big=a1-a0>Math.PI?1:0;
+    const p=a=>`${(c+R*Math.cos(a)).toFixed(2)} ${(c+R*Math.sin(a)).toFixed(2)}`;
+    const fill=n%2&&i===n-1?'var(--line)':cols[i%2],ink=fill==='var(--red)'?'#fff':'var(--ink)',am=((i+.5)/n)*360-90;
+    g+=`<path d="M${c} ${c} L${p(a0)} A${R} ${R} 0 ${big} 1 ${p(a1)}Z" style="fill:${fill};stroke:var(--card)" stroke-width="2"/>`;
+    const lbl=t.length>18?t.slice(0,17)+'…':t;
+    g+=`<text transform="rotate(${am.toFixed(2)} ${c} ${c})" x="${c+R-12}" y="${c+4}" text-anchor="end" font-size="12" font-weight="500" style="fill:${ink}">${esc(lbl)}</text>`;
+  });
+  return `<svg viewBox="0 0 320 320" aria-hidden="true"><g class="wheel" id="wheel">${g}</g><circle cx="${c}" cy="${c}" r="20" style="fill:var(--card);stroke:var(--red)" stroke-width="3"/><text x="${c}" y="${c+6}" text-anchor="middle" font-size="18" style="fill:var(--red)">♥</text></svg>`;
+}
 let tick;
 function renderRegalo(){
   const r=$('#regalo'),sp=spot(S.cancion||''),yS=ytId(S.cancion||''),yV=ytId(S.yt||'');
-  const fotos=S.fotos.filter(f=>!f.subiendo);const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
-  const qs=S.qs.filter(q=>q.q&&q.ok);const tl=S.tl.filter(x=>x.t);
+  const fotos=S.fotos.filter(f=>!f.subiendo),rz=S.razones.filter(x=>x.t||x.url);
+  const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+  const qs=S.qs.map(q=>({q:q.q,ops:q.ops.map((o,j)=>({o,ok:j===q.ok})).filter(x=>x.o.trim())})).filter(q=>q.q&&q.ops.some(x=>x.ok)&&q.ops.length>1);
+  const tl=S.tl.filter(x=>x.t),premios=S.ruleta.items.filter(x=>x.trim()),city=CIUDADES[S.cielo.ciudad]||CIUDADES.santiago;
   r.innerHTML=`
   <section class="scene s-env"><div>
     <p class="script" style="font-size:28px;margin:0">Para ${esc(S.para)}</p>
     <button class="env" id="env" aria-label="Abrir el sobre">
-      <svg viewBox="0 0 360 250"><rect x="10" y="40" width="340" height="200" rx="12" fill="#c8102e"/><path d="M10 236 L180 120 L350 236Z" fill="#a50d26"/><path d="M10 50 L10 236 L150 140Z M350 50 L350 236 L210 140Z" fill="#b30f2a"/>
-      <rect x="40" y="20" width="280" height="150" rx="6" fill="#fff"/><text x="180" y="95" text-anchor="middle" font-family="Dancing Script,cursive" font-size="30" fill="#c8102e">Te amo</text>
-      <path class="flap" d="M10 50 Q10 40 22 40 L338 40 Q350 40 350 50 L180 160Z" fill="#e0193b"/>
+      <svg viewBox="0 0 360 250"><rect x="10" y="40" width="340" height="200" rx="12" style="fill:var(--red)"/><path d="M10 236 L180 120 L350 236Z" fill="#000" opacity=".12"/><path d="M10 50 L10 236 L150 140Z M350 50 L350 236 L210 140Z" fill="#000" opacity=".07"/>
+      <rect x="40" y="20" width="280" height="150" rx="6" fill="#fff"/><text x="180" y="95" text-anchor="middle" font-family="Dancing Script,cursive" font-size="30" style="fill:var(--red)">Te amo</text>
+      <path class="flap" d="M10 50 Q10 40 22 40 L338 40 Q350 40 350 50 L180 160Z" style="fill:var(--red);filter:brightness(1.12)"/>
       <g class="seal"><circle cx="180" cy="152" r="28" fill="#7a0a1c"/><path d="M180 168c-16-11-15-24-6-24 3 0 5 2 6 5 1-3 3-5 6-5 9 0 10 13-6 24z" fill="#ffd6df"/></g></svg>
     </button>
     <p style="color:var(--mute)" id="envTxt">Toca el sello para abrir tu regalo</p>
     <p class="script" style="font-size:22px">de ${esc(S.de)}</p>
   </div></section>
   <div id="inside" class="hide">
+  ${S.wrapped?`<section class="scene"><div class="wrapped-cta"><p class="script" style="font-size:26px;margin:0">Nuestro Wrapped</p><h2 style="margin:.3em 0 .6em">Nuestra relación en números</h2><button id="btnWrapped">Ver nuestro Wrapped</button></div></section>`:''}
   ${together()?`<section class="scene s-red"><div><p class="lbl">Llevamos juntos</p><div class="count"><div><b id="cD">0</b><small>días</small></div><div><b id="cH">0</b><small>horas</small></div><div><b id="cM">0</b><small>minutos</small></div><div><b id="cS">0</b><small>segundos</small></div></div><p class="lbl" style="margin-top:18px">desde el ${fecha(S.fecha)}</p></div></section>`:''}
   ${sp||yS?`<section class="scene"><div><h2>Nuestra canción</h2>${sp?`<iframe class="spot" src="${sp}" allow="encrypted-media" loading="lazy"></iframe>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yS}" allowfullscreen loading="lazy"></iframe>`}<p class="note"><a href="${esc(S.cancion)}">Abrir la canción</a></p></div></section>`:''}
   ${fotos.length?`<section class="scene"><div><h2>Nuestros momentos</h2><div class="album" id="album">${fotos.map(f=>`<figure><img src="${f.url}" alt="${esc(f.cap)}" loading="lazy"><figcaption>${esc(f.cap)}</figcaption></figure>`).join('')}</div><div class="nav"><button class="ghost" id="prev" aria-label="Foto anterior">←</button><button class="ghost" id="next" aria-label="Foto siguiente">→</button></div></div></section>`:''}
+  ${rz.length?`<section class="scene"><div><h2>${rz.length} razones por las que te amo</h2><div class="deck" id="deck"></div><div class="pips" id="pips"></div><div class="nav"><button class="ghost" id="rzPrev" aria-label="Razón anterior">←</button><button id="rzNext">Siguiente razón</button></div></div></section>`:''}
   ${S.carta?`<section class="scene"><div><h2>Una carta para ti</h2><div class="paper">${esc(S.carta)}</div></div></section>`:''}
+  ${S.cielo.on&&(S.cielo.f||S.fecha)?`<section class="scene s-sky"><div><p class="lbl">Así estaba el cielo</p><h2>${esc(city[0])}, ${fecha(S.cielo.f||S.fecha)}</h2>${skySvg(S.cielo,true)}<p class="lbl" style="font-size:14px">a las ${esc(S.cielo.h||'22:00')} · las estrellas más brillantes sobre nosotros</p></div></section>`:''}
   ${tl.length?`<section class="scene"><div><h2>Nuestra historia</h2><ul class="tl">${tl.sort((a,b)=>a.f<b.f?-1:1).map(x=>`<li><time>${x.f?fecha(x.f):''}</time>${esc(x.t)}</li>`).join('')}</ul></div></section>`:''}
   ${S.voz?`<section class="scene"><div><h2>Escúchame</h2><p style="color:var(--mute)">Te dejé un mensaje con mi voz</p><audio controls src="${S.voz.url}" style="width:100%"></audio></div></section>`:''}
   ${S.video||yV?`<section class="scene"><div><h2>Un video para ti</h2>${S.video?`<video class="media" controls playsinline src="${S.video.url}"></video>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yV}" allowfullscreen loading="lazy"></iframe><p class="note"><a href="${esc(S.yt)}">Abrir en YouTube</a></p>`}</div></section>`:''}
+  ${S.medidor.on?`<section class="scene"><div><h2>Medidor de amor</h2><svg class="heartm" viewBox="0 0 100 92" aria-hidden="true"><defs><clipPath id="hc"><path d="M50 90C18 66 2 50 2 28 2 13 14 2 28 2c9 0 17 5 22 13C55 7 63 2 72 2c14 0 26 11 26 26 0 22-16 38-48 62z"/></clipPath></defs><g clip-path="url(#hc)"><rect width="100" height="92" style="fill:var(--soft)"/><rect id="hfill" y="92" width="100" height="92" style="fill:var(--red)"/></g><path d="M50 90C18 66 2 50 2 28 2 13 14 2 28 2c9 0 17 5 22 13C55 7 63 2 72 2c14 0 26 11 26 26 0 22-16 38-48 62z" style="fill:none;stroke:var(--red)" stroke-width="2"/></svg><div class="pct" id="pct">0%</div><p id="medMsg" style="min-height:1.6em;font-size:18px"></p><button id="btnMed">Medir mi amor</button></div></section>`:''}
+  ${S.ruleta.on&&premios.length>1?`<section class="scene"><div><h2>Rueda de la fortuna</h2><p style="color:var(--mute)">Gira y gana un premio</p><div class="wheel-wrap"><div class="pointer"></div>${wheelSvg(premios)}</div><button id="btnGirar">Girar</button><p class="premio" id="premio" aria-live="polite"></p></div></section>`:''}
+  ${S.citas.length?`<section class="scene"><div><h2>Elige nuestra próxima cita</h2><div class="citas">${S.citas.map((c,i)=>`<div class="cita" data-ci="${i}"><p>${esc(c)}</p>${S.telDe?`<a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`¡Elijo esta cita! 💕 ${c}`)}">La quiero</a>`:`<button data-pick="${i}">La quiero</button>`}</div>`).join('')}</div></div></section>`:''}
   <section class="scene s-env"><div id="quiz"></div></section>
+  ${S.telDe?`<div class="foot"><a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`Vi tu regalo y me encantó 💕`)}">Responder a ${esc(S.de)} por WhatsApp</a></div>`:''}
   </div>`;
   const env=$('#env');
-  env.onclick=()=>{if(env.classList.contains('open'))return;env.classList.add('open');$('#envTxt').textContent='Desliza hacia abajo ↓';$('#inside').classList.remove('hide');rain(26);setTimeout(()=>($('.s-red')||$('#inside')).scrollIntoView({behavior:'smooth'}),900)};
+  env.onclick=()=>{if(env.classList.contains('open'))return;env.classList.add('open');$('#envTxt').textContent='Desliza hacia abajo ↓';$('#inside').classList.remove('hide');rain(26);setTimeout(()=>($('#inside').firstElementChild).scrollIntoView({behavior:'smooth'}),900)};
+  if($('#btnWrapped'))$('#btnWrapped').onclick=openWrapped;
   const al=$('#album');
   if(al){const go=d=>al.scrollBy({left:d*al.clientWidth*.8,behavior:'smooth'});$('#prev').onclick=()=>go(-1);$('#next').onclick=()=>go(1);al.tabIndex=0;al.onkeydown=e=>{if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1)}}
+  if(rz.length){
+    let k=0;const draw=()=>{const x=rz[k];$('#deck').innerHTML=`<button class="rcard flip ${x.url?'':'noimg'}" aria-label="Siguiente razón">${x.url?`<img src="${x.url}" alt="">`:''}<div class="n">Razón ${k+1}</div><p>${esc(x.t)}</p></button>`;$('#pips').innerHTML=rz.map((_,j)=>`<i class="${j===k?'on':''}"></i>`).join('');$('#rzNext').textContent=k===rz.length-1?'Volver a empezar':'Siguiente razón';$('#deck .rcard').onclick=nx};
+    const nx=()=>{k=(k+1)%rz.length;draw()};$('#rzNext').onclick=nx;$('#rzPrev').onclick=()=>{k=(k-1+rz.length)%rz.length;draw()};draw();
+  }
+  if($('#btnMed')){
+    $('#btnMed').onclick=()=>{
+      const b=$('#btnMed'),f=$('#hfill'),p=$('#pct'),m=$('#medMsg');b.disabled=true;m.textContent='';const t0=performance.now();
+      const step=now=>{const k=Math.min(1,(now-t0)/2600),v=Math.round(k*k*(3-2*k)*100);f.setAttribute('y',92-92*v/100);p.textContent=v+'%';
+        if(k<1)requestAnimationFrame(step);else{let n=100;const over=setInterval(()=>{n=n*2.3;p.textContent=num(n)+'%';if(n>9e4){clearInterval(over);p.textContent='∞';m.textContent=S.medidor.txt||'Mi amor por ti no tiene límite.';rain(40);b.disabled=false;b.textContent='Medir otra vez'}},160)}};
+      requestAnimationFrame(step);
+    };
+  }
+  if($('#btnGirar')){
+    let rot=0;$('#btnGirar').onclick=()=>{
+      const n=premios.length,i=Math.floor(Math.random()*n),seg=360/n,b=$('#btnGirar');b.disabled=true;$('#premio').textContent='';
+      rot+=360*5+((360-(i+.5)*seg)-(rot%360)+360)%360;$('#wheel').style.transform=`rotate(${rot}deg)`;
+      setTimeout(()=>{const p=premios[i];$('#premio').innerHTML=`Te tocó: <b>${esc(p)}</b>${S.telDe?` <a class="btn wa" style="margin-top:10px" target="_blank" rel="noopener" href="${wa(S.telDe,`¡Gané en la rueda! 🎡 Quiero canjear: ${p}`)}">Canjear por WhatsApp</a>`:''}`;b.disabled=false;b.textContent='Girar otra vez';rain(20)},4300);
+    };
+  }
+  $('#regalo').querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{$('#regalo').querySelectorAll('.cita').forEach(c=>c.classList.remove('elegida'));b.closest('.cita').classList.add('elegida');b.textContent='¡Elegida!'});
   clearInterval(tick);
   const upd=()=>{const t=together();if(!t||!$('#cD'))return;$('#cD').textContent=t.d.toLocaleString('es-CL');$('#cH').textContent=t.h;$('#cM').textContent=t.m;$('#cS').textContent=t.s};
   upd();tick=setInterval(upd,1000);
@@ -502,10 +837,10 @@ function renderRegalo(){
   const showFinal=()=>{$('#quiz').innerHTML=`<p class="script" style="font-size:30px;margin:0">El último regalo</p><h2 class="big" style="color:var(--red)">♥</h2><div class="paper" style="text-align:center;white-space:pre-wrap">${esc(S.final)}</div>`;rain(60)};
   const showQ=()=>{
     if(qi>=qs.length){showFinal();return}
-    const q=qs[qi],opts=shuffle([q.ok,...String(q.no).split('|').map(s=>s.trim()).filter(Boolean)]);
-    $('#quiz').innerHTML=`<p class="lock">Pregunta ${qi+1} de ${qs.length} para desbloquear tu sorpresa</p><h2>${esc(q.q)}</h2><div class="opts">${opts.map(o=>`<button data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><p class="note" id="qMsg"></p>`;
+    const q=qs[qi],opts=shuffle(q.ops);
+    $('#quiz').innerHTML=`<p class="lock">Pregunta ${qi+1} de ${qs.length} para desbloquear tu sorpresa</p><h2>${esc(q.q)}</h2><div class="opts">${opts.map(o=>`<button data-ok="${o.ok?1:0}">${esc(o.o)}</button>`).join('')}</div><p class="note" id="qMsg"></p>`;
     $('#quiz .opts').onclick=e=>{const b=e.target.closest('button');if(!b)return;
-      if(b.dataset.o===q.ok){qi++;showQ()}else{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('#qMsg').textContent='Casi… inténtalo otra vez.'}};
+      if(b.dataset.ok==='1'){qi++;showQ()}else{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('#qMsg').textContent='Casi… inténtalo otra vez.'}};
   };
   if(qs.length)showQ();else showFinal();
 }
@@ -516,10 +851,11 @@ function route(){
   $('#crear').style.display=g?'none':'';$('#regalo').style.display=g?'block':'none';$('#quotaTop').style.display=g?'none':'';
   $('.tabs').style.display=RECIP?'none':'';
   $('#tCrear').classList.toggle('on',!g);$('#tRegalo').classList.toggle('on',g);
+  document.body.dataset.tema=g?(S.tema||'pasion'):'';
   if(g)renderRegalo();else clearInterval(tick);
   scrollTo(0,0);
 }
-function renderAll(){fill();renderFotos();renderTL();renderQ();songInfo();showVideo();showVoz();showSaved();route()}
+function renderAll(){fill();renderFotos();renderRz();renderTL();renderQ();renderRuleta();renderCitas();renderCartas();songInfo();showVideo();showVoz();skyPrev();showSaved();route()}
 addEventListener('hashchange',()=>{if(!RECIP)route()});
 async function init(){
   const p=new URLSearchParams(location.search),aviso=$('#aviso');
