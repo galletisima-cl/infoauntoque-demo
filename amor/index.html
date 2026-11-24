@@ -12,8 +12,6 @@
    PICTURE: el sobre lacrado que se abre al tocar el corazón; dentro, la historia de la pareja.
    COLOUR y TYPE: carmesí dominante, rosa suave de apoyo, blanco papel; Dancing Script para nombres, DM Serif para títulos, DM Sans para texto.
    LAYOUT: editor en una columna tranquila con barra de cuota fija; el regalo es un recorrido vertical a pantalla completa. */
-:root{color-scheme:light dark;--bg:light-dark(#fff0f3,#170409);--ink:light-dark(#3b0a16,#ffe6ec);--red:light-dark(#c8102e,#ff4d6d);--card:light-dark(#fff,#260910);--soft:light-dark(#ffd6df,#3d0f1b);--mute:light-dark(#86495a,#d79aa8);--line:light-dark(#f3b8c6,#5a1a2a)}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "DM Sans",system-ui,sans-serif;overflow-x:clip}
 h1,h2,h3{font-family:"DM Serif Display",Georgia,serif;font-weight:400;line-height:1.05;text-wrap:balance;margin:0 0 .4em}
@@ -103,10 +101,7 @@ button:disabled{opacity:.5;cursor:default}
 .tag{display:inline-block;font-size:13px;background:var(--soft);padding:4px 10px;border-radius:999px;margin-bottom:10px}
 @media(prefers-reduced-motion:reduce){.hearts{display:none}.env .flap{transition:none}*{animation:none!important}}
 /* ---- Temas del regalo ---- */
-#regalo{background:var(--bg);color:var(--ink)}
-body[data-tema=pastel]{color-scheme:light;--bg:#fff5f8;--ink:#5a2a3a;--red:#d9577a;--card:#fff;--soft:#ffe0ea;--mute:#9c6474;--line:#f6c6d3}
-body[data-tema=noche]{color-scheme:dark;--bg:#0f0b24;--ink:#f1eaff;--red:#d6336c;--card:#1c1640;--soft:#2b2357;--mute:#b3a8d9;--line:#3b3170}
-body[data-tema=vintage]{color-scheme:light;--bg:#f6ece0;--ink:#3d2418;--red:#8c2f39;--card:#fffaf3;--soft:#ead7c3;--mute:#86604e;--line:#d9c0a8}
+#regalo{background:none;color:var(--ink)}
 .temas{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
 .temas label{margin:0;display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer;min-height:52px}
 .temas input{accent-color:var(--red);width:18px;height:18px}
@@ -176,9 +171,94 @@ input[type=time],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:
 .slide .s{font-size:15px;opacity:.8;margin-top:10px}
 @keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
 .foot{padding:30px 16px 60px;text-align:center}
+/* ===== Estética: gradient mesh por tema, vidrio, neumorfismo y hero con parallax ===== */
+body{background:var(--bg)}
+.mesh{position:fixed;inset:-10%;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(at 12% 16%,var(--b1) 0,transparent 52%),
+    radial-gradient(at 88% 10%,var(--b2) 0,transparent 50%),
+    radial-gradient(at 78% 86%,var(--b3) 0,transparent 55%),
+    radial-gradient(at 14% 88%,var(--b4) 0,transparent 50%),
+    radial-gradient(at 52% 48%,var(--b5) 0,transparent 62%),
+    var(--bg);
+  animation:drift 40s ease-in-out infinite alternate;transition:background .6s}
+@keyframes drift{to{transform:translate3d(3%,-2%,0) scale(1.06) rotate(2deg)}}
+/* Vidrio */
+.sec,.paper,.album figure,.cita,.rcard,.count div,.wrapped-cta,.top,.hero-ed,.s-sky>div,.qr .code{
+  background-color:var(--card);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid var(--glass-b);box-shadow:0 10px 36px -12px var(--glass-sh)}
+.qr .code{background-color:#fff}
+.sec{border-radius:26px}
+.top{background-color:var(--topbg);color:var(--ink);border-width:0 0 1px}
+.top .brand{color:var(--red)}
+.tabs a{color:var(--ink)}
+.tabs a.on{background:var(--btn);color:var(--red);box-shadow:var(--neu-in)}
+.bar{background:var(--soft)}.bar i{background:var(--red)}
+input[type=text],input[type=date],input[type=url],input[type=time],input[type=tel],textarea,select{background:var(--field);border-color:var(--glass-b);color:var(--ink)}
+.ph{background:var(--soft)}
+.paper{background-image:repeating-linear-gradient(transparent 0 31px,var(--line) 31px 32px)}
+/* Neumorfismo */
+button,.btn{background:var(--btn);color:var(--btn-ink);border:1px solid var(--glass-b);box-shadow:var(--neu);transition:box-shadow .2s,transform .15s}
+button:hover,.btn:hover{transform:translateY(-1px)}
+button:active,.btn:active{box-shadow:var(--neu-in);transform:none}
+button.ghost{background:var(--btn);color:var(--btn-ink)}
+button.x{background:none;border:0;box-shadow:none;color:var(--mute)}
+.pri,button.pri{background:linear-gradient(135deg,var(--red),var(--acc2));color:var(--pri-ink);border-color:transparent}
+.wa{background:linear-gradient(135deg,#25b866,#1a8a4b)!important;color:#fff!important;border-color:transparent}
+.opts button{background:var(--btn);color:var(--ink)}
+.rcard{color:var(--ink)}
+.temas label,.chips label{background:var(--btn);border-color:var(--glass-b);box-shadow:var(--neu)}
+.temas label:has(input:checked),.chips label:has(input:checked){box-shadow:var(--neu-in);border-color:var(--red);background:var(--btn)}
+.mini{width:30px;height:30px;border-radius:50%;flex:none;border:2px solid var(--glass-b)}
+/* Escenas del regalo sobre el mesh */
+.s-env,.s-red{background:none}
+.s-red{color:var(--ink)}.s-red .lbl,.count small{color:var(--mute)}
+.count div{border-radius:18px}
+.s-sky{background:none}
+.s-sky>div{background-color:rgba(8,7,28,.72);border-radius:30px;padding:clamp(18px,4vw,34px);color:#f1eaff}
+.wrapped-cta{color:var(--ink)}
+.wrapped-cta .script{color:var(--red)}
+.album figure{border-radius:10px}
+/* Hero con parallax */
+.hero{position:relative;overflow:hidden;isolation:isolate}
+.hero>.layer{position:absolute;inset:-18% -12%;pointer-events:none;z-index:-1;will-change:transform}
+.hero .blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.8}
+.hero .layer svg{position:absolute;inset:0;width:100%;height:100%}
+.scene.hero{min-height:100svh}
+.hero-ed{border-radius:30px;padding:clamp(28px,5vw,52px) clamp(20px,4vw,40px);margin-bottom:18px}
+.hero-ed h1{margin-top:6px}
+button.env{background:none;border:0;box-shadow:none}
+button.rcard{background:var(--card);box-shadow:0 10px 36px -12px var(--glass-sh)}
+@media(prefers-reduced-motion:reduce){.mesh{animation:none}.hero>.layer{transform:none!important}}
+/* Temas: Pasión es la base */
+:root,body[data-tema=pasion]{color-scheme:dark;--bg:#0d0208;--ink:#fff0f4;--mute:#f2b6c8;--red:#ff2e5b;--acc2:#8a2be2;--pri-ink:#fff;
+  --b1:rgba(224,16,47,.85);--b2:rgba(123,47,247,.75);--b3:rgba(255,122,24,.7);--b4:rgba(255,77,141,.6);--b5:rgba(0,0,0,.65);
+  --card:rgba(255,255,255,.08);--topbg:rgba(20,2,12,.55);--glass-b:rgba(255,255,255,.18);--glass-sh:rgba(0,0,0,.6);--soft:rgba(255,255,255,.12);--line:rgba(255,255,255,.14);--field:rgba(0,0,0,.28);
+  --seg2:#5b1a8c;--seg3:#ff7a18;
+  --btn:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.03));--btn-ink:#fff0f4;
+  --neu:6px 6px 16px rgba(0,0,0,.55),-5px -5px 14px rgba(255,255,255,.07);--neu-in:inset 4px 4px 10px rgba(0,0,0,.55),inset -3px -3px 9px rgba(255,255,255,.07)}
+body[data-tema=pastel]{color-scheme:light;--bg:#fff8fb;--ink:#5a2a3a;--mute:#99606f;--red:#d24f78;--acc2:#f28fb0;--pri-ink:#fff;
+  --b1:#ffd1e1;--b2:#ffffff;--b3:#fbc4d6;--b4:#fff0f5;--b5:#ffe3ec;
+  --card:rgba(255,255,255,.55);--topbg:rgba(255,248,251,.7);--glass-b:rgba(255,255,255,.85);--glass-sh:rgba(210,79,120,.22);--soft:rgba(255,209,225,.55);--line:rgba(210,79,120,.18);--field:rgba(255,255,255,.75);
+  --seg2:#ffd1e1;--seg3:#fbe6ee;
+  --btn:linear-gradient(145deg,#fffafc,#f7e6ed);--btn-ink:#b8406a;
+  --neu:6px 6px 14px rgba(205,140,165,.38),-6px -6px 14px rgba(255,255,255,.95);--neu-in:inset 4px 4px 10px rgba(205,140,165,.38),inset -4px -4px 10px rgba(255,255,255,.95)}
+body[data-tema=noche]{color-scheme:dark;--bg:#020309;--ink:#eef4ff;--mute:#a9badb;--red:#7ec8ff;--acc2:#b39ddb;--pri-ink:#04060f;
+  --b1:rgba(0,0,0,.9);--b2:rgba(79,195,247,.5);--b3:rgba(179,157,219,.55);--b4:rgba(126,200,255,.32);--b5:rgba(20,18,58,.9);
+  --card:rgba(255,255,255,.07);--topbg:rgba(2,3,9,.55);--glass-b:rgba(255,255,255,.16);--glass-sh:rgba(0,0,0,.7);--soft:rgba(126,200,255,.14);--line:rgba(255,255,255,.12);--field:rgba(0,0,0,.35);
+  --seg2:#3d3570;--seg3:#1d4a6b;
+  --btn:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.02));--btn-ink:#cfe9ff;
+  --neu:6px 6px 16px rgba(0,0,0,.65),-5px -5px 14px rgba(255,255,255,.06);--neu-in:inset 4px 4px 10px rgba(0,0,0,.6),inset -3px -3px 9px rgba(255,255,255,.06)}
+body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a5a4e;--red:#7d2e3a;--acc2:#a8606a;--pri-ink:#fff8f0;
+  --b1:rgba(216,167,167,.85);--b2:rgba(125,46,58,.45);--b3:rgba(156,175,136,.8);--b4:#f6efe2;--b5:rgba(231,201,189,.8);
+  --card:rgba(255,250,243,.5);--topbg:rgba(246,239,226,.72);--glass-b:rgba(255,250,243,.8);--glass-sh:rgba(90,50,40,.22);--soft:rgba(216,167,167,.35);--line:rgba(125,46,58,.16);--field:rgba(255,250,243,.72);
+  --seg2:#9caf88;--seg3:#d8a7a7;
+  --btn:linear-gradient(145deg,#f8f1e6,#e8dccb);--btn-ink:#7d2e3a;
+  --neu:6px 6px 14px rgba(125,95,75,.32),-6px -6px 14px rgba(255,255,255,.75);--neu-in:inset 4px 4px 10px rgba(125,95,75,.32),inset -4px -4px 10px rgba(255,255,255,.75)}
 </style>
 </head>
 <body>
+<div class="mesh" aria-hidden="true"></div>
 <header class="top">
   <span class="brand">Con amor</span>
   <nav class="tabs"><a href="#crear" id="tCrear">Crear regalo</a><a href="#regalo" id="tRegalo">Ver regalo</a></nav>
@@ -187,10 +267,13 @@ input[type=time],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:
 
 <script>if(/[?&]r=/.test(location.search))document.write('<style>#crear,.tabs,#quotaTop{display:none}</style>')</script>
 <main id="crear" class="wrap">
-  <span class="tag">Demo · los textos de ejemplo se pueden cambiar</span>
   <div class="msg" id="aviso"></div>
-  <h1>Arma tu regalo de San Valentín</h1>
-  <p class="hint" style="color:var(--mute)">Todo se comprime en tu celular antes de subirse: fotos a WebP, notas de voz a 32 kbps y videos a 720p.</p>
+  <header class="hero hero-ed" id="heroEd">
+    <div class="layer" data-k=".12" id="edL1"></div><div class="layer" data-k=".28" id="edL2"></div><div class="layer" data-k=".5" id="edL3"></div>
+    <span class="tag">Demo · los textos de ejemplo se pueden cambiar</span>
+    <h1>Arma tu regalo de San Valentín</h1>
+    <p class="hint" style="color:var(--mute);margin:0">Todo se comprime en tu celular antes de subirse: fotos a WebP, notas de voz a 32 kbps y videos a 720p. Elige un tema y verás el cambio aquí mismo.</p>
+  </header>
 
   <section class="sec">
     <h2>Ustedes</h2>
@@ -214,7 +297,7 @@ input[type=time],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:
   <section class="sec">
     <h2>Álbum de fotos</h2>
     <p class="hint">Hasta 20 fotos. Se reducen a 1600 px y WebP al 75 %, más una miniatura de 400 px.</p>
-    <span class="btn file">Agregar fotos<input type="file" id="inFotos" accept="image/*" multiple></span>
+    <span class="btn file pri">Agregar fotos<input type="file" id="inFotos" accept="image/*" multiple></span>
     <div class="msg" id="msgFotos"></div>
     <div class="grid" id="gridFotos"></div>
   </section>
@@ -326,7 +409,7 @@ input[type=time],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:
     <h2>Guardar y compartir</h2>
     <div id="sinGuardar">
       <p class="hint">Al guardar se crea tu regalo con su QR y un link secreto para seguir editándolo. Después se guarda solo cada vez que cambias algo.</p>
-      <button id="btnSave">Guardar regalo</button>
+      <button id="btnSave" class="pri">Guardar regalo</button>
       <p class="note" id="saveMsg"></p>
     </div>
     <div id="guardado" class="hide">
@@ -335,7 +418,7 @@ input[type=time],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:
         <div>
           <p style="margin:0 0 6px">Link del regalo (va en el QR):</p>
           <p style="margin:0 0 12px;word-break:break-all"><b id="link"></b></p>
-          <button id="copy">Copiar link</button>
+          <button id="copy" class="pri">Copiar link</button>
           <a class="btn wa" id="waRegalo" target="_blank" rel="noopener">Enviar por WhatsApp</a>
           <a class="btn ghost" href="#regalo" style="background:var(--soft);color:var(--ink)">Ver como tu pareja</a>
           <p class="note" id="copied"></p>
@@ -362,7 +445,8 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const store={get(){try{return JSON.parse(localStorage.getItem('amor_ed'))}catch(e){return null}},set(v){try{v?localStorage.setItem('amor_ed',JSON.stringify(v)):localStorage.removeItem('amor_ed')}catch(e){}}};
 
 /* ---------- catálogos ---------- */
-const TEMAS=[['pasion','Pasión',['#c8102e','#ffd6df','#3b0a16']],['pastel','Pastel',['#d9577a','#ffe0ea','#fff5f8']],['noche','Noche',['#0f0b24','#d6336c','#b3a8d9']],['vintage','Vintage',['#8c2f39','#ead7c3','#3d2418']]];
+const TEMAS=[['pasion','Pasión',['#e0102f','#7b2ff7','#ff7a18','#ff4d8d','#0d0208']],['pastel','Pastel',['#ffd1e1','#ffffff','#fbc4d6','#fff0f5','#fff8fb']],['noche','Noche',['#000','#4fc3f7','#b39ddb','#14123a','#020309']],['vintage','Vintage',['#d8a7a7','#7d2e3a','#9caf88','#f6efe2','#f1e8d9']]];
+const miniMesh=c=>`radial-gradient(at 20% 20%,${c[0]},transparent 60%),radial-gradient(at 85% 25%,${c[1]},transparent 55%),radial-gradient(at 70% 85%,${c[2]},transparent 60%),radial-gradient(at 15% 85%,${c[3]},transparent 55%),${c[4]}`;
 const CIUDADES={arica:['Arica',-18.48,-70.31,'America/Santiago'],antofagasta:['Antofagasta',-23.65,-70.40,'America/Santiago'],laserena:['La Serena',-29.90,-71.25,'America/Santiago'],valparaiso:['Valparaíso',-33.05,-71.62,'America/Santiago'],santiago:['Santiago',-33.45,-70.67,'America/Santiago'],concepcion:['Concepción',-36.83,-73.05,'America/Santiago'],temuco:['Temuco',-38.74,-72.60,'America/Santiago'],puertomontt:['Puerto Montt',-41.47,-72.94,'America/Santiago'],puntaarenas:['Punta Arenas',-53.16,-70.91,'America/Punta_Arenas']};
 const CITAS=['Picnic al atardecer','Noche de películas con cabritas','Cocinar juntos una receta nueva','Subir un cerro a ver la ciudad','Desayuno en la cama','Escapada de fin de semana','Ver las estrellas lejos de la ciudad','Clase de baile juntos','Ir a la playa a ver el atardecer','Tarde de juegos de mesa','Recorrer una feria y probar algo nuevo','Cena a la luz de las velas'];
 const IDEAS=[
@@ -603,8 +687,8 @@ let idea=0;
 $('#btnIdea').onclick=()=>{S.carta=IDEAS[idea++%IDEAS.length](S.de||'Yo',S.para||'Mi amor');$('#fCarta').value=S.carta;scheduleSave()};
 
 /* ---------- temas ---------- */
-$('#temas').innerHTML=TEMAS.map(([k,n,c])=>`<label><input type="radio" name="tema" value="${k}"><span class="dots">${c.map(x=>`<i style="background:${x}"></i>`).join('')}</span>${n}</label>`).join('');
-$('#temas').addEventListener('change',e=>{S.tema=e.target.value;scheduleSave()});
+$('#temas').innerHTML=TEMAS.map(([k,n,c])=>`<label><input type="radio" name="tema" value="${k}"><span class="mini" style="background:${miniMesh(c)}"></span>${n}</label>`).join('');
+$('#temas').addEventListener('change',e=>{S.tema=e.target.value;document.body.dataset.tema=S.tema;scheduleSave()});
 
 /* ---------- mapa de estrellas ---------- */
 $('#fCiudad').innerHTML=Object.entries(CIUDADES).map(([k,c])=>`<option value="${k}">${c[0]}</option>`).join('');
@@ -758,17 +842,30 @@ function openWrapped(){
   addEventListener('keydown',key);show();
 }
 function wheelSvg(items){
-  const n=items.length,cols=['var(--red)','var(--soft)'],R=150,c=160;let g='';
+  const n=items.length,cols=['var(--red)','var(--seg2)'],R=150,c=160;let g='';
   items.forEach((t,i)=>{
     const a0=(i/n)*2*Math.PI-Math.PI/2,a1=((i+1)/n)*2*Math.PI-Math.PI/2,big=a1-a0>Math.PI?1:0;
     const p=a=>`${(c+R*Math.cos(a)).toFixed(2)} ${(c+R*Math.sin(a)).toFixed(2)}`;
-    const fill=n%2&&i===n-1?'var(--line)':cols[i%2],ink=fill==='var(--red)'?'#fff':'var(--ink)',am=((i+.5)/n)*360-90;
+    const fill=n%2&&i===n-1?'var(--seg3)':cols[i%2],ink=fill==='var(--red)'?'var(--pri-ink)':'var(--ink)',am=((i+.5)/n)*360-90;
     g+=`<path d="M${c} ${c} L${p(a0)} A${R} ${R} 0 ${big} 1 ${p(a1)}Z" style="fill:${fill};stroke:var(--card)" stroke-width="2"/>`;
     const lbl=t.length>18?t.slice(0,17)+'…':t;
     g+=`<text transform="rotate(${am.toFixed(2)} ${c} ${c})" x="${c+R-12}" y="${c+4}" text-anchor="end" font-size="12" font-weight="500" style="fill:${ink}">${esc(lbl)}</text>`;
   });
   return `<svg viewBox="0 0 320 320" aria-hidden="true"><g class="wheel" id="wheel">${g}</g><circle cx="${c}" cy="${c}" r="20" style="fill:var(--card);stroke:var(--red)" stroke-width="3"/><text x="${c}" y="${c+6}" text-anchor="middle" font-size="18" style="fill:var(--red)">♥</text></svg>`;
 }
+/* ---------- hero con parallax ---------- */
+function heroLayers(seed){
+  let x=seed*9301+49297;const rnd=()=>(x=(x*9301+49297)%233280)/233280;
+  const blobs=[['--b1',8,10,46],['--b2',62,4,40],['--b3',58,58,44],['--b4',4,60,36]].map(([v,l,t,w])=>`<i class="blob" style="background:var(${v});left:${l}%;top:${t}%;width:${w}%;aspect-ratio:1"></i>`).join('');
+  let hearts='';for(let i=0;i<14;i++){const cx=rnd()*100,cy=rnd()*100,s=.5+rnd()*1.6,o=(.18+rnd()*.35).toFixed(2);hearts+=`<path transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) scale(${(s*.12).toFixed(3)})" d="M0 8C-9 1-9-6-4-7c2 0 3 1 4 3 1-2 2-3 4-3 5 1 5 8-4 15z" style="fill:var(--red)" opacity="${o}"/>`}
+  let dots='';for(let i=0;i<40;i++){dots+=`<circle cx="${(rnd()*100).toFixed(1)}" cy="${(rnd()*100).toFixed(1)}" r="${(.12+rnd()*.32).toFixed(2)}" style="fill:var(--ink)" opacity="${(.25+rnd()*.5).toFixed(2)}"/>`}
+  return `<div class="layer" data-k=".12" aria-hidden="true">${blobs}</div><div class="layer" data-k=".3" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">${hearts}</svg></div><div class="layer" data-k=".55" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">${dots}</svg></div>`;
+}
+let PX=[],pxRaf=0,mx=0,my=0;
+const pxApply=()=>{pxRaf=0;for(const h of PX){if(!h.isConnected)continue;const top=h.getBoundingClientRect().top;if(top>innerHeight||top<-h.offsetHeight-200)continue;for(const l of h.querySelectorAll(':scope>.layer')){const k=+l.dataset.k;l.style.transform=`translate3d(${(mx*k*60).toFixed(1)}px,${(scrollY*k+my*k*60).toFixed(1)}px,0)`}}};
+const pxReq=()=>{if(!pxRaf)pxRaf=requestAnimationFrame(pxApply)};
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){addEventListener('scroll',pxReq,{passive:true});addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;pxReq()},{passive:true})}
+const parallax=(...els)=>{PX=els.filter(Boolean);pxReq()};
 let tick;
 function renderRegalo(){
   const r=$('#regalo'),sp=spot(S.cancion||''),yS=ytId(S.cancion||''),yV=ytId(S.yt||'');
@@ -777,7 +874,7 @@ function renderRegalo(){
   const qs=S.qs.map(q=>({q:q.q,ops:q.ops.map((o,j)=>({o,ok:j===q.ok})).filter(x=>x.o.trim())})).filter(q=>q.q&&q.ops.some(x=>x.ok)&&q.ops.length>1);
   const tl=S.tl.filter(x=>x.t),premios=S.ruleta.items.filter(x=>x.trim()),city=CIUDADES[S.cielo.ciudad]||CIUDADES.santiago;
   r.innerHTML=`
-  <section class="scene s-env"><div>
+  <section class="scene s-env hero" id="hero">${heroLayers(7)}<div>
     <p class="script" style="font-size:28px;margin:0">Para ${esc(S.para)}</p>
     <button class="env" id="env" aria-label="Abrir el sobre">
       <svg viewBox="0 0 360 250"><rect x="10" y="40" width="340" height="200" rx="12" style="fill:var(--red)"/><path d="M10 236 L180 120 L350 236Z" fill="#000" opacity=".12"/><path d="M10 50 L10 236 L150 140Z M350 50 L350 236 L210 140Z" fill="#000" opacity=".07"/>
@@ -789,22 +886,23 @@ function renderRegalo(){
     <p class="script" style="font-size:22px">de ${esc(S.de)}</p>
   </div></section>
   <div id="inside" class="hide">
-  ${S.wrapped?`<section class="scene"><div class="wrapped-cta"><p class="script" style="font-size:26px;margin:0">Nuestro Wrapped</p><h2 style="margin:.3em 0 .6em">Nuestra relación en números</h2><button id="btnWrapped">Ver nuestro Wrapped</button></div></section>`:''}
+  ${S.wrapped?`<section class="scene"><div class="wrapped-cta"><p class="script" style="font-size:26px;margin:0">Nuestro Wrapped</p><h2 style="margin:.3em 0 .6em">Nuestra relación en números</h2><button id="btnWrapped" class="pri">Ver nuestro Wrapped</button></div></section>`:''}
   ${together()?`<section class="scene s-red"><div><p class="lbl">Llevamos juntos</p><div class="count"><div><b id="cD">0</b><small>días</small></div><div><b id="cH">0</b><small>horas</small></div><div><b id="cM">0</b><small>minutos</small></div><div><b id="cS">0</b><small>segundos</small></div></div><p class="lbl" style="margin-top:18px">desde el ${fecha(S.fecha)}</p></div></section>`:''}
   ${sp||yS?`<section class="scene"><div><h2>Nuestra canción</h2>${sp?`<iframe class="spot" src="${sp}" allow="encrypted-media" loading="lazy"></iframe>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yS}" allowfullscreen loading="lazy"></iframe>`}<p class="note"><a href="${esc(S.cancion)}">Abrir la canción</a></p></div></section>`:''}
   ${fotos.length?`<section class="scene"><div><h2>Nuestros momentos</h2><div class="album" id="album">${fotos.map(f=>`<figure><img src="${f.url}" alt="${esc(f.cap)}" loading="lazy"><figcaption>${esc(f.cap)}</figcaption></figure>`).join('')}</div><div class="nav"><button class="ghost" id="prev" aria-label="Foto anterior">←</button><button class="ghost" id="next" aria-label="Foto siguiente">→</button></div></div></section>`:''}
-  ${rz.length?`<section class="scene"><div><h2>${rz.length} razones por las que te amo</h2><div class="deck" id="deck"></div><div class="pips" id="pips"></div><div class="nav"><button class="ghost" id="rzPrev" aria-label="Razón anterior">←</button><button id="rzNext">Siguiente razón</button></div></div></section>`:''}
+  ${rz.length?`<section class="scene"><div><h2>${rz.length} razones por las que te amo</h2><div class="deck" id="deck"></div><div class="pips" id="pips"></div><div class="nav"><button class="ghost" id="rzPrev" aria-label="Razón anterior">←</button><button id="rzNext" class="pri">Siguiente razón</button></div></div></section>`:''}
   ${S.carta?`<section class="scene"><div><h2>Una carta para ti</h2><div class="paper">${esc(S.carta)}</div></div></section>`:''}
   ${S.cielo.on&&(S.cielo.f||S.fecha)?`<section class="scene s-sky"><div><p class="lbl">Así estaba el cielo</p><h2>${esc(city[0])}, ${fecha(S.cielo.f||S.fecha)}</h2>${skySvg(S.cielo,true)}<p class="lbl" style="font-size:14px">a las ${esc(S.cielo.h||'22:00')} · las estrellas más brillantes sobre nosotros</p></div></section>`:''}
   ${tl.length?`<section class="scene"><div><h2>Nuestra historia</h2><ul class="tl">${tl.sort((a,b)=>a.f<b.f?-1:1).map(x=>`<li><time>${x.f?fecha(x.f):''}</time>${esc(x.t)}</li>`).join('')}</ul></div></section>`:''}
   ${S.voz?`<section class="scene"><div><h2>Escúchame</h2><p style="color:var(--mute)">Te dejé un mensaje con mi voz</p><audio controls src="${S.voz.url}" style="width:100%"></audio></div></section>`:''}
   ${S.video||yV?`<section class="scene"><div><h2>Un video para ti</h2>${S.video?`<video class="media" controls playsinline src="${S.video.url}"></video>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yV}" allowfullscreen loading="lazy"></iframe><p class="note"><a href="${esc(S.yt)}">Abrir en YouTube</a></p>`}</div></section>`:''}
-  ${S.medidor.on?`<section class="scene"><div><h2>Medidor de amor</h2><svg class="heartm" viewBox="0 0 100 92" aria-hidden="true"><defs><clipPath id="hc"><path d="M50 90C18 66 2 50 2 28 2 13 14 2 28 2c9 0 17 5 22 13C55 7 63 2 72 2c14 0 26 11 26 26 0 22-16 38-48 62z"/></clipPath></defs><g clip-path="url(#hc)"><rect width="100" height="92" style="fill:var(--soft)"/><rect id="hfill" y="92" width="100" height="92" style="fill:var(--red)"/></g><path d="M50 90C18 66 2 50 2 28 2 13 14 2 28 2c9 0 17 5 22 13C55 7 63 2 72 2c14 0 26 11 26 26 0 22-16 38-48 62z" style="fill:none;stroke:var(--red)" stroke-width="2"/></svg><div class="pct" id="pct">0%</div><p id="medMsg" style="min-height:1.6em;font-size:18px"></p><button id="btnMed">Medir mi amor</button></div></section>`:''}
-  ${S.ruleta.on&&premios.length>1?`<section class="scene"><div><h2>Rueda de la fortuna</h2><p style="color:var(--mute)">Gira y gana un premio</p><div class="wheel-wrap"><div class="pointer"></div>${wheelSvg(premios)}</div><button id="btnGirar">Girar</button><p class="premio" id="premio" aria-live="polite"></p></div></section>`:''}
+  ${S.medidor.on?`<section class="scene"><div><h2>Medidor de amor</h2><svg class="heartm" viewBox="0 0 100 92" aria-hidden="true"><defs><clipPath id="hc"><path d="M50 90C18 66 2 50 2 28 2 13 14 2 28 2c9 0 17 5 22 13C55 7 63 2 72 2c14 0 26 11 26 26 0 22-16 38-48 62z"/></clipPath></defs><g clip-path="url(#hc)"><rect width="100" height="92" style="fill:var(--soft)"/><rect id="hfill" y="92" width="100" height="92" style="fill:var(--red)"/></g><path d="M50 90C18 66 2 50 2 28 2 13 14 2 28 2c9 0 17 5 22 13C55 7 63 2 72 2c14 0 26 11 26 26 0 22-16 38-48 62z" style="fill:none;stroke:var(--red)" stroke-width="2"/></svg><div class="pct" id="pct">0%</div><p id="medMsg" style="min-height:1.6em;font-size:18px"></p><button id="btnMed" class="pri">Medir mi amor</button></div></section>`:''}
+  ${S.ruleta.on&&premios.length>1?`<section class="scene"><div><h2>Rueda de la fortuna</h2><p style="color:var(--mute)">Gira y gana un premio</p><div class="wheel-wrap"><div class="pointer"></div>${wheelSvg(premios)}</div><button id="btnGirar" class="pri">Girar</button><p class="premio" id="premio" aria-live="polite"></p></div></section>`:''}
   ${S.citas.length?`<section class="scene"><div><h2>Elige nuestra próxima cita</h2><div class="citas">${S.citas.map((c,i)=>`<div class="cita" data-ci="${i}"><p>${esc(c)}</p>${S.telDe?`<a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`¡Elijo esta cita! 💕 ${c}`)}">La quiero</a>`:`<button data-pick="${i}">La quiero</button>`}</div>`).join('')}</div></div></section>`:''}
   <section class="scene s-env"><div id="quiz"></div></section>
   ${S.telDe?`<div class="foot"><a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`Vi tu regalo y me encantó 💕`)}">Responder a ${esc(S.de)} por WhatsApp</a></div>`:''}
   </div>`;
+  parallax($('#hero'));
   const env=$('#env');
   env.onclick=()=>{if(env.classList.contains('open'))return;env.classList.add('open');$('#envTxt').textContent='Desliza hacia abajo ↓';$('#inside').classList.remove('hide');rain(26);setTimeout(()=>($('#inside').firstElementChild).scrollIntoView({behavior:'smooth'}),900)};
   if($('#btnWrapped'))$('#btnWrapped').onclick=openWrapped;
@@ -851,11 +949,12 @@ function route(){
   $('#crear').style.display=g?'none':'';$('#regalo').style.display=g?'block':'none';$('#quotaTop').style.display=g?'none':'';
   $('.tabs').style.display=RECIP?'none':'';
   $('#tCrear').classList.toggle('on',!g);$('#tRegalo').classList.toggle('on',g);
-  document.body.dataset.tema=g?(S.tema||'pasion'):'';
-  if(g)renderRegalo();else clearInterval(tick);
+  document.body.dataset.tema=S.tema||'pasion';
+  if(g)renderRegalo();else{clearInterval(tick);parallax($('#heroEd'))}
   scrollTo(0,0);
 }
-function renderAll(){fill();renderFotos();renderRz();renderTL();renderQ();renderRuleta();renderCitas();renderCartas();songInfo();showVideo();showVoz();skyPrev();showSaved();route()}
+function edHero(){const t=document.createElement('div');t.innerHTML=heroLayers(3);const h=$('#heroEd');h.querySelectorAll(':scope>.layer').forEach(l=>l.remove());h.prepend(...t.children)}
+function renderAll(){edHero();fill();renderFotos();renderRz();renderTL();renderQ();renderRuleta();renderCitas();renderCartas();songInfo();showVideo();showVoz();skyPrev();showSaved();route()}
 addEventListener('hashchange',()=>{if(!RECIP)route()});
 async function init(){
   const p=new URLSearchParams(location.search),aviso=$('#aviso');
