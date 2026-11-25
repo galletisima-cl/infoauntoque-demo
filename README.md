@@ -39,3 +39,7 @@ Regalo digital para parejas con QR: fotos, canción, carta, línea del tiempo, v
 - Link secreto de edición: `/amor/?editar=ID&k=TOKEN` (se muestra al guardar y queda recordado en ese navegador)
 
 Las fotos, la voz y el video se comprimen en el celular y se suben directo a Supabase Storage con un link firmado; `/api/regalo` controla el tope de 15 MB por regalo y 8 MB por archivo.
+
+## Mascota de pareja · demo (`/amor/mascota/`)
+"El hijo de los dos": huevo que nace con 10 toques, indicadores (pancita, fuerza, energía, felicidad), 9 comidas con animación, entrenamiento Cortafrutas (Bebé I), batallas por turnos, caca, enfermedad con dosis, sueño con luz, heridas, avisos y despedida con los abuelos.
+Por ahora se guarda solo en el navegador (localStorage) y trae un modo prueba para adelantar el tiempo. Reglas en el botón "Reglas" de la página.
