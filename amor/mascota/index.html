@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0d0208">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nuestro hijo">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icono-180.png">
 <title>Nuestro hijo · demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -10,7 +17,10 @@
 /* Demo de la mascota de pareja ("el hijo de los dos"). Se guarda en este navegador (localStorage).
    Mismos temas que /amor: gradient mesh, vidrio y neumorfismo. */
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%}
+html,body{margin:0;height:100%;overscroll-behavior:none}
+/* Bloqueo de scroll mientras hay un juego abierto: el dedo no mueve la página ni la barra del navegador */
+body.bloqueado{position:fixed;left:0;right:0;overflow:hidden;width:100%}
+.full{touch-action:none;overscroll-behavior:none}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 "DM Sans",system-ui,sans-serif;overflow-x:hidden;user-select:none;-webkit-user-select:none}
 h1,h2,h3{font-family:"DM Serif Display",Georgia,serif;font-weight:400;margin:0;line-height:1.1}
 .script{font-family:"Dancing Script",cursive}
@@ -143,8 +153,9 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .full.on{display:block}
 #ninja{background:radial-gradient(circle at 50% 30%,#3b1c3f,#12061a)}
 #ninja canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
-.hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;padding:14px 18px;color:#fff;font-weight:700;font-size:20px;z-index:2;pointer-events:none}
+.hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;color:#fff;font-weight:700;font-size:20px;z-index:2;pointer-events:none}
 .centro{position:absolute;inset:0;display:grid;place-items:center;z-index:3;padding:20px}
+.centro:empty{display:none}
 .card{max-width:360px;width:100%;text-align:center;padding:22px;border-radius:24px;background:rgba(20,10,25,.86);color:#fff;border:1px solid rgba(255,255,255,.2)}
 .card h2{font-size:30px;margin-bottom:6px}
 .card p{margin:.4em 0}
@@ -288,7 +299,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <button class="cerrar" style="width:100%">Entendido</button></div></div>
 
 <!-- Fruit Ninja -->
-<div class="full" id="ninja"><canvas id="cv"></canvas><div class="hud"><span id="nPts">0</span><span id="nT">30</span></div><div class="centro" id="nCentro"></div></div>
+<div class="full" id="ninja"><canvas id="cv"></canvas><div class="hud"><span id="nPts">0</span><button id="nSalir" style="pointer-events:auto;padding:6px 14px;font-size:14px;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);box-shadow:none">✕ Salir</button><span id="nT">30</span></div><div class="centro" id="nCentro"></div></div>
 
 <!-- Batalla -->
 <div class="full" id="batalla">
@@ -551,6 +562,14 @@ function luz(){if(S.fase==='huevo')return;const t=ahora();
   if(S.luz&&!esNoche(t))return toast('Todavía es de día: no tiene sueño');
   S.luz=!S.luz;anota(quien+(S.luz?' prendió':' apagó')+' la luz');render()}
 
+/* ===== Bloqueo de la página (como app) mientras se juega ===== */
+let scrollY0=0;
+function bloquear(on){const b=document.body;if(on===b.classList.contains('bloqueado'))return;
+  if(on){scrollY0=scrollY;b.style.top=-scrollY0+'px';b.classList.add('bloqueado')}
+  else{b.classList.remove('bloqueado');b.style.top='';scrollTo(0,scrollY0)}}
+document.addEventListener('touchmove',e=>{if(document.body.classList.contains('bloqueado'))e.preventDefault()},{passive:false});
+document.addEventListener('gesturestart',e=>e.preventDefault());
+
 /* ===== Hojas ===== */
 function abrir(id){$(id).classList.add('on')}
 function cerrarHojas(){$$('.sheet').forEach(s=>s.classList.remove('on'))}
@@ -568,14 +587,14 @@ function ninja(){
   if(S.energia<10)return toast('Está muy cansado para entrenar: necesita dormir ⚡');
   if(S.hambre<10)return toast('Tiene mucha hambre para entrenar 🍽️');
   if(S.enfermo||S.herido)return toast('Primero hay que curarlo');
-  ocupado=true;const g=.32;const box=$('#ninja'),cv=$('#cv'),ctx=cv.getContext('2d');box.classList.add('on');
+  ocupado=true;const g=.32;const box=$('#ninja'),cv=$('#cv'),ctx=cv.getContext('2d');box.classList.add('on');bloquear(true);
   const dpr=Math.min(2,devicePixelRatio||1);let W,Hh;
-  const size=()=>{W=innerWidth;Hh=innerHeight;cv.width=W*dpr;cv.height=Hh*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)};size();addEventListener('resize',size);
+  const size=()=>{const vv=window.visualViewport;W=vv?vv.width:innerWidth;Hh=vv?vv.height:innerHeight;cv.width=W*dpr;cv.height=Hh*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)};size();addEventListener('resize',size);
   const FR=[['🍎','#ff3b3b'],['🍊','#ff9a1a'],['🍉','#ff4d6d'],['🍓','#ff2e5b'],['🍌','#ffe14d'],['🍇','#9b5de5'],['🍑','#ffab76']];
   let items=[],trozos=[],gotas=[],trazo=[],pts=0,fin=performance.now()+30000,prox=0,abajo=false,vivo=true,flashRojo=0;
   $('#nPts').textContent='0';$('#nCentro').innerHTML='';
   const lanzar=()=>{const n=1+Math.floor(Math.random()*3);for(let i=0;i<n;i++){const bad=Math.random()<.15,f=FR[Math.floor(Math.random()*FR.length)];
-    items.push({x:rnd(W*.15,W*.85),y:Hh+40,vx:rnd(-2.2,2.2),vy:-Math.sqrt(2*g*Hh*rnd(.5,.82)),r:30,e:bad?'🦠':f[0],c:bad?'#7cff6b':f[1],bad,rot:0,vr:rnd(-.08,.08)})}};
+    items.push({x:rnd(W*.15,W*.85),y:Hh+40,vx:rnd(-2.2,2.2),vy:-Math.sqrt(2*g*Hh*rnd(.5,.82)),r:40,e:bad?'🦠':f[0],c:bad?'#7cff6b':f[1],bad,rot:0,vr:rnd(-.08,.08)})}};
   const distSeg=(px,py,ax,ay,bx,by)=>{const dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy||1;let t=((px-ax)*dx+(py-ay)*dy)/l;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy))};
   let cortesGesto=0;
   const mover=(x,y)=>{const p=trazo[trazo.length-1];trazo.push({x,y,t:performance.now()});if(!p)return;
@@ -585,21 +604,28 @@ function ninja(){
       for(let i=0;i<14;i++)gotas.push({x:it.x,y:it.y,vx:rnd(-5,5),vy:rnd(-6,2),v:1,c:it.c})}}
     $('#nPts').textContent=pts};
   let combo=0;
-  cv.onpointerdown=e=>{abajo=true;trazo=[];cortesGesto=0;mover(e.clientX,e.clientY)};
-  cv.onpointermove=e=>{if(abajo)mover(e.clientX,e.clientY)};
-  cv.onpointerup=cv.onpointercancel=()=>{abajo=false;cortesGesto=0};
-  const loop=now=>{if(!vivo)return;const quedan=Math.max(0,fin-now);$('#nT').textContent=Math.ceil(quedan/1000);
+  // Táctil: eventos touch con preventDefault (así el navegador no hace scroll ni "atrás"); mouse: pointer events
+  const empieza=(x,y)=>{abajo=true;trazo=[];cortesGesto=0;mover(x,y)},suelta=()=>{abajo=false;cortesGesto=0};
+  cv.ontouchstart=e=>{e.preventDefault();const t=e.changedTouches[0];empieza(t.clientX,t.clientY)};
+  cv.ontouchmove=e=>{e.preventDefault();for(const t of e.changedTouches)mover(t.clientX,t.clientY)};
+  cv.ontouchend=cv.ontouchcancel=e=>{e.preventDefault();suelta()};
+  cv.onpointerdown=e=>{if(e.pointerType==='mouse')empieza(e.clientX,e.clientY)};
+  cv.onpointermove=e=>{if(e.pointerType==='mouse'&&abajo)mover(e.clientX,e.clientY)};
+  cv.onpointerup=cv.onpointercancel=e=>{if(e.pointerType==='mouse')suelta()};
+  $('#nSalir').onclick=()=>{vivo=false;removeEventListener('resize',size);box.classList.remove('on');bloquear(false);ocupado=false;toast('Entrenamiento cancelado: no cuenta');render()};
+  let ultimo=performance.now();
+  const loop=now=>{if(!vivo)return;const k=Math.min(3,(now-ultimo)/16.67);ultimo=now;const quedan=Math.max(0,fin-now);$('#nT').textContent=Math.ceil(quedan/1000);
     if(now>prox&&quedan>1500){lanzar();prox=now+rnd(650,1000)}
     ctx.clearRect(0,0,W,Hh);
     if(flashRojo>0){ctx.fillStyle=`rgba(255,40,40,${flashRojo*.35})`;ctx.fillRect(0,0,W,Hh);flashRojo-=.05}
     ctx.textAlign='center';ctx.textBaseline='middle';
-    for(const it of items){it.vy+=g;it.x+=it.vx;it.y+=it.vy;it.rot+=it.vr;if(it.cut)continue;
+    for(const it of items){it.vy+=g*k;it.x+=it.vx*k;it.y+=it.vy*k;it.rot+=it.vr*k;if(it.cut)continue;
       ctx.save();ctx.translate(it.x,it.y);ctx.rotate(it.rot);ctx.font='56px serif';ctx.fillText(it.e,0,0);ctx.restore()}
     items=items.filter(it=>!it.cut&&it.y<Hh+80);
-    for(const t of trozos){t.vy+=g;t.x+=t.vx;t.y+=t.vy;t.rot+=t.vr;ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.ang);
+    for(const t of trozos){t.vy+=g*k;t.x+=t.vx*k;t.y+=t.vy*k;t.rot+=t.vr*k;ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.ang);
       ctx.beginPath();ctx.rect(-40,t.lado<0?-40:0,80,40);ctx.clip();ctx.rotate(-t.ang+t.rot);ctx.font='56px serif';ctx.fillText(t.e,0,0);ctx.restore()}
     trozos=trozos.filter(t=>t.y<Hh+80);
-    for(const d of gotas){d.vy+=.25;d.x+=d.vx;d.y+=d.vy;d.v-=.025;ctx.globalAlpha=Math.max(0,d.v);ctx.fillStyle=d.c;ctx.beginPath();ctx.arc(d.x,d.y,4,0,7);ctx.fill()}
+    for(const d of gotas){d.vy+=.25*k;d.x+=d.vx*k;d.y+=d.vy*k;d.v-=.025*k;ctx.globalAlpha=Math.max(0,d.v);ctx.fillStyle=d.c;ctx.beginPath();ctx.arc(d.x,d.y,4,0,7);ctx.fill()}
     ctx.globalAlpha=1;gotas=gotas.filter(d=>d.v>0);
     trazo=trazo.filter(p=>now-p.t<160);
     if(trazo.length>1){for(let i=1;i<trazo.length;i++){const a=trazo[i-1],b=trazo[i],k=i/trazo.length;
@@ -614,7 +640,7 @@ function ninja(){
     $('#nCentro').innerHTML=`<div class="card"><p class="script" style="font-size:26px;margin:0;color:#ffb3c7">${record&&pts?'¡Nuevo récord!':'¡Buen entrenamiento!'}</p><h2>${pts} frutas</h2><p style="opacity:.75">Récord: ${S.record}</p>
       <div class="res"><span>🍽️ Pancita ${d.hambre}</span><span>💪 Fuerza +${d.fuerza}</span><span>⚡ Energía ${d.energia}</span><span>😊 Felicidad +${d.felicidad}</span><span>⚖️ Peso ${d.peso}</span></div>
       <button class="pri" id="nFin" style="width:100%">Volver</button></div>`;
-    $('#nFin').onclick=()=>{box.classList.remove('on');ocupado=false;aplicar(d);anota(quien+' lo entrenó: '+pts+' frutas 🍉');render()}}
+    $('#nFin').onclick=()=>{box.classList.remove('on');bloquear(false);ocupado=false;aplicar(d);anota(quien+' lo entrenó: '+pts+' frutas 🍉');render()}}
 }
 
 /* ===== Batallas por turnos ===== */
@@ -631,7 +657,7 @@ async function batalla(){
   const lista=ENEMIGOS[S.fase]||ENEMIGOS.bebe1,en=Object.assign({},lista[Math.floor(Math.random()*lista.length)]);
   en.pod=Math.round(en.pod*rnd(.85,1.2));en.max=36+Math.round(en.pod*.6);en.hp=en.max;
   const yo={pod:12+S.fuerza*.3,max:50,hp:50,esp:2,def:false};
-  const B=$('#batalla');B.classList.add('on');$('#eNom').textContent=en.n;$('#eNiv').textContent='Nv '+Math.max(1,Math.round(en.pod/4));
+  const B=$('#batalla');B.classList.add('on');bloquear(true);$('#eNom').textContent=en.n;$('#eNiv').textContent='Nv '+Math.max(1,Math.round(en.pod/4));
   $('#eSpr').textContent=en.e;$('#eSpr').style.opacity=1;$('#ySpr').innerHTML=petSVG('petB');$('#ySpr').style.opacity=1;
   $('#yNom').textContent=S.nombre;$('#yNiv').textContent='Nv '+Math.max(1,Math.round(yo.pod/4));
   const upd=()=>{barra($('#eHp'),en.hp,en.max);barra($('#yHp'),yo.hp,yo.max);$('#yHpn').textContent=Math.max(0,Math.ceil(yo.hp))+'/'+yo.max};upd();
@@ -670,7 +696,7 @@ async function batalla(){
     if(gano&&S.vicNivel>=2&&!S.listo){S.listo=true;await escribe('¡'+S.nombre+' está listo para evolucionar! Bebé II llega pronto ✨');anota('¡Listo para evolucionar a Bebé II! (próximamente)')}
   }
   $('#bMenu').innerHTML='<button data-m="ok" style="grid-column:1/-1">Volver</button>';
-  $('#bMenu button').onclick=()=>{B.classList.remove('on');ocupado=false;render()};
+  $('#bMenu button').onclick=()=>{B.classList.remove('on');bloquear(false);ocupado=false;render()};
 }
 
 /* ===== Despedida (abuelos) ===== */
