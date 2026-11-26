@@ -155,6 +155,10 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .prueba select{font:inherit;padding:6px;border-radius:10px;background:var(--btn);color:var(--btn-ink);border:1px solid var(--glass-b)}
 .quien{display:flex;gap:6px}
 .prueba input{flex:1;font:inherit;font-size:14px;padding:7px 10px;border-radius:10px;background:var(--btn);color:var(--btn-ink);border:1px solid var(--glass-b)}
+.ent button{width:100%;margin-bottom:8px;display:flex;align-items:center;gap:12px;text-align:left;padding:10px 14px}
+.ent button b{font-size:15px}.ent button small{display:block;font-size:12px;color:var(--mute)}
+.ent button .ico{margin-left:auto;font-size:18px;flex:none}
+.ent button.tuyo{border-color:var(--red)}
 .msgs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .msgs button{display:flex;align-items:center;gap:8px;text-align:left;font-size:14px}
 .msgs button span{font-size:24px}
@@ -310,7 +314,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 <!-- Entrenamiento -->
 <div class="sheet" id="shEntrenar"><div>
   <h3>Entrenamiento</h3>
-  <div class="cat" id="niveles"></div>
+  <div class="ent" id="niveles"></div>
   <button class="cerrar" style="width:100%">Cerrar</button>
 </div></div>
 
@@ -330,7 +334,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <p><b>Noche (22:00 a 8:00, hora de Chile):</b> se duerme solo. Con la luz apagada recupera energía +15/h. Con la luz prendida duerme mal: +6/h de energía y felicidad −5/h.</p>
   <p><b>Caca:</b> 3 horas después de comer. Si pasan 2 horas sin limpiar, se enferma.</p>
   <p><b>Enfermedad 💀:</b> también si la pancita queda en 0 más de 6 horas o una herida no se cura en 6 horas. Necesita de 1 a 3 dosis, con 1 hora entre cada una.</p>
-  <p><b>Entrenar (Bebé I):</b> pancita −10, fuerza +5, energía −10, felicidad +5, peso −1. Necesita energía y pancita de al menos 10.</p>
+  <p><b>Entrenar:</b> los entrenamientos de niveles anteriores siguen disponibles al evolucionar. <b>Cortafrutas (Bebé I):</b> pancita −10, fuerza +5, energía −10, felicidad +5, peso −1. Necesita energía y pancita de al menos 10.</p>
   <p><b>Comida:</b> cada uno puede darle máximo 2 comidas por hora.</p>
   <p><b>Mensajes 💌:</b> cada uno elige un mensaje corto y el hijo se lo dice al otro cuando abra la app, con una animación. En la prueba, cambia a la otra persona con "Soy…" para recibirlo.</p>
   <p><b>Batallas:</b> desde Bebé I, con enemigos de su nivel. No cambian los indicadores, pero la fuerza y el nivel ayudan a ganar. Puede quedar herido 🩹.</p>
@@ -705,8 +709,14 @@ function cerrarHojas(){$$('.sheet').forEach(s=>s.classList.remove('on'))}
 $$('.sheet').forEach(s=>s.addEventListener('click',e=>{if(e.target===s||e.target.classList.contains('cerrar'))cerrarHojas()}));
 $$('[data-f]').forEach(b=>b.onclick=()=>comer(b.dataset.f));
 function abrirEntreno(){if(!puede('entrenar'))return;
-  $('#niveles').innerHTML=NIVELES.map(n=>{const act=n.id===S.fase;return`<button style="width:100%;margin-bottom:8px;text-align:left;display:flex;justify-content:space-between" ${act&&n.id==='bebe1'?'data-ninja':'disabled'}><span><b>${n.n}</b><br><small>${n.ent||'Próximamente'}</small></span><span>${act?'▶':n.ent?'✓':'🔒'}</span></button>`}).join('');
-  const b=$('[data-ninja]');if(b)b.onclick=()=>{cerrarHojas();ninja()};abrir('#shEntrenar')}
+  // Los entrenamientos de niveles anteriores siguen disponibles (Bebé II puede hacer el de Bebé I, etc.)
+  const yo=nivelIdx();
+  $('#niveles').innerHTML=NIVELES.map((n,i)=>{const juega=JUEGOS[n.id]&&i<=yo;
+    const det=n.id==='huevo'?'Tocar el huevo · ya nació 🐣':juega?n.ent:i>yo?'Se desbloquea al llegar a '+n.n:'Entrenamiento próximamente';
+    return`<button class="${i===yo?'tuyo':''}" ${juega?`data-juego="${n.id}"`:'disabled'}><span><b>${n.n}</b>${i===yo?' · su nivel':''}<small>${det}</small></span><span class="ico">${juega?'▶':i>yo?'🔒':n.id==='huevo'?'✓':'⏳'}</span></button>`}).join('');
+  $$('[data-juego]').forEach(b=>b.onclick=()=>{cerrarHojas();JUEGOS[b.dataset.juego]()});abrir('#shEntrenar')}
+// Minijuego de entrenamiento de cada nivel (cuando existan los de Bebé II en adelante, se agregan aquí)
+const JUEGOS={bebe1:()=>ninja()};
 function diario(){$('#log').innerHTML=S.log.map(l=>`<li><time>${fmtD.format(new Date(l.t))}</time><span>${esc(l.txt)}</span></li>`).join('')||'<li>Todavía no pasa nada.</li>';abrir('#shDiario')}
 function comidasHora(q){const t=ahora();S.comidas=(S.comidas||[]).filter(c=>c.t>t-H&&c.t<=t);return S.comidas.filter(c=>c.q===q).map(c=>c.t).sort((a,b)=>a-b)}
 function abrirMensajes(){if(S.fase==='huevo')return toast('Primero tiene que nacer: él lleva los mensajes');
