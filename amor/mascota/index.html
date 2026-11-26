@@ -1407,6 +1407,10 @@ $('#selTema').onchange=e=>{S.tema=e.target.value;render()};
 /* ===== Inicio ===== */
 cargar();
 if(REGALO){const v=document.getElementById('volver');v.href='../?r='+encodeURIComponent(REGALO);v.hidden=false}
+// El hijo vive mientras el regalo exista y esté habilitado
+if(REGALO)fetch('/api/regalo?r='+encodeURIComponent(REGALO)).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;
+  if(j.registro===false){location.replace('../?r='+encodeURIComponent(REGALO));return}
+  if(j.off){document.body.insertAdjacentHTML('beforeend','<main style="position:fixed;inset:0;z-index:9999;display:grid;place-items:center;text-align:center;padding:24px;font-family:system-ui;color:#fff;background:#14123a"><div><div style="font-size:64px">🥚</div><h1>Este regalo no está disponible</h1><p>Quien lo regaló lo deshabilitó.</p></div></main>');document.body.style.overflow='hidden'}}).catch(()=>{});
 quien=localStorage.getItem(CLAVE+'-quien')||'Él';$('#nomEl').value=nom('Él');$('#nomElla').value=nom('Ella');$$('[data-q]').forEach(x=>x.classList.toggle('on',x.dataset.q===quien));
 {const es=$('#estrellas');let h='';for(let i=0;i<40;i++)h+=`<i style="left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*2.4}s"></i>`;es.innerHTML=h}
 if(vive()&&!S.nombre){S.nombre='Mochi'}

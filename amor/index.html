@@ -30,7 +30,7 @@ a{color:var(--red)}
 .sec{background:var(--card);border-radius:22px;padding:clamp(18px,3vw,28px);margin-bottom:18px;box-shadow:0 1px 0 var(--line),0 12px 30px -22px rgba(120,0,30,.35)}
 .sec p.hint{color:var(--mute);font-size:14px;margin:.2em 0 1em}
 label{display:block;font-weight:500;font-size:14px;margin:12px 0 4px}
-input[type=text],input[type=date],input[type=url],textarea{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
+input[type=text],input[type=date],input[type=url],input[type=tel],input[type=email],input[type=password],textarea{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
 textarea{min-height:150px;resize:vertical}
 input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 .row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
@@ -98,6 +98,15 @@ button:disabled{opacity:.5;cursor:default}
 .hearts span{position:absolute;top:-40px;color:#ff8fa3;text-shadow:0 0 1px #7a0a1c;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(260deg);opacity:.2}}
 .hide{display:none!important}
+.quien{background:rgba(255,255,255,.18);color:inherit;border:1.5px solid currentColor;border-radius:999px;min-height:40px;padding:6px 14px;font-size:14px;box-shadow:none}
+.sheet-bg{position:fixed;inset:0;z-index:50;background:rgba(10,0,8,.55);display:grid;place-items:center;padding:16px;backdrop-filter:blur(6px)}
+.sheet-bg>div{background:var(--card);color:var(--ink);border-radius:24px;padding:24px;width:min(420px,100%);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+.sheet-bg h2{margin:0 0 6px}
+.estado-regalo{margin:16px 0 4px;padding:14px;border-radius:16px;background:var(--soft);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.estado-regalo.off{outline:2px solid var(--red)}
+details.pass{margin-top:12px}details.pass summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:500}
+.reg .sec h2{margin-top:0}
+.reg .lead{text-align:center;margin-bottom:22px}
 .tag{display:inline-block;font-size:13px;background:var(--soft);padding:4px 10px;border-radius:999px;margin-bottom:10px}
 @media(prefers-reduced-motion:reduce){.hearts{display:none}.env .flap{transition:none}*{animation:none!important}}
 /* ---- Temas del regalo ---- */
@@ -218,7 +227,7 @@ body{background:var(--bg)}
 .tabs a{color:var(--ink)}
 .tabs a.on{background:var(--btn);color:var(--red);box-shadow:var(--neu-in)}
 .bar{background:var(--soft)}.bar i{background:var(--red)}
-input[type=text],input[type=date],input[type=url],input[type=time],input[type=tel],textarea,select{background:var(--field);border-color:var(--glass-b);color:var(--ink)}
+input[type=text],input[type=date],input[type=url],input[type=time],input[type=tel],input[type=email],input[type=password],textarea,select{background:var(--field);border-color:var(--glass-b);color:var(--ink)}
 .ph{background:var(--soft)}
 .paper{background-image:repeating-linear-gradient(transparent 0 31px,var(--line) 31px 32px)}
 /* Neumorfismo */
@@ -295,6 +304,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 <header class="top">
   <span class="brand">Con amor</span>
   <nav class="tabs"><a href="#crear" id="tCrear">Crear regalo</a><a href="#regalo" id="tRegalo">Ver regalo</a></nav>
+  <button class="quien hide" id="tQuien" type="button">👤 Quien regala</button>
   <div class="quota" id="quotaTop"><span id="estado">Sin guardar</span><span>·</span><span>Espacio</span><span class="bar"><i id="qBar"></i></span><span id="qTxt">0 KB de 15 MB</span></div>
 </header>
 
@@ -303,10 +313,29 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <div class="msg" id="aviso"></div>
   <header class="hero hero-ed" id="heroEd">
     <div class="layer" data-k=".12" id="edL1"></div><div class="layer" data-k=".28" id="edL2"></div><div class="layer" data-k=".5" id="edL3"></div>
-    <span class="tag">Demo · los textos de ejemplo se pueden cambiar</span>
+    <span class="tag" id="edTag">Vista de prueba · para guardar, registra tu tarjeta</span>
     <h1>Arma tu regalo de San Valentín</h1>
     <p class="hint" style="color:var(--mute);margin:0">Todo se comprime en tu celular antes de subirse: fotos a WebP, notas de voz a 32 kbps y videos a 720p. Elige un tema y verás el cambio aquí mismo.</p>
   </header>
+
+  <section class="sec hide" id="secPerfil">
+    <h2>Tu tarjeta y tu perfil</h2>
+    <p class="hint">Tarjeta <b id="pCodigo"></b>. Solo tú (quien regala) puedes editar el regalo; quien lo recibe solo lo ve.</p>
+    <div class="row">
+      <div><label for="pEmail">Tu correo</label><input type="email" id="pEmail" autocomplete="email"></div>
+      <div style="align-self:end"><button class="ghost" id="pEmailOk">Guardar correo</button></div>
+    </div>
+    <details class="pass"><summary>Cambiar contraseña</summary>
+      <div class="row">
+        <div><label for="pActual">Contraseña actual</label><input type="password" id="pActual" autocomplete="current-password"></div>
+        <div><label for="pNueva">Nueva contraseña</label><input type="password" id="pNueva" autocomplete="new-password" minlength="6"></div>
+      </div>
+      <button class="ghost" id="pPassOk">Cambiar contraseña</button>
+    </details>
+    <div class="estado-regalo" id="pEstado"></div>
+    <p class="note" id="pMsg" aria-live="polite"></p>
+    <button class="x" id="pSalir">Cerrar sesión en este celular</button>
+  </section>
 
   <section class="sec">
     <h2>Ustedes</h2>
@@ -440,8 +469,9 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <section class="sec">
     <h2>Guardar y compartir</h2>
     <div id="sinGuardar">
-      <p class="hint">Al guardar se crea tu regalo con su QR y un link secreto para seguir editándolo. Después se guarda solo cada vez que cambias algo.</p>
-      <button id="btnSave" class="pri">Guardar regalo</button>
+      <p class="hint">Para guardar tu regalo, primero registra tu tarjeta: acércala al celular, o escribe el código que viene con ella.</p>
+      <form class="cuad-add" id="fCodigoForm"><input type="text" id="fCodigo" placeholder="Código de la tarjeta" autocapitalize="off" aria-label="Código de la tarjeta"><button class="pri">Registrar</button></form>
+      <button class="ghost" id="btnPrueba" style="margin-top:12px">Probar con una tarjeta de prueba</button>
       <p class="note" id="saveMsg"></p>
     </div>
     <div id="guardado" class="hide">
@@ -456,10 +486,11 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
           <p class="note" id="copied"></p>
         </div>
       </div>
-      <label>Tu link para editar (es secreto, guárdalo)</label>
+      <p class="note">Este es el mismo link que abre la tarjeta. Para editar desde otro celular, abre el regalo y toca <b>👤 Quien regala</b>.</p>
+      <div id="linkViejo" class="hide"><label>Tu link para editar (regalo antiguo sin tarjeta)</label>
       <p style="margin:0 0 10px;word-break:break-all;font-size:14px" id="linkEd"></p>
-      <button class="ghost" id="copyEd">Copiar link de edición</button>
-      <button class="x" id="nuevo">Empezar otro regalo</button>
+      <button class="ghost" id="copyEd">Copiar link de edición</button></div>
+      <button class="x" id="nuevo">Cerrar sesión</button>
     </div>
   </section>
 </main>
@@ -546,11 +577,7 @@ function unpack(d,base){
 const estado=t=>{$('#estado').textContent=t};
 async function ensure(){
   if(ED)return ED;
-  if(!online)throw new Error('Modo prueba: aquí no hay servidor, así que no se guarda.');
-  estado('Creando…');
-  const j=await api({accion:'crear',datos:pack()});
-  ED={id:j.id,token:j.token,slug:j.slug};store.set(ED);showSaved();estado('Guardado ✓');
-  return ED;
+  throw new Error(online?'Primero registra tu tarjeta (abajo, en "Guardar y compartir").':'Modo prueba: aquí no hay servidor, así que no se guarda.');
 }
 let tSave,saving=false,again=false;
 function scheduleSave(){if(!ED||!online)return;estado('Cambios sin guardar');clearTimeout(tSave);tSave=setTimeout(save,1200)}
@@ -612,9 +639,9 @@ $('#inFotos').addEventListener('change',async e=>{
     let full,th;
     try{full=await shrink(f,1600,.75);th=await shrink(f,400,.7)}catch(err){m.textContent='No se pudo leer '+f.name+'. Prueba con JPG o PNG.';continue}
     if(!room(full.size+th.size)){m.textContent='No queda espacio para esta foto (tope 15 MB).';break}
-    const it={url:URL.createObjectURL(full),thumb:URL.createObjectURL(th),size:full.size+th.size,orig:f.size,cap:'',subiendo:online};
+    const it={url:URL.createObjectURL(full),thumb:URL.createObjectURL(th),size:full.size+th.size,orig:f.size,cap:'',subiendo:online&&!!ED};
     S.fotos.push(it);renderFotos();
-    if(online){
+    if(online&&ED){
       try{m.textContent=`Subiendo ${ok+1} de ${files.length}…`;it.ruta=await upload(full,'foto');it.mini=await upload(th,'mini');it.subiendo=false}
       catch(err){S.fotos.splice(S.fotos.indexOf(it),1);borrar(it.ruta);renderFotos();m.textContent=err.message;break}
     }
@@ -636,7 +663,7 @@ $('#listRz').addEventListener('change',async e=>{
   let b;try{b=await shrink(f,1080,.75)}catch(err){m.textContent='No se pudo leer esa foto.';return}
   if(!room(b.size-(r.size||0))){m.textContent='No queda espacio para esta foto.';return}
   const old=r.ruta;r.subiendo=true;renderRz();
-  if(online){try{r.ruta=await upload(b,'razon')}catch(err){r.subiendo=false;renderRz();m.textContent=err.message;return}}
+  if(online&&ED){try{r.ruta=await upload(b,'razon')}catch(err){r.subiendo=false;renderRz();m.textContent=err.message;return}}
   borrar(old);r.subiendo=false;r.url=URL.createObjectURL(b);r.size=b.size;r.orig=f.size;
   m.textContent=`Foto lista: ${fmt(f.size)} → ${fmt(b.size)}.`;renderRz();scheduleSave();
 });
@@ -678,7 +705,7 @@ $('#inVideo').addEventListener('change',async e=>{
   }
   if(!room(blob.size-(S.video?.size||0))){m.textContent=`Comprimido quedó en ${fmt(blob.size)} y supera el espacio disponible.`;return}
   const it={url:URL.createObjectURL(blob),size:blob.size,orig:f.size};
-  if(online){try{m.textContent=`Subiendo video (${fmt(blob.size)})…`;it.ruta=await upload(blob,'video')}catch(err){m.textContent=err.message;return}}
+  if(online&&ED){try{m.textContent=`Subiendo video (${fmt(blob.size)})…`;it.ruta=await upload(blob,'video')}catch(err){m.textContent=err.message;return}}
   if(S.video)borrar(S.video.ruta);
   S.video=it;showVideo();m.textContent=`Video listo: ${fmt(f.size)} → ${fmt(blob.size)}.`;renderQuota();scheduleSave();
 });
@@ -690,7 +717,7 @@ let recV=null,tmr=null;
 function showVoz(){const a=$('#prevVoz');if(S.voz){a.src=S.voz.url;a.classList.remove('hide')}else{a.removeAttribute('src');a.classList.add('hide')}$('#delVoz').classList.toggle('hide',!S.voz)}
 async function setVoz(blob,o,label){
   const m=$('#msgVoz'),it={url:URL.createObjectURL(blob),size:blob.size,orig:o};
-  if(online){try{m.textContent='Subiendo nota de voz…';it.ruta=await upload(blob,'voz')}catch(e){m.textContent=e.message;return}}
+  if(online&&ED){try{m.textContent='Subiendo nota de voz…';it.ruta=await upload(blob,'voz')}catch(e){m.textContent=e.message;return}}
   if(S.voz)borrar(S.voz.ruta);
   S.voz=it;showVoz();m.textContent=label;renderQuota();scheduleSave();
 }
@@ -822,15 +849,44 @@ function showSaved(){
   $('#sinGuardar').classList.toggle('hide',!!ED);$('#guardado').classList.toggle('hide',!ED);
   if(!ED)return;
   const url=giftUrl();$('#link').textContent=url;
-  $('#linkEd').textContent=location.origin+location.pathname+'?editar='+ED.id+'&k='+ED.token;
+  const viejo=!String(ED.token).startsWith('s.');$('#linkViejo').classList.toggle('hide',!viejo);
+  if(viejo)$('#linkEd').textContent=location.origin+location.pathname+'?editar='+ED.id+'&k='+ED.token;
   try{const q=qrcode(0,'M');q.addData(url);q.make();$('#qr').innerHTML=q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){$('#qr').textContent='QR no disponible'}
   updWa();
 }
-$('#btnSave').onclick=async()=>{const m=$('#saveMsg');try{await ensure();await save();m.textContent=''}catch(e){m.textContent=e.message}};
+/* Sin tarjeta registrada: ir a registrar (por código o con una tarjeta de prueba) */
+const nuevoCodigo=()=>{const a='abcdefghjkmnpqrstuvwxyz23456789',r=crypto.getRandomValues(new Uint8Array(12));return [...r].map(x=>a[x%a.length]).join('').replace(/(.{4})(?!$)/g,'$1-')};
+$('#fCodigoForm').onsubmit=e=>{e.preventDefault();const c=$('#fCodigo').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');if(c.length<8){$('#saveMsg').textContent='El código tiene al menos 8 caracteres.';return}location.href=location.pathname+'?r='+c};
+$('#btnPrueba').onclick=()=>{location.href=location.pathname+'?r=prueba-'+nuevoCodigo()};
 const copiar=async(txt,el)=>{try{await navigator.clipboard.writeText(txt);el.textContent='Copiado.'}catch(e){el.textContent='No se pudo copiar; selecciónalo a mano.'}};
 $('#copy').onclick=()=>copiar($('#link').textContent,$('#copied'));
 $('#copyEd').onclick=()=>copiar($('#linkEd').textContent,$('#copied'));
-$('#nuevo').onclick=()=>{store.set(null);location.href=location.pathname};
+const salir=()=>{store.set(null);location.href=location.pathname};
+$('#nuevo').onclick=salir;
+/* ---------- perfil de quien regala: correo, contraseña y deshabilitar ---------- */
+let PERFIL=null;
+function pintarPerfil(){
+  $('#secPerfil').classList.toggle('hide',!(ED&&PERFIL));if(!ED||!PERFIL)return;
+  $('#pCodigo').textContent=ED.slug;$('#pEmail').value=PERFIL.email||'';
+  $('#pActual').parentElement.classList.toggle('hide',!PERFIL.conClave);
+  $('#edTag').textContent=PERFIL.off?'Regalo deshabilitado':'Tu regalo · se guarda solo';
+  $('#pEstado').classList.toggle('off',!!PERFIL.off);
+  $('#pEstado').innerHTML=PERFIL.off
+    ?`<span>🚫 <b>Regalo deshabilitado.</b> Quien lo recibe ve un aviso en vez del regalo.</span><button class="pri" data-off="0">Volver a habilitar</button>`
+    :`<span>✅ <b>Regalo habilitado.</b> Si terminan, puedes deshabilitarlo; no se borra nada.</span><button class="ghost" data-off="1">Deshabilitar regalo</button>`;
+}
+async function perfilApi(cambios,msg){
+  const m=$('#pMsg');m.textContent='Guardando…';
+  try{const j=await api(Object.assign({accion:'perfil',id:ED.id,token:ED.token},cambios));PERFIL=j.perfil;if(j.token){ED.token=j.token;store.set(ED)}m.textContent=msg;pintarPerfil()}
+  catch(e){m.textContent=e.message}
+}
+$('#pEmailOk').onclick=()=>perfilApi({email:$('#pEmail').value},'Correo guardado ✓');
+$('#pPassOk').onclick=()=>{const n=$('#pNueva').value;if(n.length<6){$('#pMsg').textContent='La nueva contraseña debe tener al menos 6 caracteres.';return}
+  perfilApi({passActual:$('#pActual').value,passNueva:n},'Contraseña cambiada ✓').then(()=>{$('#pActual').value='';$('#pNueva').value=''})};
+$('#pEstado').onclick=e=>{const v=e.target.dataset.off;if(v==null)return;
+  if(v==='1'&&!confirm('¿Deshabilitar el regalo? Quien lo recibe ya no podrá verlo (ni el cuaderno ni los juegos). Puedes volver a habilitarlo cuando quieras.'))return;
+  perfilApi({off:v==='1'},v==='1'?'Regalo deshabilitado.':'Regalo habilitado otra vez ✓')};
+$('#pSalir').onclick=salir;
 
 /* ---------- el regalo ---------- */
 const DAY=864e5;
@@ -1066,6 +1122,50 @@ function renderRegalo(){
   if(qs.length&&!ok)showQ();else showFinal(!ok);
 }
 
+/* ---------- tarjeta sin registrar: registro de quien regala ---------- */
+const INICIO={tema:'pasion',wrapped:true,citas:['Picnic al atardecer','Ver las estrellas lejos de la ciudad','Cocinar juntos una receta nueva'],
+  ruleta:{on:true,items:['Un masaje de 15 minutos','Desayuno en la cama','Tú eliges la película','Cena que tú elijas','Un día sin lavar la loza','Salida sorpresa']}};
+function vistaRegistro(codigo){
+  document.body.dataset.tema='pasion';
+  $('#regalo').innerHTML=`<main class="wrap reg"><div class="lead"><p class="script" style="font-size:30px;margin:0">¡Hola!</p><h1 style="margin:.1em 0">Esta tarjeta todavía no tiene regalo</h1><p class="hint">Si tú la vas a regalar, regístrala y arma tu regalo. Quien la reciba verá el regalo al acercar su celular.</p><p class="note">Tarjeta <b>${esc(codigo)}</b></p></div>
+  <form id="regForm">
+  <section class="sec"><h2>Tus datos (quien regala)</h2>
+    <label for="rDe">Tu nombre</label><input id="rDe" type="text" required maxlength="40" autocomplete="given-name">
+    <div class="row"><div><label for="rEmail">Tu correo</label><input id="rEmail" type="email" required autocomplete="email"></div>
+    <div><label for="rTelDe">Tu WhatsApp (opcional)</label><input id="rTelDe" type="tel" inputmode="tel" placeholder="9 1234 5678"></div></div></section>
+  <section class="sec"><h2>Quien recibe</h2>
+    <div class="row"><div><label for="rPara">Su nombre</label><input id="rPara" type="text" required maxlength="40"></div>
+    <div><label for="rTelPara">Su WhatsApp (opcional)</label><input id="rTelPara" type="tel" inputmode="tel" placeholder="9 1234 5678"></div></div></section>
+  <section class="sec"><h2>Contraseña para editar</h2><p class="hint">Con ella entras a editar tu regalo desde la pestaña <b>👤 Quien regala</b>. Quien recibe no la necesita.</p>
+    <div class="row"><div><label for="rPass">Contraseña (mínimo 6)</label><input id="rPass" type="password" required minlength="6" autocomplete="new-password"></div>
+    <div><label for="rPass2">Repítela</label><input id="rPass2" type="password" required minlength="6" autocomplete="new-password"></div></div>
+    <button class="pri" style="margin-top:16px;width:100%">Registrar tarjeta y armar mi regalo</button><p class="note" id="regMsg" aria-live="polite"></p></section>
+  </form></main>`;
+  $('#regForm').onsubmit=async e=>{e.preventDefault();const m=$('#regMsg'),v=id=>$('#'+id).value.trim();
+    if($('#rPass').value!==$('#rPass2').value){m.textContent='Las contraseñas no coinciden.';return}
+    m.textContent='Registrando…';
+    try{const j=await api({accion:'registrar',r:codigo,pass:$('#rPass').value,de:{nombre:v('rDe'),email:v('rEmail'),tel:v('rTelDe')},para:{nombre:v('rPara'),tel:v('rTelPara')},datos:INICIO});
+      store.set({id:j.id,token:j.token,slug:j.slug});sessionStorage.setItem('amor_bienvenida','1');location.href=location.pathname}
+    catch(e){m.textContent=e.message}};
+}
+function vistaOff(j){
+  document.body.dataset.tema='noche';
+  $('#regalo').innerHTML=`<section class="scene s-env"><div><p class="script" style="font-size:30px;margin:0">Lo sentimos</p><h1>Este regalo no está disponible</h1><p class="hint">Quien lo regaló lo deshabilitó.</p></div></section>`;
+}
+/* Pestaña "👤 Quien regala": pide la contraseña y abre el editor */
+function abrirAcceso(slug,de){
+  const ses=store.get();if(ses&&ses.slug===slug&&String(ses.token).startsWith('s.')){location.href=location.pathname;return}
+  const bg=document.createElement('div');bg.className='sheet-bg';
+  bg.innerHTML=`<div role="dialog" aria-modal="true" aria-labelledby="accT"><p class="script" style="font-size:24px;margin:0;color:var(--red)">Quien regala</p><h2 id="accT">${de?'Hola, '+esc(de):'Entrar a editar'}</h2><p class="hint">Escribe tu contraseña para editar el regalo.</p>
+    <form id="accForm"><label for="accPass">Contraseña</label><input type="password" id="accPass" required autocomplete="current-password"><div class="cbt" style="margin-top:14px"><button class="pri">Entrar</button><button type="button" class="ghost" id="accNo">Cancelar</button></div><p class="note" id="accMsg" aria-live="polite"></p>
+    <p class="note">¿Olvidaste tu contraseña? Escríbenos por WhatsApp y te ayudamos.</p></form></div>`;
+  document.body.appendChild(bg);$('#accPass').focus();
+  const cerrar=()=>bg.remove();$('#accNo').onclick=cerrar;bg.onclick=e=>{if(e.target===bg)cerrar()};
+  $('#accForm').onsubmit=async e=>{e.preventDefault();$('#accMsg').textContent='Revisando…';
+    try{const j=await api({accion:'entrar',r:slug,pass:$('#accPass').value});store.set({id:j.id,token:j.token,slug:j.slug});location.href=location.pathname}
+    catch(err){$('#accMsg').textContent=err.message}};
+}
+
 /* ---------- vistas y carga ---------- */
 function route(){
   const g=RECIP||location.hash==='#regalo';
@@ -1077,7 +1177,7 @@ function route(){
   scrollTo(0,0);
 }
 function edHero(){const t=document.createElement('div');t.innerHTML=heroLayers(3);const h=$('#heroEd');h.querySelectorAll(':scope>.layer').forEach(l=>l.remove());h.prepend(...t.children)}
-function renderAll(){edHero();fill();renderFotos();renderRz();renderTL();renderQ();renderRuleta();renderCitas();renderCartas();songInfo();showVideo();showVoz();skyPrev();showSaved();route()}
+function renderAll(){pintarPerfil();edHero();fill();renderFotos();renderRz();renderTL();renderQ();renderRuleta();renderCitas();renderCartas();songInfo();showVideo();showVoz();skyPrev();showSaved();route()}
 addEventListener('hashchange',()=>{if(!RECIP)route()});
 async function init(){
   const p=new URLSearchParams(location.search),aviso=$('#aviso');
@@ -1087,6 +1187,11 @@ async function init(){
     try{
       const r=await fetch(API+'?r='+encodeURIComponent(p.get('r')));const j=await r.json();
       if(!r.ok)throw new Error(j.error||'No se encontró el regalo');
+      $('#crear').style.display='none';$('.tabs').style.display='none';$('#quotaTop').style.display='none';$('#regalo').style.display='block';
+      if(j.registro===false){vistaRegistro(j.codigo);return}
+      const q=$('#tQuien');q.classList.remove('hide');q.onclick=()=>abrirAcceso(j.slug,j.off?j.de:(j.datos&&j.datos.de));
+      const ses=store.get();if(ses&&ses.slug===j.slug)q.textContent='✏️ Editar mi regalo';
+      if(j.off){vistaOff(j);return}
       unpack(j.datos,j.base);renderAll();
     }catch(e){$('#crear').style.display='none';$('.tabs').style.display='none';$('#quotaTop').style.display='none';$('#regalo').style.display='block';$('#regalo').innerHTML=`<section class="scene s-env"><div><h1>Ups</h1><p>${esc(e.message)}</p></div></section>`}
     return;
@@ -1097,7 +1202,8 @@ async function init(){
     try{
       const r=await fetch(API+'?id='+encodeURIComponent(ed.id)+'&k='+encodeURIComponent(ed.token));const j=await r.json();
       if(!r.ok)throw new Error(j.error);
-      ED={id:j.id,token:ed.token,slug:j.slug};store.set(ED);unpack(j.datos,j.base);estado('Guardado ✓');
+      ED={id:j.id,token:ed.token,slug:j.slug};store.set(ED);unpack(j.datos,j.base);estado('Guardado ✓');PERFIL=j.perfil||null;
+      if(sessionStorage.getItem('amor_bienvenida')){sessionStorage.removeItem('amor_bienvenida');aviso.textContent='¡Listo! Tu tarjeta quedó registrada. Arma tu regalo: todo se guarda solo.'}
       if(p.get('editar'))history.replaceState(null,'',location.pathname+location.hash);
     }catch(e){aviso.textContent='No se pudo abrir el regalo guardado: '+e.message;store.set(null)}
   }

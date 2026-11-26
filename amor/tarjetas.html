@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Generador de tarjetas NFC · Regalo de amor</title>
+<style>
+  :root{--red:#e0102f;--ink:#1d1016;--mute:#6b5a62;--line:#ead9df}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#fff6f8}
+  main{max-width:900px;margin:0 auto;padding:24px 16px 60px}
+  h1{margin:0 0 6px}
+  .hint{color:var(--mute);margin:0 0 18px}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+  label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+  input{font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;min-height:44px}
+  button{font:inherit;font-weight:600;border:0;border-radius:999px;padding:10px 18px;min-height:44px;cursor:pointer;background:var(--red);color:#fff}
+  button.g{background:#f3e6ea;color:var(--ink)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+  .t{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center;break-inside:avoid}
+  .t svg{width:120px;height:120px}
+  .t b{display:block;font-family:ui-monospace,Menlo,monospace;font-size:15px;margin:8px 0 4px}
+  .t small{display:block;color:var(--mute);word-break:break-all;font-size:11px}
+  @media print{.panel,.hint,h1{display:none}body{background:#fff}.t{border-color:#ccc}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Generador de tarjetas NFC</h1>
+  <p class="hint">Crea códigos únicos para grabar en las tarjetas (por ejemplo con la app NFC Tools: "Escribir" → "URL"). Al tocar una tarjeta nueva, quien regala llega a la página de registro; después, la tarjeta abre el regalo. Los códigos se generan en este navegador y no se guardan en ningún lado: descarga la lista antes de cerrar.</p>
+  <div class="panel">
+    <div><label for="n">Cantidad</label><input id="n" type="number" min="1" max="500" value="20" style="width:110px"></div>
+    <div style="flex:1;min-width:240px"><label for="base">Dirección base</label><input id="base" style="width:100%"></div>
+    <button id="gen">Generar</button>
+    <button class="g" id="csv" disabled>Descargar CSV</button>
+    <button class="g" id="imp" disabled>Imprimir con QR</button>
+  </div>
+  <div class="grid" id="lista"></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+$('#base').value=location.origin+'/amor/?r=';
+// Código de 12 caracteres sin letras que se confunden (sin i, l, o, 0, 1): ~59 bits, imposible de adivinar
+const A='abcdefghjkmnpqrstuvwxyz23456789';
+const codigo=()=>[...crypto.getRandomValues(new Uint8Array(12))].map(x=>A[x%A.length]).join('').replace(/(.{4})(?!$)/g,'$1-');
+let filas=[];
+$('#gen').onclick=()=>{
+  const n=Math.max(1,Math.min(500,+$('#n').value||1)),base=$('#base').value.trim();
+  filas=Array.from({length:n},()=>{const c=codigo();return{c,url:base+c}});
+  $('#lista').innerHTML=filas.map(f=>{let svg='';try{const q=qrcode(0,'M');q.addData(f.url);q.make();svg=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){}
+    return `<div class="t">${svg}<b>${f.c}</b><small>${f.url}</small></div>`}).join('');
+  $('#csv').disabled=$('#imp').disabled=false;
+};
+$('#csv').onclick=()=>{
+  const txt='codigo,url\n'+filas.map(f=>f.c+','+f.url).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv'}));
+  a.download='tarjetas-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+};
+$('#imp').onclick=()=>print();
+</script>
+</body>
+</html>
