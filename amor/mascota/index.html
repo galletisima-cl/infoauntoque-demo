@@ -159,6 +159,13 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .ent button b{font-size:15px}.ent button small{display:block;font-size:12px;color:var(--mute)}
 .ent button .ico{margin-left:auto;font-size:18px;flex:none}
 .ent button.tuyo{border-color:var(--red)}
+.atq{display:grid;gap:8px}
+.atq button{display:flex;align-items:center;gap:10px;text-align:left;padding:9px 12px}
+.atq button>span:first-child{font-size:24px}
+.atq button small{display:block;font-size:12px;color:var(--mute)}
+.atq button.on{border-color:var(--red);box-shadow:var(--neu-in)}
+.fx{position:absolute;pointer-events:none;z-index:6}
+.menu .huir{grid-column:1/-1;padding:6px;font-size:13px;box-shadow:0 2px 0 #3a3a3a}
 .msgs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .msgs button{display:flex;align-items:center;gap:8px;text-align:left;font-size:14px}
 .msgs button span{font-size:24px}
@@ -197,7 +204,7 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .ficha{position:absolute;background:#fffdf4;border:3px solid #3a3a3a;border-radius:12px 4px 12px 4px;padding:6px 10px;min-width:170px;box-shadow:4px 4px 0 rgba(0,0,0,.25)}
 .ficha b{font-size:15px}.ficha small{float:right;font-weight:700}
 .hp{height:8px;background:#555;border-radius:6px;margin-top:5px;overflow:hidden;border:1px solid #333}
-.hp i{display:block;height:100%;background:#3ccf5c;transition:width .5s,background .5s}
+.hp i{display:block;height:100%;background:#3ccf5c;transition:width .8s ease-out,background .5s}
 .hp i.med{background:#f2c12e}.hp i.baja{background:#e8443a}
 .hpn{font-size:12px;text-align:right;margin-top:2px}
 .bicho{position:absolute;font-size:84px;line-height:1;transition:transform .2s,opacity .4s}
@@ -318,6 +325,15 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <button class="cerrar" style="width:100%">Cerrar</button>
 </div></div>
 
+<!-- Ataques para la batalla -->
+<div class="sheet" id="shAtaques"><div>
+  <h3>Elige 4 ataques <small id="atqCont" style="font-size:14px;color:var(--mute)"></small></h3>
+  <p style="margin:-4px 0 10px;font-size:13px;color:var(--mute)">🍗 Proteína le gana a 🍬 Dulce · 🍬 Dulce le gana a 🥦 Verdura · 🥦 Verdura le gana a 🍗 Proteína · 💗 Amor es neutro. El tipo de su hijo depende de lo que más come.</p>
+  <div class="atq" id="atqLista"></div>
+  <button class="pri" id="atqOk" style="width:100%;margin-top:10px">¡A pelear!</button>
+  <button class="cerrar" style="width:100%;margin-top:8px">Cancelar</button>
+</div></div>
+
 <!-- Mensajes -->
 <div class="sheet" id="shMensaje"><div>
   <h3 id="mTit">Mandar un mensaje</h3>
@@ -337,7 +353,8 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <p><b>Entrenar:</b> los entrenamientos de niveles anteriores siguen disponibles al evolucionar. <b>Cortafrutas (Bebé I):</b> pancita −10, fuerza +5, energía −10, felicidad +5, peso −1. Necesita energía y pancita de al menos 10.</p>
   <p><b>Comida:</b> cada uno puede darle máximo 2 comidas por hora.</p>
   <p><b>Mensajes 💌:</b> cada uno elige un mensaje corto y el hijo se lo dice al otro cuando abra la app, con una animación. En la prueba, cambia a la otra persona con "Soy…" para recibirlo.</p>
-  <p><b>Batallas:</b> desde Bebé I, con enemigos de su nivel. No cambian los indicadores, pero la fuerza y el nivel ayudan a ganar. Puede quedar herido 🩹.</p>
+  <p><b>Batallas:</b> desde Bebé I, con enemigos de su nivel. No cambian los indicadores, pero la fuerza, el nivel y la energía (velocidad) ayudan a ganar. Puede quedar herido 🩹.</p>
+  <p><b>Ataques y tipos:</b> 12 ataques propios que se aprenden al evolucionar; antes de pelear se eligen 4. 🍗 Proteína le gana a 🍬 Dulce, 🍬 Dulce a 🥦 Verdura y 🥦 Verdura a 🍗 Proteína (×1,5); 💗 Amor es neutro. El tipo del hijo es la comida que más ha comido.</p>
   <p><b>Evolución:</b> con 2 victorias en un nivel queda listo, y solo la otra persona (la que no ganó la segunda batalla) puede apretar "Evolucionar". Niveles: Bebé I → Bebé II → Novato → Novato Rebelde → Campeón → Definitivo.</p>
   <p><b>Se va con los abuelos</b> si pasa 12 horas enfermo o con la pancita en 0, o al cumplir 30 días. Después llega un huevo nuevo.</p>
   <button class="cerrar" style="width:100%">Entendido</button></div></div>
@@ -389,13 +406,13 @@ const NIVELES=[
   {id:'bebe1',n:'Bebé I',ent:'Cortafrutas (30 s)'},
   {id:'bebe2',n:'Bebé II'},{id:'novato',n:'Novato'},{id:'rebelde',n:'Novato Rebelde'},{id:'campeon',n:'Campeón'},{id:'definitivo',n:'Definitivo'}];
 const ENEMIGOS={bebe1:[
-  {n:'Babosín',e:'🐌',pod:16},{n:'Murcielaguito',e:'🦇',pod:20},{n:'Cangrejín',e:'🦀',pod:24},
-  {n:'Sapito Gruñón',e:'🐸',pod:22},{n:'Gusanín',e:'🐛',pod:14},{n:'Pollito Bravo',e:'🐤',pod:18}],
- bebe2:[{n:'Ratoncín',e:'🐭',pod:24},{n:'Abejorro',e:'🐝',pod:28},{n:'Pulpito',e:'🐙',pod:30},{n:'Erizo Pinchudo',e:'🦔',pod:32}],
- novato:[{n:'Lobo Aullón',e:'🐺',pod:36},{n:'Escorpión',e:'🦂',pod:38},{n:'Halcón Veloz',e:'🦅',pod:34},{n:'Jabalí',e:'🐗',pod:40}],
- rebelde:[{n:'Cocodrilo Dentón',e:'🐊',pod:44},{n:'Gorila Gruñón',e:'🦍',pod:48},{n:'Tiburón Bravo',e:'🦈',pod:46},{n:'Toro Furioso',e:'🐂',pod:50}],
- campeon:[{n:'Dragón de Lava',e:'🐉',pod:58},{n:'Mamut',e:'🦣',pod:54},{n:'León Rugiente',e:'🦁',pod:56},{n:'Kraken',e:'🦑',pod:60}],
- definitivo:[{n:'Ogro Gigante',e:'👹',pod:66},{n:'Rey Fantasma',e:'👻',pod:70},{n:'Robot Titán',e:'🤖',pod:72},{n:'Rex Ancestral',e:'🦖',pod:75}]};
+  {n:'Babosín',e:'🐌',pod:16,t:'proteina'},{n:'Murcielaguito',e:'🦇',pod:20,t:'dulce'},{n:'Cangrejín',e:'🦀',pod:24,t:'verdura'},
+  {n:'Sapito Gruñón',e:'🐸',pod:22,t:'proteina'},{n:'Gusanín',e:'🐛',pod:14,t:'dulce'},{n:'Pollito Bravo',e:'🐤',pod:18,t:'verdura'}],
+ bebe2:[{n:'Ratoncín',e:'🐭',pod:24,t:'proteina'},{n:'Abejorro',e:'🐝',pod:28,t:'dulce'},{n:'Pulpito',e:'🐙',pod:30,t:'verdura'},{n:'Erizo Pinchudo',e:'🦔',pod:32,t:'proteina'}],
+ novato:[{n:'Lobo Aullón',e:'🐺',pod:36,t:'dulce'},{n:'Escorpión',e:'🦂',pod:38,t:'verdura'},{n:'Halcón Veloz',e:'🦅',pod:34,t:'proteina'},{n:'Jabalí',e:'🐗',pod:40,t:'dulce'}],
+ rebelde:[{n:'Cocodrilo Dentón',e:'🐊',pod:44,t:'verdura'},{n:'Gorila Gruñón',e:'🦍',pod:48,t:'proteina'},{n:'Tiburón Bravo',e:'🦈',pod:46,t:'dulce'},{n:'Toro Furioso',e:'🐂',pod:50,t:'verdura'}],
+ campeon:[{n:'Dragón de Lava',e:'🐉',pod:58,t:'proteina'},{n:'Mamut',e:'🦣',pod:54,t:'dulce'},{n:'León Rugiente',e:'🦁',pod:56,t:'verdura'},{n:'Kraken',e:'🦑',pod:60,t:'proteina'}],
+ definitivo:[{n:'Ogro Gigante',e:'👹',pod:66,t:'dulce'},{n:'Rey Fantasma',e:'👻',pod:70,t:'verdura'},{n:'Robot Titán',e:'🤖',pod:72,t:'proteina'},{n:'Rex Ancestral',e:'🦖',pod:75,t:'dulce'}]};
 const nivelIdx=()=>NIVELES.findIndex(n=>n.id===S.fase);
 const vive=()=>S.fase!=='huevo'&&S.fase!=='abuelos';
 const otro=q=>q==='Él'?'Ella':'Él';
@@ -676,7 +693,7 @@ function comer(f){
         if(f==='dona')flota('🌀 ¡yupi!',r.width/2,r.height*.2);
         if(f==='zanahoria'){stage.classList.add('conejo');setTimeout(()=>stage.classList.remove('conejo'),2600)}
         if(f==='apio')setTimeout(()=>{svg.dataset.mood='feliz';flota('…no estaba tan malo',r.width/2,r.height*.18)},700);
-        aplicar(EFECTO[c.cat]);if(!S.pooAt)S.pooAt=ahora()+3*H;S.comidas.push({q:quien,t:ahora()});
+        aplicar(EFECTO[c.cat]);if(!S.pooAt)S.pooAt=ahora()+3*H;S.comidas.push({q:quien,t:ahora()});S.dieta=S.dieta||{};S.dieta[c.cat]=(S.dieta[c.cat]||0)+1;
         anota(nom(quien)+' le dio '+c.n+' '+c.e);
         setTimeout(()=>{delete svg.dataset.fijo;ocupado=false;render()},900)}},330)},620)}
 
@@ -807,48 +824,200 @@ function ninja(){
     $('#nFin').onclick=()=>{box.classList.remove('on');bloquear(false);ocupado=false;aplicar(d);anota(nom(quien)+' lo entrenó: '+pts+' frutas 🍉');render()}}
 }
 
-/* ===== Batallas por turnos ===== */
+/* ===== Batallas por turnos: tipos, ataques propios y animaciones ===== */
 const espera=ms=>new Promise(r=>setTimeout(r,ms));
 async function escribe(txt){const el=$('#bTxt');el.textContent='';for(const ch of txt){el.textContent+=ch;await espera(18)}await espera(500)}
 function chispa(el,e){const r=el.getBoundingClientRect(),c=document.createElement('span');c.className='chispa';c.textContent=e;c.style.left=r.left+r.width/2-17+'px';c.style.top=r.top+r.height/2-17+'px';$('#batalla').appendChild(c);setTimeout(()=>c.remove(),650)}
 function barra(el,v,max){const p=Math.max(0,v/max*100);el.style.width=p+'%';el.className=p<25?'baja':p<50?'med':''}
+
+// Tipos: Proteína vence a Dulce, Dulce vence a Verdura, Verdura vence a Proteína. Amor es neutro.
+const TIPOS={amor:{n:'Amor',e:'💗'},dulce:{n:'Dulce',e:'🍬'},proteina:{n:'Proteína',e:'🍗'},verdura:{n:'Verdura',e:'🥦'}};
+const GANA={proteina:'dulce',dulce:'verdura',verdura:'proteina'};
+const eficacia=(at,de)=>at==='amor'||de==='amor'?1:GANA[at]===de?1.5:GANA[de]===at?.67:1;
+function tipoMascota(){const d=S.dieta||{};let m='dulce',v=0;for(const k of['proteina','dulce','verdura'])if((d[k]||0)>v){v=d[k];m=k}return m}
+const mult=s=>s>=0?(2+s)/2:2/(2-s);
+
+// 12 ataques propios. niv = índice en NIVELES donde se aprende (1 = Bebé I).
+const ATAQUES=[
+ {id:'embestida',n:'Embestida Tierna',t:'amor',niv:1,pot:40,prec:100,anim:'embestida',d:'Daño normal, nunca se cansa.'},
+ {id:'burbujas',n:'Burbujas de Amor',t:'dulce',niv:1,pot:65,prec:95,usos:3,enamora:.1,anim:'burbujas',d:'Fuerte. 10 % de dejar enamorado.'},
+ {id:'escudo',n:'Abrazo Escudo',t:'amor',niv:1,escudo:1,cura:.12,anim:'escudo',d:'Recibe la mitad del próximo golpe y se cura un poco.'},
+ {id:'ojitos',n:'Ojitos de Gato',t:'amor',niv:1,baja:{atk:-1},anim:'ojitos',d:'Baja el ataque del rival.'},
+ {id:'chispas',n:'Lluvia de Chispas',t:'dulce',niv:2,pot:18,prec:95,golpes:[2,4],anim:'chispas',d:'Golpea de 2 a 4 veces.'},
+ {id:'siesta',n:'Siesta Reparadora',t:'amor',niv:2,cura:.45,usos:1,anim:'siesta',d:'Recupera casi la mitad de la vida. 1 uso.'},
+ {id:'zarpazo',n:'Zarpazo Vegetal',t:'verdura',niv:3,pot:50,prec:95,crit:.3,anim:'zarpazo',d:'Muchos golpes críticos.'},
+ {id:'grito',n:'Grito de Ánimo',t:'amor',niv:3,sube:{atk:2},anim:'grito',d:'Sube mucho su ataque.'},
+ {id:'cabezazo',n:'Cabezazo Rebelde',t:'proteina',niv:4,pot:90,prec:90,retro:.25,anim:'cabezazo',d:'Muy fuerte, pero se daña un poco.'},
+ {id:'coqueta',n:'Mirada Coqueta',t:'amor',niv:4,enamora:1,prec:85,anim:'coqueta',d:'Deja enamorado al rival: pierde turnos.'},
+ {id:'rayo',n:'Rayo del Corazón',t:'amor',niv:5,pot:120,prec:90,usos:2,recarga:1,anim:'rayo',d:'Enorme, pero descansa el turno siguiente.'},
+ {id:'eterno',n:'Abrazo Eterno',t:'proteina',niv:6,pot:55,prec:100,prio:1,drena:.5,anim:'eterno',d:'Ataca primero y se cura la mitad del daño.'}];
+const aprendidos=()=>ATAQUES.filter(a=>a.niv<=nivelIdx());
+function equipo(){const ap=aprendidos().map(a=>a.id);let eq=(S.equipo||[]).filter(id=>ap.includes(id));
+  for(const id of ap)if(eq.length<4&&!eq.includes(id))eq.push(id);S.equipo=eq.slice(0,4);return S.equipo.map(id=>ATAQUES.find(a=>a.id===id))}
+
+/* --- Kit de efectos de animación (todo con Web Animations API sobre la pantalla de batalla) --- */
+const B=()=>$('#batalla');
+const cen=el=>{const r=el.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}};
+function capa(html,css){const d=document.createElement('div');d.className='fx';d.innerHTML=html||'';Object.assign(d.style,css||{});B().appendChild(d);return d}
+const ani=(el,k,o)=>new Promise(r=>{const a=el.animate(k,Object.assign({fill:'forwards'},o));a.onfinish=r});
+async function lunge(el,dx,dy,ms=320){await ani(el,[{transform:'translate(0,0)'},{transform:`translate(${dx}px,${dy}px)`,offset:.45},{transform:'translate(0,0)'}],{duration:ms,easing:'cubic-bezier(.3,1.4,.5,1)',fill:'none'})}
+function sacudir(f=6,ms=350){const k=[];for(let i=0;i<6;i++)k.push({transform:`translate(${(i%2?1:-1)*f*(1-i/6)}px,${(i%3-1)*f*.5}px)`});k.push({transform:'none'});return ani(B(),k,{duration:ms,fill:'none'})}
+async function parpadeo(el){await ani(el,[{opacity:1},{opacity:0},{opacity:1},{opacity:0},{opacity:1}],{duration:420,easing:'steps(1,end)',fill:'none'})}
+function impacto(el,emo='💥',tam=1){const c=cen(el);
+  const anillo=capa('',{left:c.x-30+'px',top:c.y-30+'px',width:'60px',height:'60px',borderRadius:'50%',border:'4px solid #fff'});
+  ani(anillo,[{transform:'scale(.2)',opacity:1},{transform:`scale(${2.2*tam})`,opacity:0}],{duration:420,easing:'ease-out'}).then(()=>anillo.remove());
+  const s=capa(emo,{left:c.x-24+'px',top:c.y-24+'px',fontSize:48*tam+'px'});
+  return ani(s,[{transform:'scale(.3) rotate(-20deg)',opacity:1},{transform:'scale(1.3) rotate(0)',opacity:1,offset:.4},{transform:'scale(1.6)',opacity:0}],{duration:520,easing:'ease-out'}).then(()=>s.remove())}
+function flechas(el,sube,color){const c=cen(el);return Promise.all([0,1,2].map(i=>{const f=capa(sube?'▲':'▼',{left:c.x-40+i*32+'px',top:c.y+(sube?20:-40)+'px',color,fontSize:'26px',textShadow:'0 0 8px '+color});
+  return ani(f,[{transform:'translateY(0)',opacity:0},{opacity:1,offset:.2},{transform:`translateY(${sube?-60:60}px)`,opacity:0}],{duration:800,delay:i*120,easing:'ease-in-out'}).then(()=>f.remove())}))}
+function brillo(el,color,veces=2){return ani(el,[{filter:'none'},{filter:`drop-shadow(0 0 14px ${color}) brightness(1.3)`},{filter:'none'}],{duration:500,iterations:veces,fill:'none'})}
+function proyectil(de,a,html,{n=1,arco=-60,ms=520,sep=90,css={}}={}){const p=cen(de),q=cen(a);
+  return Promise.all(Array.from({length:n},(_,i)=>{const el=capa(html,Object.assign({left:p.x-14+'px',top:p.y-14+'px'},css));const dx=q.x-p.x+rnd(-14,14),dy=q.y-p.y+rnd(-14,14);
+    return ani(el,[{transform:'translate(0,0) scale(.5)',opacity:0},{opacity:1,offset:.1},{transform:`translate(${dx/2}px,${dy/2+arco}px) scale(1)`,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(1)`,opacity:1,offset:.9},{transform:`translate(${dx}px,${dy}px) scale(1.8)`,opacity:0}],{duration:ms,delay:i*sep,easing:'ease-in-out'}).then(()=>el.remove())}))}
+function oscurecer(on,col='rgba(10,10,40,.55)'){let d=$('#fxDim');if(!d){d=capa('',{inset:'0',background:col,opacity:0});d.id='fxDim'}return ani(d,[{opacity:on?0:1},{opacity:on?1:0}],{duration:300}).then(()=>{if(!on)d.remove()})}
+function destello(col='#fff'){const d=capa('',{inset:'0',background:col});return ani(d,[{opacity:0},{opacity:.9,offset:.15},{opacity:0}],{duration:450}).then(()=>d.remove())}
+function caerKO(el){return ani(el,[{transform:'translateY(0)',opacity:1},{transform:'translateY(60px)',opacity:0}],{duration:600,easing:'ease-in'})}
+
+// Una animación por ataque (a = atacante, o = objetivo)
+const ANIM={
+ async embestida(a,o,dir){lunge(a,40*dir,-30*dir);await espera(150);impacto(o,'💥');sacudir(5);await parpadeo(o)},
+ async burbujas(a,o){await proyectil(a,o,'',{n:6,arco:-50,ms:650,sep:80,css:{width:'26px',height:'26px',borderRadius:'50%',background:'radial-gradient(circle at 35% 30%,#fff,rgba(255,170,210,.5) 45%,rgba(255,80,150,.25))',border:'2px solid rgba(255,255,255,.9)'}});impacto(o,'💕');await parpadeo(o)},
+ async escudo(a){const c=cen(a);const e=capa('',{left:c.x-c.w*.7+'px',top:c.y-c.w*.7+'px',width:c.w*1.4+'px',height:c.w*1.4+'px',borderRadius:'50%',background:'radial-gradient(circle,rgba(255,255,255,0) 55%,rgba(255,140,190,.55) 75%,rgba(255,255,255,.9) 80%,rgba(255,255,255,0) 84%)'});
+   await ani(e,[{transform:'scale(0)',opacity:0},{transform:'scale(1.12)',opacity:1,offset:.5},{transform:'scale(1)',opacity:1}],{duration:420,easing:'cubic-bezier(.3,1.5,.5,1)'});
+   await ani(e,[{transform:'scale(1)',opacity:1},{transform:'scale(1.06)',opacity:.6},{transform:'scale(1)',opacity:1}],{duration:400,iterations:2});chispa(a,'💗');await ani(e,[{opacity:1},{opacity:0}],{duration:250});e.remove()},
+ async ojitos(a,o){const c=cen(a);for(const dx of[-18,18]){const s=capa('✨',{left:c.x+dx-12+'px',top:c.y-c.h*.25+'px',fontSize:'24px'});ani(s,[{transform:'scale(0) rotate(0)'},{transform:'scale(1.4) rotate(90deg)',offset:.5},{transform:'scale(0) rotate(180deg)'}],{duration:700}).then(()=>s.remove())}
+   await espera(500);ani(o,[{transform:'none'},{transform:'scale(.88) translateY(6px)'},{transform:'none'},{transform:'scale(.88) translateY(6px)'},{transform:'none'}],{duration:700,fill:'none'});await flechas(o,false,'#4aa8ff')},
+ async chispas(a,o,dir,golpe){const c=cen(o);for(let i=0;i<golpe.n;i++){const s=capa('⭐',{left:c.x+rnd(-40,20)+'px',top:c.y-180+'px',fontSize:'30px'});
+   await ani(s,[{transform:'translateY(0) rotate(0)',opacity:0},{opacity:1,offset:.2},{transform:`translateY(${170}px) rotate(200deg)`,opacity:1}],{duration:300,easing:'ease-in'});s.remove();impacto(o,'✨',.6);sacudir(3,200);golpe.uno();await espera(160)}},
+ async siesta(a){await oscurecer(true);const c=cen(a);for(let i=0;i<3;i++){const z=capa('Z',{left:c.x+10+i*10+'px',top:c.y-30+'px',fontSize:22-i*4+'px',color:'#cfe0ff',fontWeight:'700'});ani(z,[{transform:'translate(0,0)',opacity:0},{opacity:1,offset:.3},{transform:'translate(30px,-60px)',opacity:0}],{duration:1000,delay:i*250}).then(()=>z.remove())}
+   await espera(900);for(let i=0;i<5;i++){const m=capa('✚',{left:c.x+rnd(-40,30)+'px',top:c.y+20+'px',color:'#5dff8a',fontSize:'22px',fontWeight:'900'});ani(m,[{transform:'translateY(0)',opacity:1},{transform:'translateY(-70px)',opacity:0}],{duration:900,delay:i*120}).then(()=>m.remove())}
+   await brillo(a,'#5dff8a',2);await oscurecer(false)},
+ async zarpazo(a,o,dir,golpe){lunge(a,30*dir,-20*dir,260);await espera(120);const c=cen(o);
+   await Promise.all([-22,0,22].map((dy,i)=>{const l=capa('',{left:c.x-70+'px',top:c.y+dy-3+'px',width:'140px',height:'6px',borderRadius:'6px',background:'linear-gradient(90deg,transparent,#fff 40%,#c8ffd0 60%,transparent)',boxShadow:'0 0 10px #9fff9f',transformOrigin:'left center'});
+     return ani(l,[{transform:'rotate(-35deg) scaleX(0)',opacity:1},{transform:'rotate(-35deg) scaleX(1)',opacity:1,offset:.5},{transform:'rotate(-35deg) scaleX(1)',opacity:0}],{duration:360,delay:i*90}).then(()=>l.remove())}));
+   for(let i=0;i<5;i++){const h=capa('🍃',{left:c.x+'px',top:c.y+'px',fontSize:'20px'});ani(h,[{transform:'translate(0,0)',opacity:1},{transform:`translate(${rnd(-70,70)}px,${rnd(-60,40)}px) rotate(${rnd(-180,180)}deg)`,opacity:0}],{duration:700}).then(()=>h.remove())}
+   if(golpe.crit)sacudir(8);await parpadeo(o)},
+ async grito(a){const c=cen(a);const au=capa('',{left:c.x-c.w*.8+'px',top:c.y-c.w*.8+'px',width:c.w*1.6+'px',height:c.w*1.6+'px',borderRadius:'50%',background:'radial-gradient(circle,rgba(255,150,40,.65),rgba(255,60,40,.25) 50%,transparent 70%)'});
+   ani(a,[{transform:'translateX(-3px)'},{transform:'translateX(3px)'}],{duration:60,iterations:12,fill:'none'});
+   ani(au,[{transform:'scale(.6)',opacity:.3},{transform:'scale(1.1)',opacity:1},{transform:'scale(.8)',opacity:.5}],{duration:450,iterations:3}).then(()=>au.remove());
+   await flechas(a,true,'#ff5a3c');await espera(400)},
+ async cabezazo(a,o,dir){await ani(a,[{transform:'translate(0,0)'},{transform:`translate(${-24*dir}px,${14*dir}px) scale(1.08,.92)`}],{duration:260,fill:'none'});
+   const p=cen(a),q=cen(o);for(let i=1;i<=3;i++){const g=a.cloneNode(true);g.removeAttribute('id');g.querySelectorAll('[id]').forEach(x=>x.removeAttribute('id'));g.classList.add('fx');g.style.bottom='auto';g.style.left=a.getBoundingClientRect().left+'px';g.style.top=a.getBoundingClientRect().top+'px';g.style.opacity=.35/i;B().appendChild(g);
+     ani(g,[{transform:'translate(0,0)'},{transform:`translate(${(q.x-p.x)*.6*(1-i*.2)}px,${(q.y-p.y)*.6*(1-i*.2)}px)`,opacity:0}],{duration:220}).then(()=>g.remove())}
+   lunge(a,(q.x-p.x)*.6,(q.y-p.y)*.6,300);await espera(140);destello('#fff8');impacto(o,'💥',1.5);await sacudir(12,450);parpadeo(o);await parpadeo(a)},
+ async coqueta(a,o){const ca=cen(a);const g=capa('😉',{left:ca.x+20+'px',top:ca.y-ca.h*.5+'px',fontSize:'34px'});await ani(g,[{transform:'scale(0)'},{transform:'scale(1.3)',offset:.4},{transform:'scale(1)',opacity:0}],{duration:600});g.remove();
+   const c=cen(o),orb=capa([0,1,2,3].map(i=>`<span style="position:absolute;left:${50+44*Math.cos(i*Math.PI/2)}px;top:${50+44*Math.sin(i*Math.PI/2)}px;font-size:24px;transform:translate(-50%,-50%)">💗</span>`).join(''),{left:c.x-50+'px',top:c.y-c.h*.6-50+'px',width:'100px',height:'100px'});
+   brillo(o,'#ff7ab8',2);await ani(orb,[{transform:'rotate(0) scaleY(.45)'},{transform:'rotate(720deg) scaleY(.45)'}],{duration:1400,easing:'ease-in-out'});orb.remove()},
+ async rayo(a,o){const p=cen(a),q=cen(o);
+   const orbe=capa('',{left:p.x-25+'px',top:p.y-25+'px',width:'50px',height:'50px',borderRadius:'50%',background:'radial-gradient(circle,#fff,#ff7ab8 55%,transparent 72%)'});
+   for(let i=0;i<8;i++){const ang=i/8*Math.PI*2,pt=capa('',{left:p.x-4+Math.cos(ang)*90+'px',top:p.y-4+Math.sin(ang)*90+'px',width:'8px',height:'8px',borderRadius:'50%',background:'#ffd1e6',boxShadow:'0 0 8px #ff7ab8'});
+     ani(pt,[{transform:'translate(0,0)',opacity:0},{opacity:1,offset:.3},{transform:`translate(${-Math.cos(ang)*90}px,${-Math.sin(ang)*90}px)`,opacity:0}],{duration:700,delay:i*40}).then(()=>pt.remove())}
+   await ani(orbe,[{transform:'scale(.1)'},{transform:'scale(1)'},{transform:'scale(.8)'},{transform:'scale(1.2)'}],{duration:900,easing:'ease-in'});
+   const L=Math.hypot(q.x-p.x,q.y-p.y),ang=Math.atan2(q.y-p.y,q.x-p.x)*180/Math.PI;
+   const haz=capa('',{left:p.x+'px',top:p.y-11+'px',width:L+'px',height:'22px',borderRadius:'11px',transformOrigin:'0 50%',background:'linear-gradient(180deg,#ff7ab8,#fff 45%,#fff 55%,#ff7ab8)',boxShadow:'0 0 24px 6px #ff7ab8'});
+   await ani(haz,[{transform:`rotate(${ang}deg) scaleX(0)`},{transform:`rotate(${ang}deg) scaleX(1)`}],{duration:200,easing:'ease-out'});
+   destello();impacto(o,'💖',1.6);ani(haz,[{opacity:1},{opacity:.6},{opacity:1},{opacity:.5},{opacity:1}],{duration:500});await sacudir(10,500);
+   await Promise.all([ani(haz,[{opacity:1},{opacity:0}],{duration:250}),ani(orbe,[{opacity:1},{opacity:0}],{duration:250})]);haz.remove();orbe.remove();parpadeo(o)},
+ async eterno(a,o){const p=cen(a),q=cen(o),reset=op=>{a.getAnimations().forEach(x=>x.cancel());a.style.opacity=op};
+   await ani(a,[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.4)'}],{duration:200});reset(0);
+   a.style.transform=`translate(${(q.x-p.x)*.7}px,${(q.y-p.y)*.7}px)`;await ani(a,[{opacity:0},{opacity:1}],{duration:200});reset(1);
+   ani(o,[{transform:'none'},{transform:'scale(1.12,.86)'},{transform:'none'}],{duration:500,iterations:2,fill:'none'});impacto(o,'🤗');
+   await proyectil(o,a,'💗',{n:5,arco:-30,ms:600,sep:100,css:{fontSize:'24px'}});await brillo(a,'#5dff8a',1);
+   await ani(a,[{opacity:1},{opacity:0}],{duration:180});reset(0);a.style.transform='';
+   await ani(a,[{opacity:0},{opacity:1}],{duration:200});reset(1)},
+ // ataques del rival
+ async rivalNormal(a,o,dir){lunge(a,40*dir,-30*dir);await espera(150);impacto(o,'💢');sacudir(5);await parpadeo(o)},
+ async rivalFurioso(a,o,dir){const c=cen(o);const r=capa('⚡',{left:c.x-20+'px',top:c.y-140+'px',fontSize:'56px'});
+   await ani(r,[{transform:'translate(0,0)',opacity:0},{transform:'translate(-14px,50px)',opacity:1,offset:.3},{transform:'translate(14px,90px)',offset:.6},{transform:'translate(0,130px)',opacity:1}],{duration:320,easing:'steps(4,end)'});r.remove();
+   destello('rgba(255,60,60,.6)');impacto(o,'⚡',1.3);await sacudir(10,420);await parpadeo(o)},
+ async rivalGrito(a,o){await ani(a,[{transform:'scale(1)'},{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:220,iterations:2,fill:'none'});sacudir(4,300);await flechas(o,false,'#4aa8ff')}};
+
+/* --- Elegir los 4 ataques antes de pelear --- */
+function elegirEquipo(){return new Promise(res=>{const ap=aprendidos();equipo();
+  if(ap.length<=4)return res(true);
+  const pinta=()=>{$('#atqLista').innerHTML=ap.map(a=>`<button data-at="${a.id}" class="${S.equipo.includes(a.id)?'on':''}"><span>${TIPOS[a.t].e}</span><span><b>${a.n}</b><small>${a.d}${a.usos?' · '+a.usos+' usos':''}</small></span></button>`).join('');
+    $('#atqCont').textContent=S.equipo.length+'/4';$('#atqOk').disabled=!S.equipo.length;
+    $$('#atqLista button').forEach(b=>b.onclick=()=>{const id=b.dataset.at,i=S.equipo.indexOf(id);if(i>=0)S.equipo.splice(i,1);else if(S.equipo.length<4)S.equipo.push(id);else return toast('Máximo 4: quita uno primero');pinta()})};
+  pinta();abrir('#shAtaques');
+  $('#atqOk').onclick=()=>{cerrarHojas();guardar();res(true)};
+  $('#shAtaques .cerrar').onclick=()=>{cerrarHojas();res(false)}})}
+
 async function batalla(){
   if(S.fase==='huevo')return toast('Las batallas se habilitan desde Bebé I');
   if(!puede('batalla'))return;
   if(S.enfermo)return toast('Está enfermo: primero dale medicina');
   if(S.herido)return toast('Está herido: cúralo con el botiquín');
+  if(!await elegirEquipo())return;
   ocupado=true;
   const lista=ENEMIGOS[S.fase]||ENEMIGOS.bebe1,en=Object.assign({},lista[Math.floor(Math.random()*lista.length)]);
-  en.pod=Math.round(en.pod*rnd(.85,1.2));en.max=36+Math.round(en.pod*.6);en.hp=en.max;
-  const nv=Math.max(0,nivelIdx()-1),yo={pod:12+S.fuerza*.3+nv*9,max:50+nv*12,hp:50+nv*12,esp:2,def:false};
-  const B=$('#batalla');B.classList.add('on');bloquear(true);$('#eNom').textContent=en.n;$('#eNiv').textContent='Nv '+Math.max(1,Math.round(en.pod/4));
-  $('#eSpr').textContent=en.e;$('#eSpr').style.opacity=1;$('#ySpr').innerHTML=petSVG('petB');$('#ySpr').classList.toggle('grande',nivelIdx()>=3);$('#ySpr').style.opacity=1;
-  $('#yNom').textContent=S.nombre;$('#yNiv').textContent='Nv '+Math.max(1,Math.round(yo.pod/4));
+  en.pod=Math.round(en.pod*rnd(.85,1.2));en.max=36+Math.round(en.pod*.6);en.hp=en.max;en.atk=0;en.def=0;en.enam=0;en.vel=en.pod*.5+rnd(0,8);
+  const nv=Math.max(0,nivelIdx()-1),yo={pod:12+S.fuerza*.3+nv*9,max:50+nv*12,hp:50+nv*12,atk:0,def:0,escudo:false,recarga:false,vel:10+nv*6+S.energia*.15,usos:{},t:tipoMascota()};
+  const eq=equipo();eq.forEach(a=>{if(a.usos)yo.usos[a.id]=a.usos});
+  const Bt=$('#batalla'),eS=$('#eSpr'),yS=$('#ySpr');Bt.classList.add('on');bloquear(true);
+  $('#eNom').textContent=en.n+' '+TIPOS[en.t].e;$('#eNiv').textContent='Nv '+Math.max(1,Math.round(en.pod/4));
+  eS.textContent=en.e;eS.style.opacity=1;eS.getAnimations().forEach(x=>x.cancel());yS.innerHTML=petSVG('petB');yS.classList.toggle('grande',nivelIdx()>=3);yS.style.opacity=1;yS.getAnimations().forEach(x=>x.cancel());
+  $('#yNom').textContent=S.nombre+' '+TIPOS[yo.t].e;$('#yNiv').textContent='Nv '+Math.max(1,Math.round(yo.pod/4));
   const upd=()=>{barra($('#eHp'),en.hp,en.max);barra($('#yHp'),yo.hp,yo.max);$('#yHpn').textContent=Math.max(0,Math.ceil(yo.hp))+'/'+yo.max};upd();
-  $('#bMenu').innerHTML='';await escribe('¡Apareció un '+en.n+'!');
-  let fin=null;
-  const elegir=()=>new Promise(res=>{$('#bMenu').innerHTML=`<button data-m="ata">Placaje<small>daño normal</small></button><button data-m="esp" ${yo.esp?'':'disabled'}>Burbujas de amor<small>fuerte · quedan ${yo.esp}</small></button><button data-m="def">Abrazo escudo<small>se protege y recupera</small></button><button data-m="huir">Huir<small>termina sin contar</small></button>`;
+  $('#bMenu').innerHTML='';
+  await ani(eS,[{transform:'translateX(160px)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:500,easing:'ease-out',fill:'none'});
+  await escribe('¡Apareció un '+en.n+' de tipo '+TIPOS[en.t].n+'!');
+  const msgEf=e=>e>1?'¡Le llegó justo al corazón!':e<1?'No le hizo mucho…':'';
+  const danio=(pod,pot,at,atkS,defS,tipoDef)=>(2+pod*pot/100)*eficacia(at,tipoDef)*mult(atkS)/mult(defS)*rnd(.85,1);
+  const elegir=()=>new Promise(res=>{
+    $('#bMenu').innerHTML=eq.map(a=>{const q=a.usos?yo.usos[a.id]:null;return`<button data-m="${a.id}" ${q===0?'disabled':''}>${TIPOS[a.t].e} ${a.n}<small>${a.d.split('.')[0]}${q!=null?' · quedan '+q:''}</small></button>`}).join('')+'<button data-m="huir" class="huir">Huir</button>';
     $$('#bMenu button').forEach(b=>b.onclick=()=>{$('#bMenu').innerHTML='';res(b.dataset.m)})});
-  const golpe=async(atk,objetivo,base,txt,emoji)=>{
-    const spr=objetivo==='en'?$('#eSpr'):$('#ySpr'),atSpr=objetivo==='en'?$('#ySpr'):$('#eSpr');
-    await escribe(txt);atSpr.classList.add(objetivo==='en'?'ataca-y':'ataca-e');await espera(250);
-    if(Math.random()<.1){atSpr.classList.remove('ataca-y','ataca-e');await escribe('¡Pero falló!');return}
-    let d=Math.round(base*rnd(.8,1.2));const crit=Math.random()<.1;if(crit)d=Math.round(d*1.6);
-    if(objetivo==='yo'&&yo.def){d=Math.round(d/2);yo.def=false}
-    chispa(spr,emoji);spr.classList.add('golpe');B.classList.add('sacude');
-    if(objetivo==='en')en.hp-=d;else yo.hp-=d;upd();if(navigator.vibrate)navigator.vibrate(40);
-    await espera(550);spr.classList.remove('golpe');atSpr.classList.remove('ataca-y','ataca-e');B.classList.remove('sacude');
-    if(crit)await escribe('¡Golpe crítico!')};
+  // turno del jugador
+  const turnoYo=async a=>{
+    if(a.usos)yo.usos[a.id]--;
+    await escribe(S.nombre+' usó '+a.n+'.');
+    if(a.prec&&Math.random()*100>a.prec){await lunge(yS,20,-10);await escribe('¡Pero falló!');return}
+    if(a.pot){const golpes=a.golpes?Math.floor(rnd(a.golpes[0],a.golpes[1]+1)):1;let total=0,critAlguno=false;
+      const g={n:golpes,crit:false,uno:()=>{const crit=Math.random()<(a.crit||.08);if(crit)critAlguno=true;let d=Math.round(danio(yo.pod,a.pot,a.t,yo.atk,en.def,en.t)*(crit?1.5:1));en.hp-=d;total+=d;upd()}};
+      if(!a.golpes){g.crit=Math.random()<(a.crit||.08);}
+      if(navigator.vibrate)navigator.vibrate(40);
+      if(a.golpes)await ANIM[a.anim](yS,eS,1,g);
+      else{const crit=g.crit;let d=Math.round(danio(yo.pod,a.pot,a.t,yo.atk,en.def,en.t)*(crit?1.5:1));critAlguno=crit;
+        const p=ANIM[a.anim](yS,eS,1,g);await espera(a.anim==='rayo'?1300:a.anim==='burbujas'?600:a.anim==='eterno'?500:250);en.hp-=d;total=d;upd();await p}
+      if(a.golpes)await escribe('¡Golpeó '+golpes+' veces!');
+      if(critAlguno)await escribe('¡Golpe crítico!');
+      const ef=msgEf(eficacia(a.t,en.t));if(ef)await escribe(ef);
+      if(a.retro){const r=Math.max(1,Math.round(total*a.retro));yo.hp-=r;upd();await escribe(S.nombre+' también se dio un golpe.')}
+      if(a.drena){const c=Math.round(total*a.drena);yo.hp=Math.min(yo.max,yo.hp+c);upd();await escribe(S.nombre+' recuperó '+c+' de vida.')}
+      if(a.recarga)yo.recarga=true;
+      if(a.enamora&&en.hp>0&&Math.random()<a.enamora&&!en.enam){en.enam=3;await escribe('¡'+en.n+' quedó enamorado! 💗')}
+      return}
+    await ANIM[a.anim](yS,eS,1,{});
+    if(a.escudo){yo.escudo=true}
+    if(a.cura){const c=Math.round(yo.max*a.cura);yo.hp=Math.min(yo.max,yo.hp+c);upd();await escribe(S.nombre+' recuperó '+c+' de vida.')}
+    if(a.escudo)await escribe(S.nombre+' se cubrió con un abrazo.');
+    if(a.baja){if(en.atk<=-6)await escribe('El ataque de '+en.n+' ya no puede bajar más.');else{en.atk=Math.max(-6,en.atk+a.baja.atk);await escribe('¡Bajó el ataque de '+en.n+'!')}}
+    if(a.sube){if(yo.atk>=6)await escribe('Su ataque ya está al máximo.');else{yo.atk=Math.min(6,yo.atk+a.sube.atk);await escribe('¡El ataque de '+S.nombre+' subió mucho!')}}
+    if(a.enamora){if(en.enam)await escribe(en.n+' ya está enamorado.');else{en.enam=3;await escribe('¡'+en.n+' quedó enamorado! 💗')}}};
+  // turno del rival
+  const turnoEn=async()=>{
+    if(en.enam){en.enam--;if(Math.random()<.5){chispa(eS,'💗');await escribe(en.n+' está embobado mirando a '+S.nombre+' y no ataca.');return}if(!en.enam)await escribe(en.n+' se le pasó el enamoramiento.')}
+    const r=Math.random();
+    if(r<.12&&yo.def>-3){await escribe(en.n+' lanzó un grito feroz.');await ANIM.rivalGrito(eS,yS);yo.def--;await escribe('¡Bajó la defensa de '+S.nombre+'!');return}
+    const fuerte=r>.75,pot=fuerte?60:40;
+    await escribe(en.n+(fuerte?' usó un ataque furioso.':' atacó.'));
+    if(Math.random()<.08){await lunge(eS,-20,10);await escribe('¡Pero falló!');return}
+    const crit=Math.random()<.08;let d=Math.round(danio(en.pod,pot,en.t,en.atk,yo.def,yo.t)*(crit?1.5:1));
+    if(yo.escudo){d=Math.round(d/2);yo.escudo=false}
+    const p=fuerte?ANIM.rivalFurioso(eS,yS,-1):ANIM.rivalNormal(eS,yS,-1);await espera(fuerte?400:250);yo.hp-=d;upd();if(navigator.vibrate)navigator.vibrate(60);await p;
+    if(crit)await escribe('¡Golpe crítico!');const ef=msgEf(eficacia(en.t,yo.t));if(ef)await escribe(ef)};
+  let fin=null;
   while(!fin){
-    const m=await elegir();
-    if(m==='huir'){await escribe(S.nombre+' huyó sin problemas.');fin='huir';break}
-    if(m==='ata')await golpe(yo,'en',4+yo.pod*.35,S.nombre+' usó Placaje.','💥');
-    if(m==='esp'){yo.esp--;await golpe(yo,'en',7+yo.pod*.55,S.nombre+' usó Burbujas de amor.','🫧')}
-    if(m==='def'){yo.def=true;yo.hp=Math.min(yo.max,yo.hp+6);upd();chispa($('#ySpr'),'💗');await escribe(S.nombre+' se protegió con un abrazo.')}
-    if(en.hp<=0){$('#eSpr').style.opacity=0;await escribe('¡'+en.n+' quedó K.O.!');fin='gana';break}
-    const fuerte=Math.random()<.25;
-    await golpe(en,'yo',(fuerte?6:4)+en.pod*(fuerte?.5:.33),en.n+(fuerte?' usó un ataque furioso.':' atacó.'),fuerte?'⚡':'💢');
-    if(yo.hp<=0){$('#ySpr').style.opacity=.3;await escribe(S.nombre+' ya no puede seguir…');fin='pierde';break}
+    let a=null;
+    if(yo.recarga){yo.recarga=false;await escribe(S.nombre+' necesita recuperar el aliento.')}
+    else{const m=await elegir();if(m==='huir'){await escribe(S.nombre+' huyó sin problemas.');fin='huir';break}a=ATAQUES.find(x=>x.id===m)}
+    const yoPrimero=a&&(a.prio||yo.vel>=en.vel);
+    const pasos=yoPrimero?['yo','en']:['en','yo'];
+    for(const quienAct of pasos){
+      if(quienAct==='yo'&&a)await turnoYo(a);
+      if(quienAct==='en')await turnoEn();
+      if(en.hp<=0){await caerKO(eS);await escribe('¡'+en.n+' quedó K.O.!');fin='gana';break}
+      if(yo.hp<=0){await caerKO(yS);await escribe(S.nombre+' ya no puede seguir…');fin='pierde';break}
+    }
   }
   if(fin!=='huir'){
     S.batallas++;const gano=fin==='gana';if(gano){S.victorias++;S.vicNivel++}
@@ -861,7 +1030,7 @@ async function batalla(){
     if(gano&&S.vicNivel>=2&&!S.listo&&sig){S.listo=true;S.listoPor=quien;await escribe('¡'+S.nombre+' está listo para evolucionar a '+sig.n+'! ✨ Pero solo '+nom(otro(quien))+' puede hacerlo evolucionar.');anota('¡Listo para evolucionar a '+sig.n+'! Le toca a '+nom(otro(quien))+' ✨')}
   }
   $('#bMenu').innerHTML='<button data-m="ok" style="grid-column:1/-1">Volver</button>';
-  $('#bMenu button').onclick=()=>{B.classList.remove('on');bloquear(false);ocupado=false;render()};
+  $('#bMenu button').onclick=()=>{$$('#batalla .fx').forEach(x=>x.remove());Bt.classList.remove('on');bloquear(false);ocupado=false;render()};
 }
 
 /* ===== Evolución: silueta brillante que cambia de forma (morph con destellos) ===== */
