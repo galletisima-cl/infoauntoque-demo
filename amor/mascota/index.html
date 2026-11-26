@@ -165,6 +165,13 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .atq button small{display:block;font-size:12px;color:var(--mute)}
 .atq button.on{border-color:var(--red);box-shadow:var(--neu-in)}
 .fx{position:absolute;pointer-events:none;z-index:6}
+/* Sprites en pixel art: se amplían sin suavizado */
+.pix{image-rendering:pixelated;image-rendering:crisp-edges;background-repeat:no-repeat}
+.bicho .pix{transform:translate(-6px,-6px)}
+.gal{display:flex;gap:12px;align-items:center;padding:10px;border-radius:16px;background:var(--soft);margin-bottom:8px}
+.gal .pix{flex:none;background-color:rgba(255,255,255,.08);border-radius:12px}
+.gal b{font-size:16px}.gal small{display:block;color:var(--mute);font-size:12px;margin:2px 0 6px}
+.gal-bt{display:flex;gap:6px;flex-wrap:wrap}.gal-bt button{padding:6px 10px;font-size:12px;border-radius:10px}
 .menu .huir{grid-column:1/-1;padding:6px;font-size:13px;box-shadow:0 2px 0 #3a3a3a}
 .msgs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .msgs button{display:flex;align-items:center;gap:8px;text-align:left;font-size:14px}
@@ -221,7 +228,8 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .menu{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .menu button{background:#fff;color:#222;border:2px solid #3a3a3a;box-shadow:0 3px 0 #3a3a3a;border-radius:10px;font-weight:700;padding:10px 6px;font-size:15px}
 .menu button:active{transform:translateY(2px);box-shadow:0 1px 0 #3a3a3a}
-.menu button small{display:block;font-weight:400;font-size:11px;color:#666}
+.menu button small{display:block;font-weight:400;font-size:11px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu button{padding:8px 6px!important;font-size:14px!important;min-width:0}
 .chispa{position:absolute;font-size:34px;pointer-events:none;animation:chispa .6s ease-out forwards;z-index:5}
 @keyframes chispa{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
 #despedida,#nacer{background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
@@ -299,7 +307,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <p id="buzon" style="margin:8px 0 0;font-size:12px;color:var(--mute)"></p>
     <div class="fila">
       <button data-skip="1">+1 hora</button><button data-skip="3">+3 horas</button><button data-skip="8">+8 horas</button><button data-skip="24">+1 día</button>
-      <button id="btnEvo">✨ Evolucionar</button><button id="btnReglas">Reglas</button><button id="btnReset">Reiniciar</button>
+      <button id="btnEvo">✨ Evolucionar</button><button id="btnGal">👾 Enemigos</button><button id="btnReglas">Reglas</button><button id="btnReset">Reiniciar</button>
       <select id="selTema" aria-label="Tema"><option value="pasion">Pasión</option><option value="pastel">Pastel</option><option value="noche">Noche</option><option value="vintage">Vintage</option></select>
     </div>
   </section>
@@ -332,6 +340,14 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <div class="atq" id="atqLista"></div>
   <button class="pri" id="atqOk" style="width:100%;margin-top:10px">¡A pelear!</button>
   <button class="cerrar" style="width:100%;margin-top:8px">Cancelar</button>
+</div></div>
+
+<!-- Galería de enemigos chilenos -->
+<div class="sheet" id="shGaleria"><div>
+  <h3>Enemigos chilenos 👾</h3>
+  <p style="margin:-4px 0 10px;font-size:13px;color:var(--mute)">Pixel art original, animado con sprite sheets de 5 cuadros.</p>
+  <div id="galLista"></div>
+  <button class="cerrar" style="width:100%;margin-top:10px">Cerrar</button>
 </div></div>
 
 <!-- Mensajes -->
@@ -367,9 +383,9 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <div class="ficha" style="left:10px;top:calc(16px + env(safe-area-inset-top))"><b id="eNom">?</b> <small id="eNiv"></small><div class="hp"><i id="eHp"></i></div></div>
   <div class="ring" style="right:6%;top:23%;width:150px;height:36px"></div>
   <div class="bicho" id="eSpr" style="right:12%;top:12%"></div>
-  <div class="ring" style="left:4%;bottom:calc(246px + env(safe-area-inset-bottom));width:170px;height:40px"></div>
-  <div class="yo" id="ySpr" style="left:8%;bottom:calc(250px + env(safe-area-inset-bottom))"></div>
-  <div class="ficha" style="right:10px;bottom:calc(262px + env(safe-area-inset-bottom))"><b id="yNom">?</b> <small id="yNiv"></small><div class="hp"><i id="yHp"></i></div><div class="hpn" id="yHpn"></div></div>
+  <div class="ring" style="left:4%;bottom:calc(var(--cajaH,240px) + 4px);width:170px;height:40px"></div>
+  <div class="yo" id="ySpr" style="left:8%;bottom:calc(var(--cajaH,240px) + 8px)"></div>
+  <div class="ficha" style="right:10px;bottom:calc(var(--cajaH,240px) + 24px)"><b id="yNom">?</b> <small id="yNiv"></small><div class="hp"><i id="yHp"></i></div><div class="hpn" id="yHpn"></div></div>
   <div class="caja"><div class="txt" id="bTxt"></div><div class="menu" id="bMenu"></div></div>
 </div>
 
@@ -862,7 +878,7 @@ function capa(html,css){const d=document.createElement('div');d.className='fx';d
 const ani=(el,k,o)=>new Promise(r=>{const a=el.animate(k,Object.assign({fill:'forwards'},o));a.onfinish=r});
 async function lunge(el,dx,dy,ms=320){await ani(el,[{transform:'translate(0,0)'},{transform:`translate(${dx}px,${dy}px)`,offset:.45},{transform:'translate(0,0)'}],{duration:ms,easing:'cubic-bezier(.3,1.4,.5,1)',fill:'none'})}
 function sacudir(f=6,ms=350){const k=[];for(let i=0;i<6;i++)k.push({transform:`translate(${(i%2?1:-1)*f*(1-i/6)}px,${(i%3-1)*f*.5}px)`});k.push({transform:'none'});return ani(B(),k,{duration:ms,fill:'none'})}
-async function parpadeo(el){await ani(el,[{opacity:1},{opacity:0},{opacity:1},{opacity:0},{opacity:1}],{duration:420,easing:'steps(1,end)',fill:'none'})}
+async function parpadeo(el){if(el._px)el._px.pose('hit');await ani(el,[{opacity:1},{opacity:0},{opacity:1},{opacity:0},{opacity:1}],{duration:420,easing:'steps(1,end)',fill:'none'})}
 function impacto(el,emo='💥',tam=1){const c=cen(el);
   const anillo=capa('',{left:c.x-30+'px',top:c.y-30+'px',width:'60px',height:'60px',borderRadius:'50%',border:'4px solid #fff'});
   ani(anillo,[{transform:'scale(.2)',opacity:1},{transform:`scale(${2.2*tam})`,opacity:0}],{duration:420,easing:'ease-out'}).then(()=>anillo.remove());
@@ -926,12 +942,14 @@ const ANIM={
    await ani(a,[{opacity:1},{opacity:0}],{duration:180});reset(0);a.style.transform='';
    await ani(a,[{opacity:0},{opacity:1}],{duration:200});reset(1)},
  // ataques del rival
- async rivalNormal(a,o,dir){lunge(a,40*dir,-30*dir);await espera(150);impacto(o,'💢');sacudir(5);await parpadeo(o)},
- async rivalFurioso(a,o,dir){const c=cen(o);const r=capa('⚡',{left:c.x-20+'px',top:c.y-140+'px',fontSize:'56px'});
+ async rivalNormal(a,o,dir){if(a._px)a._px.pose('atk');lunge(a,40*dir,-30*dir);await espera(150);impacto(o,'💢');sacudir(5);await parpadeo(o)},
+ async rivalFurioso(a,o,dir){if(a._px)a._px.pose('atk');const c=cen(o);const r=capa('⚡',{left:c.x-20+'px',top:c.y-140+'px',fontSize:'56px'});
    await ani(r,[{transform:'translate(0,0)',opacity:0},{transform:'translate(-14px,50px)',opacity:1,offset:.3},{transform:'translate(14px,90px)',offset:.6},{transform:'translate(0,130px)',opacity:1}],{duration:320,easing:'steps(4,end)'});r.remove();
    destello('rgba(255,60,60,.6)');impacto(o,'⚡',1.3);await sacudir(10,420);await parpadeo(o)},
- async rivalGrito(a,o){await ani(a,[{transform:'scale(1)'},{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:220,iterations:2,fill:'none'});sacudir(4,300);await flechas(o,false,'#4aa8ff')}};
+ async rivalGrito(a,o){if(a._px)a._px.pose('atk');await ani(a,[{transform:'scale(1)'},{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:220,iterations:2,fill:'none'});sacudir(4,300);await flechas(o,false,'#4aa8ff')}};
 
+// La mascota y su ficha se ubican justo encima de la caja de texto, mida lo que mida
+try{new ResizeObserver(e=>{const h=e[0].target.getBoundingClientRect().height;$('#batalla').style.setProperty('--cajaH',Math.round(h+12)+'px')}).observe($('#batalla .caja'))}catch(_){}
 /* --- Elegir los 4 ataques antes de pelear --- */
 function elegirEquipo(){return new Promise(res=>{const ap=aprendidos();equipo();
   if(ap.length<=4)return res(true);
@@ -949,18 +967,19 @@ async function batalla(){
   if(S.herido)return toast('Está herido: cúralo con el botiquín');
   if(!await elegirEquipo())return;
   ocupado=true;
-  const lista=ENEMIGOS[S.fase]||ENEMIGOS.bebe1,en=Object.assign({},lista[Math.floor(Math.random()*lista.length)]);
+  const lista=ENEMIGOS[S.fase]||ENEMIGOS.bebe1,en=Object.assign({},enemigoForzado||lista[Math.floor(Math.random()*lista.length)]);enemigoForzado=null;
   en.pod=Math.round(en.pod*rnd(.85,1.2));en.max=36+Math.round(en.pod*.6);en.hp=en.max;en.atk=0;en.def=0;en.enam=0;en.vel=en.pod*.5+rnd(0,8);
   const nv=Math.max(0,nivelIdx()-1),yo={pod:12+S.fuerza*.3+nv*9,max:50+nv*12,hp:50+nv*12,atk:0,def:0,escudo:false,recarga:false,vel:10+nv*6+S.energia*.15,usos:{},t:tipoMascota()};
   const eq=equipo();eq.forEach(a=>{if(a.usos)yo.usos[a.id]=a.usos});
   const Bt=$('#batalla'),eS=$('#eSpr'),yS=$('#ySpr');Bt.classList.add('on');bloquear(true);
   $('#eNom').textContent=en.n+' '+TIPOS[en.t].e;$('#eNiv').textContent='Nv '+Math.max(1,Math.round(en.pod/4));
-  eS.textContent=en.e;eS.style.opacity=1;eS.getAnimations().forEach(x=>x.cancel());yS.innerHTML=petSVG('petB');yS.classList.toggle('grande',nivelIdx()>=3);yS.style.opacity=1;yS.getAnimations().forEach(x=>x.cancel());
+  eS.textContent='';eS._px=null;if(en.px){const sp=spriteEl(en.px,4);eS.appendChild(sp);eS._px=sp._px}else eS.textContent=en.e;eS.style.opacity=1;eS.getAnimations().forEach(x=>x.cancel());yS.innerHTML=petSVG('petB');yS.classList.toggle('grande',nivelIdx()>=3);yS.style.opacity=1;yS.getAnimations().forEach(x=>x.cancel());
   $('#yNom').textContent=S.nombre+' '+TIPOS[yo.t].e;$('#yNiv').textContent='Nv '+Math.max(1,Math.round(yo.pod/4));
   const upd=()=>{barra($('#eHp'),en.hp,en.max);barra($('#yHp'),yo.hp,yo.max);$('#yHpn').textContent=Math.max(0,Math.ceil(yo.hp))+'/'+yo.max};upd();
   $('#bMenu').innerHTML='';
   await ani(eS,[{transform:'translateX(160px)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:500,easing:'ease-out',fill:'none'});
   await escribe('¡Apareció un '+en.n+' de tipo '+TIPOS[en.t].n+'!');
+  if(en.grito){if(eS._px)eS._px.pose('atk');await escribe(en.n+': “'+en.grito+'”')}
   const msgEf=e=>e>1?'¡Le llegó justo al corazón!':e<1?'No le hizo mucho…':'';
   const danio=(pod,pot,at,atkS,defS,tipoDef)=>(2+pod*pot/100)*eficacia(at,tipoDef)*mult(atkS)/mult(defS)*rnd(.85,1);
   const elegir=()=>new Promise(res=>{
@@ -1033,6 +1052,82 @@ async function batalla(){
   $('#bMenu button').onclick=()=>{$$('#batalla .fx').forEach(x=>x.remove());Bt.classList.remove('on');bloquear(false);ocupado=false;render()};
 }
 
+/* ===== Enemigos chilenos en pixel art (originales) =====
+   Cada enemigo se pinta por código en una grilla de 32×32, se le agrega contorno automático y se arma un
+   sprite sheet de 5 cuadros: espera 1, espera 2, ataque 1, ataque 2 y golpe. Se muestra ampliado sin suavizado
+   (image-rendering: pixelated) y se anima cambiando background-position cuadro por cuadro. */
+const PX=32,CUADROS=['idle0','idle1','atk0','atk1','hit'],OSC='#1e1218';
+function lienzo(){const g=Array.from({length:PX},()=>Array(PX).fill(null));return{g,
+  px(x,y,c){x=Math.floor(x);y=Math.floor(y);if(x>=0&&y>=0&&x<PX&&y<PX)g[y][x]=c},
+  rect(x,y,w,h,c){for(let j=0;j<h;j++)for(let i=0;i<w;i++)this.px(x+i,y+j,c)},
+  elip(cx,cy,rx,ry,c){for(let y=Math.floor(cy-ry);y<=cy+ry;y++)for(let x=Math.floor(cx-rx);x<=cx+rx;x++){const dx=(x+.5-cx)/rx,dy=(y+.5-cy)/ry;if(dx*dx+dy*dy<=1)this.px(x,y,typeof c==='function'?c(x,y):c)}},
+  linea(x0,y0,x1,y1,c){const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0))||1;for(let i=0;i<=n;i++)this.px(Math.round(x0+(x1-x0)*i/n),Math.round(y0+(y1-y0)*i/n),c)},
+  ojoX(x,y){x-=1;y-=1;for(const[i,j]of[[0,0],[2,0],[1,1],[0,2],[2,2]])this.px(x+i,y+j,OSC)}}}
+function contorno(g){const o=g.map(r=>r.slice());for(let y=0;y<PX;y++)for(let x=0;x<PX;x++)if(!g[y][x]&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>g[y+b]&&g[y+b][x+a]))o[y][x]=OSC;return o}
+function mezcla(c,d,t){const p=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16)),a=p(c),b=p(d);return'#'+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+const PINTORES={
+ pudu(L,f){const b=f==='idle1'?1:0,ax=f==='atk1'?-4:0,hd=f==='atk0'?2:0,C='#8a5a34',D='#6b4226',Cl='#c49a6c';
+   [12,14,20,22].forEach((x,i)=>{const h=(f==='atk1'&&i>1)?5:6;L.rect(x+ax+(f==='atk1'&&i<2?-1:0),24,2,h,D);L.rect(x+ax+(f==='atk1'&&i<2?-1:0),23+h,2,1,'#2a1a14')});
+   L.rect(27+ax,15+b,2,2,'#f4ead8');
+   L.elip(18+ax,19+b,10,6.5,C);L.elip(18+ax,22.5+b,7,2.5,Cl);L.rect(14+ax,15+b,8,1,'#a8744a');
+   L.elip(11+ax,15+b+hd/2,3.5,4,C);
+   const hx=8+ax-(f==='atk0'?1:0),hy=11+b+hd;
+   L.elip(hx+4,hy-4,1.6,2.6,D);L.elip(hx,hy,5,4.5,C);L.elip(hx-4,hy+1.5,2.6,2,Cl);L.rect(hx-6,hy+1,2,1,OSC);
+   L.rect(hx-1,hy-7,1,3,'#3a2a1a');L.rect(hx+1,hy-8,1,4,'#3a2a1a');L.px(hx+2,hy-8,'#3a2a1a');
+   if(f==='hit')L.ojoX(hx-2,hy-1);else{L.rect(hx-2,hy-1,2,2,'#fff');L.px(hx-2,hy,OSC);L.px(hx-3,hy-2,OSC);L.px(hx-2,hy-3,OSC);L.px(hx-1,hy-3,OSC)}
+   L.px(hx+1,hy+1,'#e07a7a');if(f==='atk1'){L.px(hx-5,hy+3,'#fff');L.px(hx-6,hy+3,'#fff')}},
+ completo(L,f){const b=f==='idle1'?1:0,ax=f==='atk0'?2:f==='atk1'?-3:0,x0=3+ax,y=b,boca=f!=='idle0'&&f!=='idle1';
+   [10,20].forEach(x=>{L.rect(x+ax,25,2,3,'#e8b46a');L.rect(x-1+ax,28,4,2,'#3a2a1a')});
+   L.rect(x0-2,13+y,30,4,'#c0533a');L.rect(x0-2,13+y,30,1,'#e88066');
+   L.elip(x0+13,19+y,13.5,6.5,(px,py)=>py>=22+y?'#c98a3e':'#e8b46a');
+   for(let x=x0;x<x0+26;x++){L.px(x,12+y,x%3===0?'#ff7b6b':'#e83b3b');L.px(x,11+y,'#e83b3b');L.rect(x,9+y,1,2,x%4===1?'#5a9a28':'#7cbf3a');
+     const h=1+Math.round(1+Math.sin((x+(f==='idle1'?2:0))*.9));for(let k=0;k<h;k++)L.px(x,8+y-k,'#fff8e0')}
+   const ex=x0+5,ey=17+y;
+   if(f==='hit'){L.ojoX(ex,ey);L.ojoX(ex+6,ey)}else{L.rect(ex,ey,2,2,'#fff');L.px(ex,ey+1,OSC);L.rect(ex+6,ey,2,2,'#fff');L.px(ex+6,ey+1,OSC);L.linea(ex-1,ey-2,ex+2,ey-1,OSC);L.linea(ex+9,ey-2,ex+6,ey-1,OSC)}
+   if(boca){L.rect(ex+2,ey+3,4,2,'#5a1a1a');L.px(ex+3,ey+3,'#fff')}else L.rect(ex+2,ey+3,4,1,OSC);
+   L.px(ex-1,ey+2,'#f08a7a');L.px(ex+9,ey+2,'#f08a7a');
+   if(f==='atk1'){L.elip(x0-2,20+y,2.2,2.2,'#e8b46a');L.rect(x0+1,20+y,2,1,'#e8b46a')}},
+ tio(L,f){const b=f==='idle1'?1:0,ax=f==='atk1'?-2:0,P='#f1c27d',Pd='#d9a55e';
+   L.rect(11+ax,28,3,3,'#3b3f58');L.rect(18+ax,28,3,3,'#3b3f58');L.rect(10+ax,30,4,2,'#2a1a14');L.rect(18+ax,30,4,2,'#2a1a14');
+   L.elip(16+ax,21+b,9,7.5,(x,y)=>(((x>>1)+(y>>1))%2)?'#8fb8e8':'#f4f8ff');
+   L.rect(12+ax,17+b,8,11,'#c0392b');L.rect(14+ax,22+b,4,3,'#a12d22');L.rect(12+ax,16+b,1,1,'#c0392b');L.rect(19+ax,16+b,1,1,'#c0392b');
+   L.rect(24+ax,19+b,2,5,P);L.px(24+ax,24+b,Pd);
+   const pinza='#9aa3ad',chori='#8b2e1f';
+   if(f==='atk0'){L.rect(6+ax,10,2,9,P);L.linea(6+ax,9,4+ax,3,pinza);L.linea(7+ax,9,6+ax,3,pinza);L.rect(3+ax,1,4,2,chori)}
+   else if(f==='atk1'){L.rect(3+ax,20+b,7,2,P);L.linea(3+ax,21+b,0,25,pinza);L.linea(3+ax,22+b,1,26,pinza);L.rect(0,26,3,2,chori)}
+   else{const s=f==='idle1'?-1:0;L.rect(5+ax,19+b,5,2,P);L.elip(4.5+ax,20+b,1.5,1.5,P);L.linea(4+ax,19+b,1,14+s,pinza);L.linea(5+ax,19+b,3,14+s,pinza);L.rect(0,12+s,4,2,chori);L.px(1,11+s,'#c9c9c9')}
+   L.elip(16+ax,10+b,6,6,P);L.rect(9+ax,10+b,1,2,Pd);L.rect(22+ax,10+b,1,2,Pd);
+   L.rect(10+ax,7+b,2,4,'#7a7a7a');L.rect(20+ax,7+b,2,4,'#7a7a7a');L.px(15+ax,5+b,'#fff6dc');L.px(16+ax,5+b,'#fff6dc');
+   if(f==='hit'){L.ojoX(12+ax,8+b);L.ojoX(18+ax,8+b)}else{L.px(13+ax,9+b,OSC);L.px(18+ax,9+b,OSC);L.rect(12+ax,7+b,2,1,'#4a3a2a');L.rect(18+ax,7+b,2,1,'#4a3a2a')}
+   L.rect(15+ax,10+b,2,2,Pd);L.rect(12+ax,12+b,8,2,'#5a3a22');L.px(11+ax,13+b,'#5a3a22');L.px(20+ax,13+b,'#5a3a22');
+   if(f!=='idle0'&&f!=='idle1')L.rect(15+ax,14+b,2,2,'#5a1a1a');
+   L.px(12+ax,11+b,'#e88a7a');L.px(20+ax,11+b,'#e88a7a')}};
+const HOJAS={};
+function hojaSprites(id){if(HOJAS[id])return HOJAS[id];const cv=document.createElement('canvas');cv.width=PX*CUADROS.length;cv.height=PX;const ctx=cv.getContext('2d');
+  CUADROS.forEach((f,i)=>{const L=lienzo();PINTORES[id](L,f);let g=contorno(L.g);if(f==='hit')g=g.map(r=>r.map(c=>c&&mezcla(c,'#ffffff',.4)));
+    g.forEach((r,y)=>r.forEach((c,x)=>{if(c){ctx.fillStyle=c;ctx.fillRect(i*PX+x,y,1,1)}}))});
+  return HOJAS[id]=cv.toDataURL()}
+function spriteEl(id,escala=3){const d=document.createElement('div'),T=PX*escala;d.className='pix';
+  Object.assign(d.style,{width:T+'px',height:T+'px',backgroundImage:`url(${hojaSprites(id)})`,backgroundSize:`${T*CUADROS.length}px ${T}px`});
+  let pose='idle',t=0,visto=false;const set=n=>d.style.backgroundPosition=`${-n*T}px 0`;set(0);
+  const iv=setInterval(()=>{if(d.isConnected)visto=true;else if(visto||t>20){clearInterval(iv);return}t++;if(pose==='idle')set(t%2)},380);
+  d._px={async pose(p){pose=p;if(p==='atk'){set(2);await espera(160);set(3);await espera(300)}else if(p==='hit'){set(4);await espera(480)}pose='idle';set(t%2)}};
+  return d}
+const CHILENOS=[
+  {id:'pudu',n:'Pudú Furioso',e:'🦌',px:'pudu',pod:20,t:'verdura',grito:'¡Chiquitito pero matón!',niv:'bebe1'},
+  {id:'completo',n:'Completo Italiano',e:'🌭',px:'completo',pod:28,t:'proteina',grito:'¡Con harta palta, compadre!',niv:'bebe2'},
+  {id:'tio',n:'Tío del Asado',e:'🍖',px:'tio',pod:38,t:'proteina',grito:'¡Ya po, que se me quema la carne!',niv:'novato'}];
+CHILENOS.forEach(c=>ENEMIGOS[c.niv].push(c));
+let enemigoForzado=null;
+function galeria(){$('#galLista').innerHTML='';CHILENOS.forEach(c=>{const fila=document.createElement('div');fila.className='gal';
+    const sp=spriteEl(c.px,3);fila.appendChild(sp);
+    const info=document.createElement('div');info.innerHTML=`<b>${c.n}</b> ${TIPOS[c.t].e}<small>${NIVELES.find(n=>n.id===c.niv).n} · "${c.grito}"</small>`;
+    const bt=document.createElement('div');bt.className='gal-bt';bt.innerHTML='<button data-g="atk">Atacar</button><button data-g="hit">Golpe</button><button data-g="pelear" class="pri">Pelear</button>';
+    info.appendChild(bt);fila.appendChild(info);$('#galLista').appendChild(fila);
+    bt.querySelector('[data-g=atk]').onclick=()=>sp._px.pose('atk');bt.querySelector('[data-g=hit]').onclick=()=>sp._px.pose('hit');
+    bt.querySelector('[data-g=pelear]').onclick=()=>{if(S.fase==='huevo')return toast('Primero tiene que nacer');cerrarHojas();enemigoForzado=c;batalla()}});
+  abrir('#shGaleria')}
+
 /* ===== Evolución: silueta brillante que cambia de forma (morph con destellos) ===== */
 function evolucionar(forzar){
   if(ocupado)return;
@@ -1056,6 +1151,7 @@ function evolucionar(forzar){
 }
 $('#evoBtn').onclick=()=>evolucionar(false);
 $('#btnEvo').onclick=()=>evolucionar(true);
+$('#btnGal').onclick=galeria;
 
 /* ===== Despedida (abuelos) ===== */
 function despedida(){if($('#despedida').classList.contains('on'))return;
