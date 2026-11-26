@@ -142,8 +142,6 @@ input[type=time],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:
 .pips i{width:8px;height:8px;border-radius:50%;background:var(--line)}.pips i.on{background:var(--red)}
 .s-sky{background:radial-gradient(circle at 50% 40%,#1b1446,#07061a 75%);color:#f1eaff}
 .s-sky .lbl{color:#cfc6f5}
-.heartm{width:min(240px,60vw);display:block;margin:10px auto}
-.pct{font:400 clamp(44px,12vw,80px)/1 "DM Serif Display",serif;color:var(--red)}
 .wheel-wrap{position:relative;width:min(340px,82vw);margin:10px auto}
 .wheel-wrap svg{width:100%;height:auto;display:block}
 .wheel{transition:transform 4.2s cubic-bezier(.12,.75,.12,1);transform-box:view-box;transform-origin:160px 160px}
@@ -153,7 +151,33 @@ input[type=time],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:
 .cita{background:var(--card);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;justify-content:space-between;box-shadow:0 1px 0 var(--line)}
 .cita p{margin:0;font-size:17px}
 .cita .btn,.cita button{align-self:flex-start;font-size:15px;min-height:44px}
-.cita.elegida{outline:2px solid var(--red)}
+.cita.prox{outline:2px solid var(--red)}
+.cita .badge{align-self:flex-start;background:var(--red);color:var(--pri-ink);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:4px 10px}
+.cita.hecha{opacity:.95}
+.cita textarea{min-height:64px;font-size:15px}
+.cfecha{position:relative;display:inline-flex;align-items:center;gap:6px;margin:0;font-weight:500;font-size:15px;color:var(--mute);min-height:44px;cursor:pointer}
+.cfecha input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.cbt{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--soft);margin:6px 0 16px;flex-wrap:wrap;justify-content:center}
+.seg:empty{display:none}
+.seg button{background:none;color:var(--ink);min-height:40px;padding:8px 16px;border-radius:999px;font-size:15px;box-shadow:none}
+.seg button.on{background:var(--red);color:var(--pri-ink)}
+.cuad-add{display:flex;gap:8px;margin-top:16px}
+.cuad-add input{flex:1}
+.agendar{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.juegos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;text-align:left}
+.juego{display:flex;flex-direction:column;gap:8px;background:var(--card);border-radius:22px;padding:20px;color:var(--ink);text-decoration:none;box-shadow:0 1px 0 var(--line)}
+.juego .ico{font-size:44px;line-height:1}
+.juego b{font-size:20px}
+.juego small{color:var(--mute);font-size:15px;flex:1}
+.juego .btn{align-self:flex-start}
+.juego.pronto{opacity:.7}
+.juego .tag{align-self:flex-start;border:1.5px dashed var(--mute);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--mute)}
+.juegos.unlock .juego{animation:unlock .7s cubic-bezier(.3,1.5,.5,1) both}
+.juegos.unlock .juego:nth-child(2){animation-delay:.25s}
+.juegos.unlock .ico{animation:wiggle .6s .5s both}
+@keyframes unlock{from{opacity:0;transform:translateY(30px) scale(.8)}}
+@keyframes wiggle{0%,100%{transform:none}25%{transform:rotate(-14deg) scale(1.2)}75%{transform:rotate(12deg) scale(1.2)}}
 .wrapped-cta{background:linear-gradient(135deg,var(--red),#7a0a1c);color:#fff;border-radius:24px;padding:28px}
 .wrapped-cta button{background:#fff;color:#7a0a1c;font-weight:700}
 .story{position:fixed;inset:0;z-index:40;background:#120208;color:#fff;display:grid;grid-template-rows:auto 1fr;padding:max(env(safe-area-inset-top),12px) 14px 20px}
@@ -184,7 +208,7 @@ body{background:var(--bg)}
   animation:drift 40s ease-in-out infinite alternate;transition:background .6s}
 @keyframes drift{to{transform:translate3d(3%,-2%,0) scale(1.06) rotate(2deg)}}
 /* Vidrio */
-.sec,.paper,.album figure,.cita,.rcard,.count div,.wrapped-cta,.top,.hero-ed,.s-sky>div,.qr .code{
+.sec,.paper,.album figure,.cita,.juego,.rcard,.count div,.wrapped-cta,.top,.hero-ed,.s-sky>div,.qr .code{
   background-color:var(--card);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);
   border:1px solid var(--glass-b);box-shadow:0 10px 36px -12px var(--glass-sh)}
 .qr .code{background-color:#fff}
@@ -374,17 +398,15 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <section class="sec">
     <h2>Juegos</h2>
     <div class="sw"><input type="checkbox" id="fWrapped"><label for="fWrapped">Wrapped: resumen animado de su relación</label></div>
-    <div class="sw"><input type="checkbox" id="fMedOn"><label for="fMedOn">Medidor de amor</label></div>
-    <label for="fMedTxt">Mensaje cuando el medidor revienta</label><input type="text" id="fMedTxt">
-    <div class="sw" style="margin-top:16px"><input type="checkbox" id="fRuletaOn"><label for="fRuletaOn">Rueda de la fortuna</label></div>
-    <p class="note">Premios de la rueda (hasta 8):</p>
+    <div class="sw" style="margin-top:16px"><input type="checkbox" id="fRuletaOn"><label for="fRuletaOn">Rueda de la fortuna con premios</label></div>
+    <p class="note">La rueda también trae el modo <b>Nuestra próxima cita</b>: gira entre las citas pendientes del cuaderno y elige la siguiente. Premios (hasta 8):</p>
     <div id="listRuleta"></div>
     <button class="ghost" id="addPremio">Agregar premio</button>
   </section>
 
   <section class="sec">
-    <h2>Ideas de citas románticas</h2>
-    <p class="hint">Elige las que le quieres proponer. Tu pareja podrá elegir una y avisarte por WhatsApp.</p>
+    <h2>Cuaderno de citas</h2>
+    <p class="hint">Elige las ideas con que parte el cuaderno. Después los dos pueden agregar citas, ponerles fecha, marcarlas como hechas y anotar cómo les fue, desde el regalo.</p>
     <div class="chips" id="chipsCitas"></div>
     <label for="fCitaNueva">Agregar una idea propia</label>
     <div style="display:flex;gap:8px"><input type="text" id="fCitaNueva" placeholder="Ej: volver al lugar donde nos conocimos"><button class="ghost" id="addCita">Agregar</button></div>
@@ -392,14 +414,15 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
   <section class="sec">
     <h2>Preguntas para desbloquear la sorpresa</h2>
-    <p class="hint">Escribe hasta 4 opciones y marca la correcta. Tu pareja tiene que acertar todas para ver el último regalo.</p>
+    <p class="hint">Escribe hasta 4 opciones y marca la correcta. Tu pareja tiene que acertar todas para desbloquear los juegos.</p>
     <div id="listQ"></div>
     <button class="ghost" id="addQ">Agregar pregunta</button>
   </section>
 
   <section class="sec">
-    <h2>El último regalo</h2>
-    <label for="fFinal">Mensaje secreto</label><textarea id="fFinal" style="min-height:100px"></textarea>
+    <h2>El último regalo: 2 juegos</h2>
+    <p class="hint">Al acertar todas las preguntas se desbloquean <b>🥚 Nuestro hijo</b> (la mascota virtual que cuidan entre los dos) y <b>🗝️ Escape room de parejas</b> (próximamente).</p>
+    <label for="fFinal">Mensaje que acompaña la sorpresa (opcional)</label><textarea id="fFinal" style="min-height:100px"></textarea>
   </section>
 
   <section class="sec">
@@ -477,14 +500,19 @@ const S={
   carta:'Sofía:\n\nHay días en que todavía no creo la suerte que tengo. Gracias por reírte de mis chistes malos, por esperarme siempre con un café y por hacer de cualquier martes algo especial.\n\nTe elegiría otra vez, todas las veces.\n\nTuyo,\nMatías',
   cielo:{on:true,ciudad:'santiago',f:'2021-02-14',h:'22:00'},
   tl:[{f:'2021-02-14',t:'Nuestra primera cita, en la costanera'},{f:'2022-01-08',t:'Primer viaje juntos al sur'},{f:'2023-09-02',t:'Nos fuimos a vivir juntos'},{f:'2025-02-14',t:'Adoptamos a Canela'}],
-  wrapped:true,medidor:{on:true,txt:'Error: mi amor por ti no cabe en ningún medidor.'},
+  wrapped:true,
   ruleta:{on:true,items:['Un masaje de 15 minutos','Desayuno en la cama','Tú eliges la película','Cena que tú elijas','Un día sin lavar la loza','Una carta escrita a mano','Salida sorpresa','Un abrazo de un minuto']},
   citas:['Picnic al atardecer','Ver las estrellas lejos de la ciudad','Cocinar juntos una receta nueva'],
   qs:[{q:'¿Dónde fue nuestra primera cita?',ops:['En la costanera','En el cine','En un café',''],ok:0},{q:'¿Cómo se llama nuestra perrita?',ops:['Luna','Canela','Mora',''],ok:1}],
-  final:'Prepara una maleta chica: el viernes nos vamos tres días a Pucón. Ya está todo reservado. Te amo.',
+  final:'Estos juegos son para los dos. Cuidemos juntos a nuestro hijo. Te amo.',
   cartas:[{t:'Abre cuando me extrañes',x:'Cierra los ojos y piensa en nuestro último abrazo. Ya falta menos para el próximo. Te amo.'},{t:'Buenos días, mi amor',x:'Que tengas un día lindo. Acuérdate de que alguien está pensando en ti y sonriendo.'}]
 };
 let ED=null,online=false,RECIP=false;
+/* ---------- cuaderno de citas (compartido) ---------- */
+const rid=()=>Math.random().toString(36).slice(2,10);
+const semilla=c=>(c||[]).map(t=>({id:rid(),t,e:'p',f:'',n:''}));
+S.cuaderno=semilla(S.citas);
+const slugActual=()=>RECIP?new URLSearchParams(location.search).get('r'):(ED&&ED.slug)||'';
 
 /* ---------- WhatsApp ---------- */
 const tel=t=>{let d=String(t||'').replace(/\D/g,'');if(d.length===9&&d[0]==='9')d='56'+d;else if(d.length===8)d='569'+d;return d};
@@ -499,7 +527,7 @@ async function api(body){
 }
 const med=x=>x?.ruta?{ruta:x.ruta,peso:x.size,orig:x.orig}:null;
 const pack=()=>({de:S.de,para:S.para,fecha:S.fecha,cancion:S.cancion,yt:S.yt,carta:S.carta,final:S.final,tl:S.tl,qs:S.qs,
-  telDe:S.telDe,telPara:S.telPara,tema:S.tema,cielo:S.cielo,wrapped:S.wrapped,medidor:S.medidor,ruleta:S.ruleta,citas:S.citas,cartas:S.cartas,
+  telDe:S.telDe,telPara:S.telPara,tema:S.tema,cielo:S.cielo,wrapped:S.wrapped,ruleta:S.ruleta,citas:S.citas,cartas:S.cartas,
   razones:S.razones.map(r=>({t:r.t,ruta:r.ruta||null,peso:r.size||0,orig:r.orig||0})),
   fotos:S.fotos.filter(f=>f.ruta&&f.mini).map(f=>({ruta:f.ruta,mini:f.mini,cap:f.cap,peso:f.size,orig:f.orig})),
   video:med(S.video),voz:med(S.voz)});
@@ -508,8 +536,8 @@ function unpack(d,base){
   S.tema=d.tema||'pasion';S.tl=d.tl||[];
   S.qs=(d.qs||[]).map(q=>q.ops?q:{q:q.q,ops:[q.ok,...String(q.no||'').split('|')].map(s=>s.trim()).concat(['','','']).slice(0,4),ok:0});
   S.cielo=Object.assign({on:false,ciudad:'santiago',f:d.fecha||'',h:'22:00'},d.cielo||{});
-  S.wrapped=!!d.wrapped;S.medidor=Object.assign({on:false,txt:''},d.medidor||{});S.ruleta=Object.assign({on:false,items:[]},d.ruleta||{});
-  S.citas=d.citas||[];S.cartas=d.cartas||[];
+  S.wrapped=!!d.wrapped;S.ruleta=Object.assign({on:false,items:[]},d.ruleta||{});
+  S.citas=d.citas||[];S.cartas=d.cartas||[];S.cuaderno=Array.isArray(d.cuaderno)?d.cuaderno:semilla(S.citas);
   S.razones=(d.razones||[]).map(r=>({t:r.t||'',ruta:r.ruta||null,url:r.ruta?base+r.ruta:null,size:r.peso||0,orig:r.orig||0}));
   S.fotos=(d.fotos||[]).map(f=>({ruta:f.ruta,mini:f.mini,url:base+f.ruta,thumb:base+f.mini,size:f.peso,orig:f.orig,cap:f.cap||''}));
   const m=x=>x&&{ruta:x.ruta,url:base+x.ruta,size:x.peso,orig:x.orig};
@@ -743,8 +771,6 @@ $('#addTL').onclick=()=>{S.tl.push({f:'',t:''});renderTL()};
 
 /* ---------- juegos ---------- */
 $('#fWrapped').onchange=e=>{S.wrapped=e.target.checked;scheduleSave()};
-$('#fMedOn').onchange=e=>{S.medidor.on=e.target.checked;scheduleSave()};
-$('#fMedTxt').oninput=e=>{S.medidor.txt=e.target.value};
 $('#fRuletaOn').onchange=e=>{S.ruleta.on=e.target.checked;scheduleSave()};
 function renderRuleta(){$('#listRuleta').innerHTML=S.ruleta.items.map((x,i)=>`<div style="display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px;margin-bottom:8px"><input type="text" data-pr="${i}" value="${esc(x)}" maxlength="40" aria-label="Premio ${i+1}"><button class="x" data-dpr="${i}" aria-label="Quitar premio">✕</button></div>`).join('');$('#addPremio').disabled=S.ruleta.items.length>=8}
 $('#listRuleta').addEventListener('input',e=>{const i=e.target.dataset.pr;if(i!=null)S.ruleta.items[+i]=e.target.value});
@@ -756,8 +782,9 @@ function renderCitas(){
   const all=[...new Set([...CITAS,...S.citas])];
   $('#chipsCitas').innerHTML=all.map((c,i)=>`<label><input type="checkbox" data-cita="${esc(c)}" ${S.citas.includes(c)?'checked':''}>${esc(c)}</label>`).join('');
 }
-$('#chipsCitas').addEventListener('change',e=>{const c=e.target.dataset.cita;if(c==null)return;S.citas=e.target.checked?[...S.citas,c]:S.citas.filter(x=>x!==c);scheduleSave()});
-$('#addCita').onclick=()=>{const v=$('#fCitaNueva').value.trim();if(v&&!S.citas.includes(v)&&S.citas.length<15){S.citas.push(v);$('#fCitaNueva').value='';renderCitas();scheduleSave()}};
+$('#chipsCitas').addEventListener('change',e=>{const c=e.target.dataset.cita;if(c==null)return;S.citas=e.target.checked?[...S.citas,c]:S.citas.filter(x=>x!==c);
+  if(e.target.checked){if(!S.cuaderno.some(x=>x.t===c))S.cuaderno.push({id:rid(),t:c,e:'p',f:'',n:''})}else S.cuaderno=S.cuaderno.filter(x=>!(x.e==='p'&&x.t===c));scheduleSave()});
+$('#addCita').onclick=()=>{const v=$('#fCitaNueva').value.trim();if(v&&!S.citas.includes(v)&&S.citas.length<15){S.citas.push(v);if(!S.cuaderno.some(x=>x.t===v))S.cuaderno.push({id:rid(),t:v,e:'p',f:'',n:''});$('#fCitaNueva').value='';renderCitas();scheduleSave()}};
 
 /* ---------- preguntas ---------- */
 function renderQ(){$('#listQ').innerHTML=S.qs.map((x,i)=>`<div class="q"><label for="q${i}">Pregunta ${i+1}</label><input type="text" id="q${i}" data-q="${i}" value="${esc(x.q)}"><p class="note" style="margin:10px 0 0">Opciones (marca la correcta):</p><div class="ops">${[0,1,2,3].map(j=>`<div><input type="radio" name="ok${i}" data-qok="${i}" value="${j}" ${x.ok===j?'checked':''} aria-label="Opción ${j+1} es la correcta"><input type="text" data-qo="${i}" data-j="${j}" value="${esc(x.ops[j]||'')}" placeholder="Opción ${j+1}${j>1?' (opcional)':''}"></div>`).join('')}</div><button class="x" data-dq="${i}">Quitar pregunta</button></div>`).join('')}
@@ -787,7 +814,7 @@ function fill(){
   for(const[id,k]of Object.entries(F))$(id).value=S[k]||'';
   const t=document.querySelector(`#temas input[value="${S.tema}"]`)||document.querySelector('#temas input');t.checked=true;
   $('#fCieloOn').checked=!!S.cielo.on;$('#fCiudad').value=S.cielo.ciudad;$('#fCieloF').value=S.cielo.f||'';$('#fCieloH').value=S.cielo.h||'22:00';
-  $('#fWrapped').checked=!!S.wrapped;$('#fMedOn').checked=!!S.medidor.on;$('#fMedTxt').value=S.medidor.txt||'';$('#fRuletaOn').checked=!!S.ruleta.on;
+  $('#fWrapped').checked=!!S.wrapped;$('#fRuletaOn').checked=!!S.ruleta.on;
 }
 $('#crear').addEventListener('input',e=>{if(e.target.type!=='file')scheduleSave()});
 const giftUrl=()=>location.origin+location.pathname+'?r='+ED.slug;
@@ -885,6 +912,87 @@ const pxReq=()=>{if(!pxRaf)pxRaf=requestAnimationFrame(pxApply)};
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches){addEventListener('scroll',pxReq,{passive:true});addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;pxReq()},{passive:true})}
 const parallax=(...els)=>{PX=els.filter(Boolean);pxReq()};
 let tick;
+/* Cuaderno de citas: pendientes / hechas, con fecha y recuerdo. Se guarda en el servidor con el link del
+   regalo, así los dos ven y editan el mismo cuaderno. */
+const hoy=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const fLarga=f=>new Date(f+'T12:00').toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'});
+let cuadTab='p',firmaRueda='',ruedaModo='',ruedaRot=0,premiosR=[];
+async function cuadOp(op){
+  // 1) se aplica al tiro en pantalla (optimistic update), 2) se manda al servidor, 3) se usa lo que responde
+  const cu=S.cuaderno,i=cu.findIndex(c=>c.id===op.id);
+  if(op.tipo==='agregar')cu.push({id:'tmp'+rid(),t:op.t,e:'p',f:op.f||'',n:''});
+  if(op.tipo==='editar'&&i>=0)Object.assign(cu[i],op.cambios);
+  if(op.tipo==='borrar'&&i>=0)cu.splice(i,1);
+  // el recuerdo se guarda al salir del cuadro de texto: no se redibuja para no perder el foco
+  const quieto=op.tipo==='editar'&&op.cambios&&Object.keys(op.cambios).join()==='n';
+  if(!quieto)pintarCuaderno();
+  const slug=slugActual();
+  if(!slug||!online){if(op.tipo!=='leer')$('#cuadMsg').textContent=RECIP?'Sin conexión: el cambio no se guardó.':'Vista previa: el cuaderno se comparte cuando el regalo está guardado.';return}
+  try{const j=await api({accion:'cuaderno',r:slug,op});S.cuaderno=j.cuaderno;$('#cuadMsg').textContent=op.tipo==='leer'?'':'Guardado ✓ Los dos ven este cuaderno.';if(!quieto)pintarCuaderno()}
+  catch(e){$('#cuadMsg').textContent='No se pudo guardar: '+e.message}
+}
+function pintarCuaderno(){
+  const L=$('#cuadLista');if(!L)return;
+  const pend=S.cuaderno.filter(c=>c.e==='p').sort((a,b)=>(a.f||'9')<(b.f||'9')?-1:(a.f||'9')>(b.f||'9')?1:0),
+        hechas=S.cuaderno.filter(c=>c.e==='h').sort((a,b)=>(b.f||'')<(a.f||'')?-1:1),h=hoy();
+  const prox=pend.find(c=>c.f&&c.f>=h);
+  $('#secCuad').querySelectorAll('[data-tab]').forEach(b=>{const n=b.dataset.tab==='p'?pend.length:hechas.length;b.textContent=(b.dataset.tab==='p'?'Pendientes':'Hechas')+' ('+n+')';b.classList.toggle('on',b.dataset.tab===cuadTab);b.setAttribute('aria-selected',b.dataset.tab===cuadTab)});
+  const lista=cuadTab==='p'?pend:hechas;
+  L.innerHTML=lista.length?lista.map(c=>cuadTab==='p'?`<div class="cita${c===prox?' prox':''}">
+      ${c===prox?'<span class="badge">Próxima cita</span>':''}<p>${esc(c.t)}</p>
+      <label class="cfecha">${c.f?`📅 ${c.f<h?'Era el':'El'} ${fLarga(c.f)}`:'📅 Ponerle fecha'}<input type="date" data-f="${c.id}" value="${c.f}" aria-label="Fecha de la cita"></label>
+      <div class="cbt"><button data-hecha="${c.id}">✔ ¡La hicimos!</button>${S.telDe&&c.f?`<a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`💕 Nuestra cita: ${c.t}, el ${fLarga(c.f)}`)}">Avisar</a>`:''}<button class="x" data-borrar="${c.id}" aria-label="Borrar cita">✕</button></div></div>`
+    :`<div class="cita hecha"><p>✔ ${esc(c.t)}</p><small class="lbl">${c.f?fLarga(c.f):''}</small>
+      <textarea data-n="${c.id}" maxlength="300" placeholder="¿Cómo estuvo? Anoten un recuerdo…">${esc(c.n)}</textarea>
+      <div class="cbt"><button class="ghost" data-volver="${c.id}">Volver a pendientes</button></div></div>`).join('')
+    :`<p class="note" style="grid-column:1/-1">${cuadTab==='p'?'No hay citas pendientes. ¡Anoten una!':'Todavía no marcan ninguna cita como hecha.'}</p>`;
+  // la rueda de citas se redibuja solo si cambió la lista de pendientes (para no borrar el resultado)
+  const firma=pend.map(c=>c.id+c.t).join('|');if(firma!==firmaRueda){firmaRueda=firma;if(ruedaModo==='cita')pintarRueda()}modosRueda();
+}
+function initCuaderno(premios){
+  premiosR=premios;
+  const sec=$('#secCuad');
+  sec.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{cuadTab=b.dataset.tab;pintarCuaderno()});
+  $('#cuadForm').onsubmit=e=>{e.preventDefault();const v=$('#cuadNueva').value.trim();if(!v)return;$('#cuadNueva').value='';cuadTab='p';cuadOp({tipo:'agregar',t:v})};
+  const L=$('#cuadLista');
+  L.onclick=e=>{const d=e.target.dataset;
+    if(d.hecha){const c=S.cuaderno.find(x=>x.id===d.hecha);cuadOp({tipo:'editar',id:d.hecha,cambios:{e:'h',f:c.f&&c.f<=hoy()?c.f:hoy()}});rain(24)}
+    if(d.volver)cuadOp({tipo:'editar',id:d.volver,cambios:{e:'p'}});
+    if(d.borrar&&confirm('¿Borrar esta cita del cuaderno?'))cuadOp({tipo:'borrar',id:d.borrar})};
+  L.onchange=e=>{const d=e.target.dataset;if(d.f!=null)cuadOp({tipo:'editar',id:d.f,cambios:{f:e.target.value}});if(d.n!=null)cuadOp({tipo:'editar',id:d.n,cambios:{n:e.target.value}})};
+  ruedaModo='';firmaRueda='';pintarCuaderno();
+  if(slugActual()&&online)cuadOp({tipo:'leer'});
+  $('#btnGirar').onclick=girar;
+}
+/* Rueda con 2 modos: premios y "Nuestra próxima cita" (gira entre las pendientes) */
+function modosRueda(){
+  const sec=$('#secRueda');if(!sec)return;
+  const pend=S.cuaderno.filter(c=>c.e==='p'),m=[];
+  if(S.ruleta.on&&premiosR.length>1)m.push(['premios','🎁 Premios']);
+  if(pend.length>1)m.push(['cita','💘 Nuestra próxima cita']);
+  sec.style.display=m.length?'':'none';if(!m.length)return;
+  if(!m.some(x=>x[0]===ruedaModo)){ruedaModo=m[0][0];pintarRueda()}
+  $('#ruedaModos').innerHTML=m.length>1?m.map(([k,t])=>`<button data-modo="${k}" class="${k===ruedaModo?'on':''}">${t}</button>`).join(''):'';
+  $('#ruedaModos').onclick=e=>{const k=e.target.dataset.modo;if(k&&k!==ruedaModo){ruedaModo=k;pintarRueda();modosRueda()}};
+}
+function itemsRueda(){return ruedaModo==='cita'?S.cuaderno.filter(c=>c.e==='p'):premiosR.map(t=>({t}))}
+function pintarRueda(){
+  const it=itemsRueda();if(ruedaModo==='cita'&&it.length<2){ruedaModo='';modosRueda();return}
+  $('#ruedaSvg').innerHTML=wheelSvg(it.map(x=>x.t));ruedaRot=0;$('#premio').innerHTML='';$('#btnGirar').textContent='Girar';
+  $('#ruedaTxt').textContent=ruedaModo==='cita'?'¿No se deciden? Que la rueda elija nuestra próxima cita entre las pendientes.':'Gira y gana un premio';
+}
+function girar(){
+  const it=itemsRueda(),n=it.length;if(n<2)return;
+  const i=Math.floor(Math.random()*n),seg=360/n,b=$('#btnGirar');b.disabled=true;$('#premio').innerHTML='';
+  ruedaRot+=360*5+((360-(i+.5)*seg)-(ruedaRot%360)+360)%360;$('#wheel').style.transform=`rotate(${ruedaRot}deg)`;
+  setTimeout(()=>{const x=it[i];b.disabled=false;b.textContent='Girar otra vez';rain(20);
+    if(ruedaModo==='cita'){
+      $('#premio').innerHTML=`Nuestra próxima cita: <b>${esc(x.t)}</b><div class="agendar"><input type="date" id="rFecha" value="${x.f||''}" aria-label="Fecha"><button class="pri" id="rAgendar">Agendar</button></div>`;
+      $('#rAgendar').onclick=()=>{const f=$('#rFecha').value;if(!f){$('#rFecha').focus();return}cuadOp({tipo:'editar',id:x.id,cambios:{f}});
+        $('#premio').innerHTML=`📅 <b>${esc(x.t)}</b> quedó para el ${fLarga(f)}${S.telDe?` <a class="btn wa" style="margin-top:10px" target="_blank" rel="noopener" href="${wa(S.telDe,`🎡 La rueda eligió nuestra próxima cita: ${x.t}, el ${fLarga(f)} 💕`)}">Avisar por WhatsApp</a>`:''}`};
+    }else $('#premio').innerHTML=`Te tocó: <b>${esc(x.t)}</b>${S.telDe?` <a class="btn wa" style="margin-top:10px" target="_blank" rel="noopener" href="${wa(S.telDe,`¡Gané en la rueda! 🎡 Quiero canjear: ${x.t}`)}">Canjear por WhatsApp</a>`:''}`;
+  },4300);
+}
 function renderRegalo(){
   const r=$('#regalo'),sp=spot(S.cancion||''),yS=ytId(S.cancion||''),yV=ytId(S.yt||'');
   const fotos=S.fotos.filter(f=>!f.subiendo),rz=S.razones.filter(x=>x.t||x.url);
@@ -914,9 +1022,12 @@ function renderRegalo(){
   ${tl.length?`<section class="scene"><div><h2>Nuestra historia</h2><ul class="tl">${tl.sort((a,b)=>a.f<b.f?-1:1).map(x=>`<li><time>${x.f?fecha(x.f):''}</time>${esc(x.t)}</li>`).join('')}</ul></div></section>`:''}
   ${S.voz?`<section class="scene"><div><h2>Escúchame</h2><p style="color:var(--mute)">Te dejé un mensaje con mi voz</p><audio controls src="${S.voz.url}" style="width:100%"></audio></div></section>`:''}
   ${S.video||yV?`<section class="scene"><div><h2>Un video para ti</h2>${S.video?`<video class="media" controls playsinline src="${S.video.url}"></video>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yV}" allowfullscreen loading="lazy"></iframe><p class="note"><a href="${esc(S.yt)}">Abrir en YouTube</a></p>`}</div></section>`:''}
-  ${S.medidor.on?`<section class="scene"><div><h2>Medidor de amor</h2><svg class="heartm" viewBox="0 0 100 92" aria-hidden="true"><defs><clipPath id="hc"><path d="M50 90C18 66 2 50 2 28 2 13 14 2 28 2c9 0 17 5 22 13C55 7 63 2 72 2c14 0 26 11 26 26 0 22-16 38-48 62z"/></clipPath></defs><g clip-path="url(#hc)"><rect width="100" height="92" style="fill:var(--soft)"/><rect id="hfill" y="92" width="100" height="92" style="fill:var(--red)"/></g><path d="M50 90C18 66 2 50 2 28 2 13 14 2 28 2c9 0 17 5 22 13C55 7 63 2 72 2c14 0 26 11 26 26 0 22-16 38-48 62z" style="fill:none;stroke:var(--red)" stroke-width="2"/></svg><div class="pct" id="pct">0%</div><p id="medMsg" style="min-height:1.6em;font-size:18px"></p><button id="btnMed" class="pri">Medir mi amor</button></div></section>`:''}
-  ${S.ruleta.on&&premios.length>1?`<section class="scene"><div><h2>Rueda de la fortuna</h2><p style="color:var(--mute)">Gira y gana un premio</p><div class="wheel-wrap"><div class="pointer"></div>${wheelSvg(premios)}</div><button id="btnGirar" class="pri">Girar</button><p class="premio" id="premio" aria-live="polite"></p></div></section>`:''}
-  ${S.citas.length?`<section class="scene"><div><h2>Elige nuestra próxima cita</h2><div class="citas">${S.citas.map((c,i)=>`<div class="cita" data-ci="${i}"><p>${esc(c)}</p>${S.telDe?`<a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`¡Elijo esta cita! 💕 ${c}`)}">La quiero</a>`:`<button data-pick="${i}">La quiero</button>`}</div>`).join('')}</div></div></section>`:''}
+  <section class="scene" id="secCuad"><div><p class="script" style="font-size:26px;margin:0">Nuestro</p><h2 style="margin-top:0">Cuaderno de citas</h2>
+    <div class="seg" role="tablist"><button role="tab" data-tab="p">Pendientes</button><button role="tab" data-tab="h">Hechas</button></div>
+    <div id="cuadLista" class="citas cuad"></div>
+    <form class="cuad-add" id="cuadForm"><input type="text" id="cuadNueva" maxlength="80" placeholder="Anotar una cita pendiente…" aria-label="Nueva cita"><button class="pri">Anotar</button></form>
+    <p class="note" id="cuadMsg" aria-live="polite"></p></div></section>
+  <section class="scene" id="secRueda"><div><h2>Rueda de la fortuna</h2><div class="seg" id="ruedaModos"></div><p style="color:var(--mute)" id="ruedaTxt"></p><div class="wheel-wrap"><div class="pointer"></div><div id="ruedaSvg"></div></div><button id="btnGirar" class="pri">Girar</button><div class="premio" id="premio" aria-live="polite"></div></div></section>
   <section class="scene s-env"><div id="quiz"></div></section>
   ${S.telDe?`<div class="foot"><a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`Vi tu regalo y me encantó 💕`)}">Responder a ${esc(S.de)} por WhatsApp</a></div>`:''}
   </div>`;
@@ -930,35 +1041,29 @@ function renderRegalo(){
     let k=0;const draw=()=>{const x=rz[k];$('#deck').innerHTML=`<button class="rcard flip ${x.url?'':'noimg'}" aria-label="Siguiente razón">${x.url?`<img src="${x.url}" alt="">`:''}<div class="n">Razón ${k+1}</div><p>${esc(x.t)}</p></button>`;$('#pips').innerHTML=rz.map((_,j)=>`<i class="${j===k?'on':''}"></i>`).join('');$('#rzNext').textContent=k===rz.length-1?'Volver a empezar':'Siguiente razón';$('#deck .rcard').onclick=nx};
     const nx=()=>{k=(k+1)%rz.length;draw()};$('#rzNext').onclick=nx;$('#rzPrev').onclick=()=>{k=(k-1+rz.length)%rz.length;draw()};draw();
   }
-  if($('#btnMed')){
-    $('#btnMed').onclick=()=>{
-      const b=$('#btnMed'),f=$('#hfill'),p=$('#pct'),m=$('#medMsg');b.disabled=true;m.textContent='';const t0=performance.now();
-      const step=now=>{const k=Math.min(1,(now-t0)/2600),v=Math.round(k*k*(3-2*k)*100);f.setAttribute('y',92-92*v/100);p.textContent=v+'%';
-        if(k<1)requestAnimationFrame(step);else{let n=100;const over=setInterval(()=>{n=n*2.3;p.textContent=num(n)+'%';if(n>9e4){clearInterval(over);p.textContent='∞';m.textContent=S.medidor.txt||'Mi amor por ti no tiene límite.';rain(40);b.disabled=false;b.textContent='Medir otra vez'}},160)}};
-      requestAnimationFrame(step);
-    };
-  }
-  if($('#btnGirar')){
-    let rot=0;$('#btnGirar').onclick=()=>{
-      const n=premios.length,i=Math.floor(Math.random()*n),seg=360/n,b=$('#btnGirar');b.disabled=true;$('#premio').textContent='';
-      rot+=360*5+((360-(i+.5)*seg)-(rot%360)+360)%360;$('#wheel').style.transform=`rotate(${rot}deg)`;
-      setTimeout(()=>{const p=premios[i];$('#premio').innerHTML=`Te tocó: <b>${esc(p)}</b>${S.telDe?` <a class="btn wa" style="margin-top:10px" target="_blank" rel="noopener" href="${wa(S.telDe,`¡Gané en la rueda! 🎡 Quiero canjear: ${p}`)}">Canjear por WhatsApp</a>`:''}`;b.disabled=false;b.textContent='Girar otra vez';rain(20)},4300);
-    };
-  }
-  $('#regalo').querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{$('#regalo').querySelectorAll('.cita').forEach(c=>c.classList.remove('elegida'));b.closest('.cita').classList.add('elegida');b.textContent='¡Elegida!'});
+  initCuaderno(premios);
   clearInterval(tick);
   const upd=()=>{const t=together();if(!t||!$('#cD'))return;$('#cD').textContent=t.d.toLocaleString('es-CL');$('#cH').textContent=t.h;$('#cM').textContent=t.m;$('#cS').textContent=t.s};
   upd();tick=setInterval(upd,1000);
   let qi=0;
-  const showFinal=()=>{$('#quiz').innerHTML=`<p class="script" style="font-size:30px;margin:0">El último regalo</p><h2 class="big" style="color:var(--red)">♥</h2><div class="paper" style="text-align:center;white-space:pre-wrap">${esc(S.final)}</div>`;rain(60)};
+  const slug=slugActual(),claveOk='amor-ok-'+(slug||'prueba');
+  const showFinal=nuevo=>{
+    try{localStorage.setItem(claveOk,'1')}catch(e){}
+    $('#quiz').innerHTML=`<p class="script" style="font-size:30px;margin:0">El último regalo</p><h2 style="margin:.2em 0 .4em">¡Desbloqueaste 2 juegos!</h2>
+    ${S.final?`<div class="paper" style="text-align:center;white-space:pre-wrap;margin-bottom:18px">${esc(S.final)}</div>`:''}
+    <div class="juegos${nuevo?' unlock':''}">
+      <a class="juego" href="mascota/${slug?'?r='+encodeURIComponent(slug):''}"><span class="ico">🥚</span><b>Nuestro hijo</b><small>Una mascota virtual que cuidamos entre los dos: comida, entrenamientos, batallas y evoluciones.</small><span class="btn pri">Hacerlo nacer</span></a>
+      <div class="juego pronto"><span class="ico">🗝️</span><b>Escape room de parejas</b><small>Acertijos para resolver juntos y competir con otras parejas.</small><span class="tag">Próximamente</span></div>
+    </div>`;if(nuevo)rain(60)};
   const showQ=()=>{
-    if(qi>=qs.length){showFinal();return}
+    if(qi>=qs.length){showFinal(true);return}
     const q=qs[qi],opts=shuffle(q.ops);
     $('#quiz').innerHTML=`<p class="lock">Pregunta ${qi+1} de ${qs.length} para desbloquear tu sorpresa</p><h2>${esc(q.q)}</h2><div class="opts">${opts.map(o=>`<button data-ok="${o.ok?1:0}">${esc(o.o)}</button>`).join('')}</div><p class="note" id="qMsg"></p>`;
     $('#quiz .opts').onclick=e=>{const b=e.target.closest('button');if(!b)return;
-      if(b.dataset.ok==='1'){qi++;showQ()}else{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('#qMsg').textContent='Casi… inténtalo otra vez.'}};
+      if(b.dataset.ok==='1'){qi++;if(qi>=qs.length)showFinal(true);else showQ()}else{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('#qMsg').textContent='Casi… inténtalo otra vez.'}};
   };
-  if(qs.length)showQ();else showFinal();
+  let ok=false;try{ok=!!localStorage.getItem(claveOk)}catch(e){}
+  if(qs.length&&!ok)showQ();else showFinal(!ok);
 }
 
 /* ---------- vistas y carga ---------- */

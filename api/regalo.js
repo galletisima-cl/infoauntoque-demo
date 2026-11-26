@@ -3,6 +3,7 @@
 //   GET  /api/regalo?id=ID&k=TOKEN   → regalo para editar
 //   POST {accion:"crear", datos}     → crea el regalo y devuelve id, slug y token de edición
 //   POST {accion:"guardar"|"subir"|"borrar", id, token, ...}
+//   POST {accion:"cuaderno", r:SLUG, op}  → cuaderno de citas compartido (lo editan los dos con el link del regalo)
 // Requiere SUPABASE_URL y SUPABASE_SERVICE_KEY (las mismas de /api/track).
 const crypto = require("crypto");
 
@@ -92,7 +93,6 @@ function limpiar(d, id) {
       h: /^\d{2}:\d{2}$/.test((d.cielo && d.cielo.h) || "") ? d.cielo.h : "22:00"
     },
     wrapped: !!d.wrapped,
-    medidor: { on: !!(d.medidor && d.medidor.on), txt: txt(d.medidor && d.medidor.txt, 140) },
     ruleta: {
       on: !!(d.ruleta && d.ruleta.on),
       items: (Array.isArray(d.ruleta && d.ruleta.items) ? d.ruleta.items : []).slice(0, 8).map(x => txt(x, 40))
@@ -106,6 +106,25 @@ function limpiar(d, id) {
     video: media(d.video),
     voz: media(d.voz)
   };
+}
+
+/* Cuaderno de citas: lista compartida { id, t (texto), e ("p" pendiente | "h" hecha), f (fecha), n (recuerdo) }.
+   Parte con las ideas que eligió quien regala; después la editan los dos desde el regalo. */
+const MAX_CITAS = 40;
+const fechaOk = f => /^\d{4}-\d{2}-\d{2}$/.test(f || "") ? f : "";
+const citaLimpia = c => ({
+  id: String(c.id || rand(4)).replace(/[^a-z0-9]/g, "").slice(0, 12) || rand(4),
+  t: String(c.t || "").slice(0, 80), e: c.e === "h" ? "h" : "p", f: fechaOk(c.f), n: String(c.n || "").slice(0, 300)
+});
+const semilla = citas => (citas || []).map(t => citaLimpia({ t }));
+const cuadernoDe = d => Array.isArray(d && d.cuaderno) ? d.cuaderno.map(citaLimpia).filter(c => c.t) : semilla(d && d.citas);
+// Si quien regala cambia las ideas en el editor: agrega las nuevas y quita las pendientes que desmarcó.
+function ajustarCuaderno(viejo, nuevo) {
+  const cu = cuadernoDe(viejo), antes = (viejo && viejo.citas) || [], ahora = nuevo.citas || [];
+  const quitadas = antes.filter(t => !ahora.includes(t));
+  const out = cu.filter(c => !(c.e === "p" && quitadas.includes(c.t)));
+  ahora.filter(t => !antes.includes(t) && !out.some(c => c.t === t)).forEach(t => out.push(citaLimpia({ t })));
+  return out.slice(0, MAX_CITAS);
 }
 
 module.exports = async (req, res) => {
@@ -139,6 +158,7 @@ module.exports = async (req, res) => {
     if (b.accion === "crear") {
       const id = crypto.randomUUID(), token = rand(24);
       const datos = limpiar(b.datos, id);
+      datos.cuaderno = semilla(datos.citas);
       for (let i = 0; i < 4; i++) {
         const slug = slugDe(datos) + "-" + rand(2);
         const r = await db("amor_regalos", {
@@ -152,11 +172,41 @@ module.exports = async (req, res) => {
       return;
     }
 
+    if (b.accion === "cuaderno") {
+      const slug = String(b.r || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 60);
+      const r0 = await db("amor_regalos?select=id,datos&slug=eq." + slug);
+      const fila = r0.ok && Array.isArray(r0.j) && r0.j[0];
+      if (!fila) { res.status(404).json({ error: "Este regalo no existe" }); return; }
+      const op = b.op || {}, cu = cuadernoDe(fila.datos), i = cu.findIndex(c => c.id === op.id);
+      if (op.tipo === "agregar") {
+        const t = String(op.t || "").trim().slice(0, 80);
+        if (!t) { res.status(400).json({ error: "Escribe la cita" }); return; }
+        if (cu.length >= MAX_CITAS) { res.status(413).json({ error: "El cuaderno está lleno (40 citas)" }); return; }
+        cu.push(citaLimpia({ t, f: op.f }));
+      } else if (op.tipo === "editar" && i >= 0) {
+        const c = op.cambios || {};
+        cu[i] = citaLimpia(Object.assign({}, cu[i], ["e", "f", "n"].reduce((o, k) => (k in c ? (o[k] = c[k], o) : o), {})));
+      } else if (op.tipo === "borrar" && i >= 0) {
+        cu.splice(i, 1);
+      } else if (op.tipo !== "leer") { res.status(400).json({ error: "Esa cita ya no existe" }); return; }
+      if (op.tipo !== "leer") {
+        const datos = Object.assign({}, fila.datos, { cuaderno: cu });
+        const r = await db("amor_regalos?id=eq." + fila.id, {
+          method: "PATCH", headers: { Prefer: "return=minimal" },
+          body: JSON.stringify({ datos, updated_at: new Date().toISOString() })
+        });
+        if (!r.ok) { res.status(502).json({ error: "No se pudo guardar el cuaderno" }); return; }
+      }
+      res.status(200).json({ cuaderno: cu });
+      return;
+    }
+
     const row = await duenio(b.id, b.token);
     if (!row) { res.status(401).json({ error: "El link de edición no es válido" }); return; }
 
     if (b.accion === "guardar") {
       const datos = limpiar(b.datos, row.id);
+      datos.cuaderno = ajustarCuaderno(row.datos, datos); // el cuaderno lo editan los dos: no se pisa
       if (JSON.stringify(datos).length > 80000) { res.status(413).json({ error: "El regalo tiene demasiado texto" }); return; }
       const peso = pesoDe(await archivos(row.id));
       const r = await db("amor_regalos?id=eq." + row.id, {
