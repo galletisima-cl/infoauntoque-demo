@@ -1153,13 +1153,13 @@ Object.assign(PINTORES,{
    L.elip(16+x,21+y,4,4,'#7a4a22');L.px(15+x,19+y,'#a8703a');L.px(14+x,20+y,'#a8703a');
    const br=f==='atk1'?-3:f==='idle1'?1:0;L.rect(5+x+br,17+y,2,1,S);L.px(4+x+br,16+y,S);L.rect(25+x,17+y,2,1,S);L.px(27+x,16+y,S);
    cara(L,12+x,9+y,f,{sep:5,mej:'#f0a07a',boca:-1})},
- chinchilla(L,f){const{b,ax}=fr(f),x=ax,y=b,G='#a9a9b8',Gl='#c6c6d4';
-   L.linea(27+x,22+y,30+x,15+y,'#9a9aaa');L.elip(29+x,15+y,2,3,'#b6b6c4');
-   patas(L,[12+x,20+x],26,2,'#8a8a9a');
-   L.elip(18+x,21+y,9,6.5,G);L.elip(16+x,23+y,6,3,'#eeeef4');
-   L.elip(13+x,7+y-(f==='atk0'?1:0),3,4.2,Gl);L.elip(13+x,7.5+y,1.6,2.6,'#f0b8c8');L.elip(8+x,8+y,2.6,3.6,Gl);L.elip(8+x,8.5+y,1.2,2,'#f0b8c8');
-   L.elip(11+x,15+y,6.2,5.6,'#b8b8c6');L.elip(9+x,18+y,3,2,'#e2e2ea');
-   L.px(6+x,16+y,'#e07a8a');L.linea(5+x,17+y,1+x,16+y,'#5a5a6a');L.linea(5+x,18+y,1+x,19+y,'#5a5a6a');
+ chinchilla(L,f){const{b,ax}=fr(f),x=ax,y=b,G='#7a6650',Gl='#8f7a62';
+   L.linea(26+x,24+y,29+x,27,'#e8a0a8');L.linea(29+x,27,31,24-(f==='idle1'?1:0),'#e8a0a8');
+   patas(L,[12+x,20+x],26,2,'#5a4a3a');
+   L.elip(18+x,21+y,9,6.5,G);L.elip(16+x,23+y,6,3,'#b8a688');
+   L.elip(13+x,10+y-(f==='atk0'?1:0),2.4,2.6,Gl);L.elip(13+x,10.5+y,1.2,1.4,'#e8a0a8');L.elip(9+x,10+y,2,2.4,Gl);
+   L.elip(11+x,15+y,6.2,5.6,'#86705a');L.elip(9+x,18+y,3,2,'#a8947a');
+   L.px(6+x,16+y,'#e07a8a');L.linea(5+x,17+y,1+x,16+y,'#2a2018');L.linea(5+x,18+y,1+x,19+y,'#2a2018');
    ojo1(L,8+x,13+y,f,{grande:true});if(fr(f).abre){L.rect(7+x,19+y,2,1,'#5a1a1a');L.px(7+x,20+y,'#fff')}}
 });
 Object.assign(PINTORES,{
@@ -1324,26 +1324,26 @@ function spriteEl(id,escala=3){const d=document.createElement('div'),T=PX*escala
 const CHILENOS=[
   {id:'pudu',n:'Pudú Furioso',e:'🦌',px:'pudu',pod:18,t:'verdura',grito:'¡Chiquitito pero matón!',niv:'bebe1'},
   {id:'sopaipilla',n:'Sopaipilla Pasada',e:'🥮',px:'sopaipilla',pod:16,t:'dulce',grito:'¡Estoy pasada… pero a chancaca!',niv:'bebe1'},
-  {id:'chanchito',n:'Chanchito de Greda',e:'🐷',px:'chanchito',pod:20,t:'proteina',grito:'¡Tres patas y harta suerte!',niv:'bebe1'},
-  {id:'cuncuna',n:'Cuncuna Picarona',e:'🐛',px:'cuncuna',pod:15,t:'verdura',grito:'¡Te voy a dar picazón, oye!',niv:'bebe1'},
-  {id:'completo',n:'Completo Italiano',e:'🌭',px:'completo',pod:28,t:'proteina',grito:'¡Con harta palta, compadre!',niv:'bebe2'},
-  {id:'mote',n:'Mote con Huesillo',e:'🥤',px:'mote',pod:26,t:'dulce',grito:'¡Refréscate con este combo!',niv:'bebe2'},
-  {id:'palta',n:'Palta Mañosa',e:'🥑',px:'palta',pod:30,t:'verdura',grito:'¡Todavía estoy dura, no me toquí!',niv:'bebe2'},
-  {id:'chinchilla',n:'Chinchilla Peleadora',e:'🐭',px:'chinchilla',pod:24,t:'dulce',grito:'¡Suavecita pero brava!',niv:'bebe2'},
+  {id:'chanchito',n:'Chanchito Roto',e:'🐷',px:'chanchito',pod:20,t:'proteina',grito:'¡Me falta una pata, pero no las ganas!',niv:'bebe1'},
+  {id:'cuncuna',n:'Bicho Feo',e:'🐛',px:'cuncuna',pod:15,t:'verdura',grito:'¡Te voy a dar picazón, oye!',niv:'bebe1'},
+  {id:'completo',n:'Italiano Mojado',e:'🌭',px:'completo',pod:28,t:'proteina',grito:'¡Con harta palta, compadre!',niv:'bebe2'},
+  {id:'mote',n:'Mote Caliente',e:'🥤',px:'mote',pod:26,t:'dulce',grito:'¡Cuidado, que quemo!',niv:'bebe2'},
+  {id:'palta',n:'Palta Negra',e:'🥑',px:'palta',pod:30,t:'verdura',grito:'¡Me pasé de madura y ando picada!',niv:'bebe2'},
+  {id:'chinchilla',n:'Guarén',e:'🐭',px:'chinchilla',pod:24,t:'dulce',grito:'¡Salí del alcantarillado pa’ esto!',niv:'bebe2'},
   {id:'tio',n:'Tío del Asado',e:'🍖',px:'tio',pod:38,t:'proteina',grito:'¡Ya po, que se me quema la carne!',niv:'novato'},
-  {id:'vecina',n:'Vecina Copuchenta',e:'👵',px:'vecina',pod:36,t:'dulce',grito:'¡Supe todo lo que hiciste, mijito!',niv:'novato'},
-  {id:'humita',n:'Humita Bravucona',e:'🌽',px:'humita',pod:34,t:'verdura',grito:'¡Te voy a dejar envuelto!',niv:'novato'},
-  {id:'quiltro',n:'Quiltro Callejero',e:'🐕',px:'quiltro',pod:40,t:'proteina',grito:'¡Guau! ¡Esta cuadra es mía!',niv:'novato'},
-  {id:'empanada',n:'Empanada de Pino',e:'🥟',px:'empanada',pod:46,t:'proteina',grito:'¡Con aceituna y huevo, al tiro!',niv:'rebelde'},
-  {id:'micro',n:'Micro Amarilla',e:'🚌',px:'micro',pod:48,t:'verdura',grito:'¡Súbase, súbase, que voy saliendo!',niv:'rebelde'},
+  {id:'vecina',n:'Vieja Sapa',e:'👵',px:'vecina',pod:36,t:'dulce',grito:'¡Supe todo lo que hiciste, mijito!',niv:'novato'},
+  {id:'humita',n:'Humita Rancia',e:'🌽',px:'humita',pod:34,t:'verdura',grito:'¡Te voy a dejar envuelto!',niv:'novato'},
+  {id:'quiltro',n:'Perro Matón',e:'🐕',px:'quiltro',pod:40,t:'proteina',grito:'¡Guau! ¡Esta cuadra es mía!',niv:'novato'},
+  {id:'empanada',n:'Empanada Pasada',e:'🥟',px:'empanada',pod:46,t:'proteina',grito:'¡Con aceituna y huevo, al tiro!',niv:'rebelde'},
+  {id:'micro',n:'Micrero',e:'🚌',px:'micro',pod:48,t:'verdura',grito:'¡Súbase, súbase, que voy saliendo!',niv:'rebelde'},
   {id:'picaron',n:'Picarón Pegajoso',e:'🍩',px:'picaron',pod:44,t:'dulce',grito:'¡Te voy a dejar pegoteado!',niv:'rebelde'},
   {id:'lobomarino',n:'Lobo Marino Guatón',e:'🦭',px:'lobomarino',pod:50,t:'verdura',grito:'¡Oe, este roquerío es mío!',niv:'rebelde'},
   {id:'condor',n:'Cóndor de los Andes',e:'🦅',px:'condor',pod:58,t:'proteina',grito:'¡Bajé de la cordillera pa’ esto!',niv:'campeon'},
   {id:'huaso',n:'Huaso Bravo',e:'🤠',px:'huaso',pod:56,t:'verdura',grito:'¡Ya, mi alma, vamos al rodeo!',niv:'campeon'},
-  {id:'kuchen',n:'Kuchen Gigante',e:'🥧',px:'kuchen',pod:54,t:'dulce',grito:'¡Recién salido del horno sureño!',niv:'campeon'},
-  {id:'puma',n:'Puma Patagónico',e:'🐆',px:'puma',pod:60,t:'proteina',grito:'¡Te vi desde la Patagonia!',niv:'campeon'},
-  {id:'volcan',n:'Volcán Furioso',e:'🌋',px:'volcan',pod:72,t:'proteina',grito:'¡Estoy que echo humo!',niv:'definitivo'},
-  {id:'caleuche',n:'Caleuche Fantasma',e:'👻',px:'caleuche',pod:70,t:'dulce',grito:'¡Nadie se escapa del Caleuche!',niv:'definitivo'},
+  {id:'kuchen',n:'Kuchen Rancio',e:'🥧',px:'kuchen',pod:54,t:'dulce',grito:'¡Llevo una semana en la vitrina!',niv:'campeon'},
+  {id:'puma',n:'Puma Cuma',e:'🐆',px:'puma',pod:60,t:'proteina',grito:'¡Te vi desde la Patagonia!',niv:'campeon'},
+  {id:'volcan',n:'Volcán Chaitén',e:'🌋',px:'volcan',pod:72,t:'proteina',grito:'¡Estoy que echo humo!',niv:'definitivo'},
+  {id:'caleuche',n:'El Caleuche',e:'👻',px:'caleuche',pod:70,t:'dulce',grito:'¡Nadie se escapa del Caleuche!',niv:'definitivo'},
   {id:'cuchivilu',n:'Cuchivilú',e:'🐍',px:'cuchivilu',pod:68,t:'proteina',grito:'¡Mitad chancho, mitad culebra, entero enojado!',niv:'definitivo'},
   {id:'cochayuyo',n:'Rey Cochayuyo',e:'👑',px:'cochayuyo',pod:75,t:'verdura',grito:'¡Inclínense ante el rey del mar!',niv:'definitivo'}];
 CHILENOS.forEach(c=>ENEMIGOS[c.niv].push(c));
