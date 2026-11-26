@@ -98,6 +98,18 @@ button:disabled{opacity:.5;cursor:default}
 .hearts span{position:absolute;top:-40px;color:#ff8fa3;text-shadow:0 0 1px #7a0a1c;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(260deg);opacity:.2}}
 .hide{display:none!important}
+/* iPhone: los campos de fecha y hora tienen ancho propio; se fuerzan al ancho de su caja */
+input[type=date],input[type=time],input[type=datetime-local]{-webkit-appearance:none;appearance:none;display:block;width:100%;max-width:100%;min-width:0;min-height:48px;box-sizing:border-box;text-align:left}
+input::-webkit-date-and-time-value{text-align:left;margin:0}
+.row>*{min-width:0}
+/* textos justificados */
+p,.hint,.note,.paper,.cita p,small,li{text-align:justify;-webkit-hyphens:auto;hyphens:auto}
+.scene p,.lead p,.rcard p,.premio,.sheet-bg p{text-align-last:center}
+.scene .paper{text-align-last:left}
+/* interruptor por sección */
+.sec h2+.sec-sw{margin:-4px 0 14px}
+.sec.apagada>*:not(h2):not(.sec-sw){opacity:.4;pointer-events:none}
+.sec.apagada h2::after{content:" · oculta";font-size:.6em;color:var(--mute)}
 .quien{background:rgba(255,255,255,.18);color:inherit;border:1.5px solid currentColor;border-radius:999px;min-height:40px;padding:6px 14px;font-size:14px;box-shadow:none}
 .sheet-bg{position:fixed;inset:0;z-index:50;background:rgba(10,0,8,.55);display:grid;place-items:center;padding:16px;backdrop-filter:blur(6px)}
 .sheet-bg>div{background:var(--card);color:var(--ink);border-radius:24px;padding:24px;width:min(420px,100%);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
@@ -349,7 +361,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <label for="fFecha">¿Desde cuándo están juntos?</label><input type="date" id="fFecha">
     <div class="row">
       <div><label for="fTelDe">Tu WhatsApp (para que te responda)</label><input type="tel" id="fTelDe" placeholder="9 1234 5678" inputmode="tel"></div>
-      <div><label for="fTelPara">WhatsApp de tu pareja (para mandarle cartas)</label><input type="tel" id="fTelPara" placeholder="9 1234 5678" inputmode="tel"></div>
+      <div><label for="fTelPara">WhatsApp de tu pareja</label><input type="tel" id="fTelPara" placeholder="9 1234 5678" inputmode="tel"></div>
     </div>
     <p class="note">Los números son opcionales. Sin número, WhatsApp te deja elegir el contacto.</p>
   </section>
@@ -359,7 +371,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <div class="temas" id="temas"></div>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="fotos">
     <h2>Álbum de fotos</h2>
     <p class="hint">Hasta 20 fotos. Se reducen a 1600 px y WebP al 75 %, más una miniatura de 400 px.</p>
     <span class="btn file pri">Agregar fotos<input type="file" id="inFotos" accept="image/*" multiple></span>
@@ -367,7 +379,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <div class="grid" id="gridFotos"></div>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="razones">
     <h2>10 razones por las que te amo</h2>
     <p class="hint">Cada razón con su foto. Tu pareja las verá como tarjetas que se dan vuelta una a una.</p>
     <div id="listRz"></div>
@@ -375,14 +387,14 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <div class="msg" id="msgRz"></div>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="cancion">
     <h2>Su canción</h2>
     <p class="hint">Pega un link de Spotify o YouTube. No se sube ningún archivo, así que no ocupa espacio.</p>
     <label for="fCancion">Link de la canción</label><input type="url" id="fCancion" placeholder="https://open.spotify.com/track/…">
     <div class="note" id="songOk"></div>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="video">
     <h2>Video</h2>
     <p class="hint">Lo más liviano es un link de YouTube "no listado". También puedes subir un video de hasta 30 segundos: se comprime a 720p.</p>
     <label for="fYt">Link de YouTube</label><input type="url" id="fYt" placeholder="https://youtu.be/…">
@@ -392,7 +404,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <div class="msg" id="msgVideo"></div>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="voz">
     <h2>Nota de voz</h2>
     <p class="hint">Hasta 1 minuto, grabada en Opus a 32 kbps (un minuto pesa unos 250 KB).</p>
     <button id="btnRec">Grabar</button>
@@ -402,14 +414,14 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <audio controls class="hide" id="prevVoz" style="width:100%;margin-top:10px"></audio>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="carta">
     <h2>La carta</h2>
     <p class="hint">Escríbela tú o parte desde una idea (hay 6). En la versión final esto lo redacta la IA.</p>
     <button class="ghost" id="btnIdea">Darme una idea</button>
     <label for="fCarta">Carta</label><textarea id="fCarta"></textarea>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="cielo" data-sigue="1">
     <h2>Mapa de estrellas</h2>
     <p class="hint">El cielo que había sobre su ciudad esa noche, calculado con las estrellas más brillantes.</p>
     <div class="sw"><input type="checkbox" id="fCieloOn"><label for="fCieloOn">Mostrar el mapa de estrellas</label></div>
@@ -421,13 +433,13 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <div class="skyprev" id="skyPrev"></div>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="historia">
     <h2>Línea del tiempo</h2>
     <div class="list" id="listTL"></div>
     <button class="ghost" id="addTL">Agregar momento</button>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="juegos">
     <h2>Juegos</h2>
     <div class="sw"><input type="checkbox" id="fWrapped"><label for="fWrapped">Wrapped: resumen animado de su relación</label></div>
     <div class="sw" style="margin-top:16px"><input type="checkbox" id="fRuletaOn"><label for="fRuletaOn">Rueda de la fortuna con premios</label></div>
@@ -436,7 +448,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <button class="ghost" id="addPremio">Agregar premio</button>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="citas">
     <h2>Cuaderno de citas</h2>
     <p class="hint">Elige las ideas con que parte el cuaderno. Después los dos pueden agregar citas, ponerles fecha, marcarlas como hechas y anotar cómo les fue, desde el regalo.</p>
     <div class="chips" id="chipsCitas"></div>
@@ -444,24 +456,17 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <div style="display:flex;gap:8px"><input type="text" id="fCitaNueva" placeholder="Ej: volver al lugar donde nos conocimos"><button class="ghost" id="addCita">Agregar</button></div>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="sorpresa">
     <h2>Preguntas para desbloquear la sorpresa</h2>
     <p class="hint">Escribe hasta 4 opciones y marca la correcta. Tu pareja tiene que acertar todas para desbloquear los juegos.</p>
     <div id="listQ"></div>
     <button class="ghost" id="addQ">Agregar pregunta</button>
   </section>
 
-  <section class="sec">
+  <section class="sec" data-sec="sorpresa" data-sigue="1">
     <h2>El último regalo: 2 juegos</h2>
-    <p class="hint">Al acertar todas las preguntas se desbloquean <b>🥚 Nuestro hijo</b> (la mascota virtual que cuidan entre los dos) y <b>🗝️ Escape room de parejas</b> (próximamente).</p>
+    <p class="hint">Al acertar todas las preguntas se desbloquean <b>🥚 Virtual Monster</b> (la mascota virtual que cuidan entre los dos) y <b>🗝️ Escape room de parejas</b> (próximamente).</p>
     <label for="fFinal">Mensaje que acompaña la sorpresa (opcional)</label><textarea id="fFinal" style="min-height:100px"></textarea>
-  </section>
-
-  <section class="sec">
-    <h2>Cartas por WhatsApp</h2>
-    <p class="hint">Cartas cortas para mandarle cuando quieras. Cada botón abre WhatsApp con la carta lista para enviar.</p>
-    <div id="listCartas"></div>
-    <button class="ghost" id="addCarta">Agregar carta</button>
   </section>
 
   <section class="sec">
@@ -489,6 +494,8 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
           <p class="note" id="copied"></p>
         </div>
       </div>
+      <button class="ghost" id="btnNfc" type="button">📲 Grabar en tarjeta NFC</button>
+      <p class="note" id="nfcMsg" aria-live="polite"></p>
       <p class="note">Este es el mismo link que abre la tarjeta. Para editar desde otro celular, abre el regalo y toca <b>👤 Quien regala</b>.</p>
       <div id="linkViejo" class="hide"><label>Tu link para editar (regalo antiguo sin tarjeta)</label>
       <p style="margin:0 0 10px;word-break:break-all;font-size:14px" id="linkEd"></p>
@@ -561,7 +568,7 @@ async function api(body){
 }
 const med=x=>x?.ruta?{ruta:x.ruta,peso:x.size,orig:x.orig}:null;
 const pack=()=>({de:S.de,para:S.para,fecha:S.fecha,cancion:S.cancion,yt:S.yt,carta:S.carta,final:S.final,tl:S.tl,qs:S.qs,
-  telDe:S.telDe,telPara:S.telPara,tema:S.tema,cielo:S.cielo,wrapped:S.wrapped,ruleta:S.ruleta,citas:S.citas,cartas:S.cartas,
+  telDe:S.telDe,telPara:S.telPara,tema:S.tema,cielo:S.cielo,wrapped:S.wrapped,ruleta:S.ruleta,citas:S.citas,cartas:S.cartas,ocultas:S.ocultas||[],
   razones:S.razones.map(r=>({t:r.t,ruta:r.ruta||null,peso:r.size||0,orig:r.orig||0})),
   fotos:S.fotos.filter(f=>f.ruta&&f.mini).map(f=>({ruta:f.ruta,mini:f.mini,cap:f.cap,peso:f.size,orig:f.orig})),
   video:med(S.video),voz:med(S.voz)});
@@ -571,7 +578,7 @@ function unpack(d,base){
   S.qs=(d.qs||[]).map(q=>q.ops?q:{q:q.q,ops:[q.ok,...String(q.no||'').split('|')].map(s=>s.trim()).concat(['','','']).slice(0,4),ok:0});
   S.cielo=Object.assign({on:false,ciudad:'santiago',f:d.fecha||'',h:'22:00'},d.cielo||{});
   S.wrapped=!!d.wrapped;S.ruleta=Object.assign({on:false,items:[]},d.ruleta||{});
-  S.citas=d.citas||[];S.cartas=d.cartas||[];S.cuaderno=Array.isArray(d.cuaderno)?d.cuaderno:semilla(S.citas);
+  S.citas=d.citas||[];S.cartas=d.cartas||[];S.ocultas=Array.isArray(d.ocultas)?d.ocultas:[];S.cuaderno=Array.isArray(d.cuaderno)?d.cuaderno:semilla(S.citas);
   S.razones=(d.razones||[]).map(r=>({t:r.t||'',ruta:r.ruta||null,url:r.ruta?base+r.ruta:null,size:r.peso||0,orig:r.orig||0}));
   S.fotos=(d.fotos||[]).map(f=>({ruta:f.ruta,mini:f.mini,url:base+f.ruta,thumb:base+f.mini,size:f.peso,orig:f.orig,cap:f.cap||''}));
   const m=x=>x&&{ruta:x.ruta,url:base+x.ruta,size:x.peso,orig:x.orig};
@@ -825,7 +832,7 @@ $('#addQ').onclick=()=>{if(S.qs.length<10){S.qs.push({q:'',ops:['','','',''],ok:
 
 /* ---------- cartas por WhatsApp ---------- */
 const firma=()=>S.de?`\n\n— ${S.de}`:'';
-function renderCartas(){
+function renderCartas(){if(!$('#listCartas'))return updWa();
   $('#listCartas').innerHTML=S.cartas.map((c,i)=>`<div class="carta-wa"><label for="ct${i}" style="margin-top:0">Título</label><input type="text" id="ct${i}" data-ct="${i}" data-k="t" value="${esc(c.t)}" maxlength="60"><label for="cx${i}">Carta</label><textarea id="cx${i}" data-ct="${i}" data-k="x" style="min-height:90px" maxlength="1000">${esc(c.x)}</textarea><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><a class="btn wa" data-wa="${i}" target="_blank" rel="noopener">Enviar por WhatsApp</a><button class="x" data-dct="${i}">Quitar</button></div></div>`).join('');
   $('#addCarta').disabled=S.cartas.length>=5;updWa();
 }
@@ -833,9 +840,19 @@ function updWa(){
   document.querySelectorAll('[data-wa]').forEach(a=>{const c=S.cartas[+a.dataset.wa];a.href=wa(S.telPara,`💌 ${c.t}\n\n${c.x}${firma()}`)});
   if(ED)$('#waRegalo').href=wa(S.telPara,`${S.para?S.para+', t':'T'}e preparé un regalo 💝 Ábrelo aquí: ${giftUrl()}`);
 }
-$('#listCartas').addEventListener('input',e=>{const d=e.target.dataset;if(d.ct!=null){S.cartas[+d.ct][d.k]=e.target.value;updWa()}});
-$('#listCartas').addEventListener('click',e=>{const i=e.target.dataset.dct;if(i!=null){S.cartas.splice(+i,1);renderCartas();scheduleSave()}});
-$('#addCarta').onclick=()=>{if(S.cartas.length<5){S.cartas.push({t:'',x:''});renderCartas()}};
+/* La sección "Cartas por WhatsApp" se quitó del editor (26 nov 2026); los datos antiguos se conservan */
+
+/* ---------- interruptor por sección: quien regala decide qué secciones ve su pareja ---------- */
+const vis=k=>!(S.ocultas||[]).includes(k);
+function pintarSwitches(){
+  document.querySelectorAll('#crear section[data-sec]').forEach(sec=>{
+    const k=sec.dataset.sec;let sw=sec.querySelector(':scope>.sec-sw');
+    if(!sw&&!sec.dataset.sigue){sec.querySelector('h2').insertAdjacentHTML('afterend',`<div class="sw sec-sw"><input type="checkbox" id="vis_${k}" data-vis="${k}"><label for="vis_${k}">Mostrar en el regalo</label></div>`);sw=sec.querySelector(':scope>.sec-sw')}
+    if(sw)sw.querySelector('input').checked=vis(k);
+    sec.classList.toggle('apagada',!vis(k));
+  })}
+document.getElementById('crear').addEventListener('change',e=>{const k=e.target.dataset.vis;if(!k)return;
+  S.ocultas=(S.ocultas||[]).filter(x=>x!==k);if(!e.target.checked)S.ocultas.push(k);pintarSwitches();scheduleSave()});
 
 /* ---------- campos simples, guardado y QR ---------- */
 const F={'#fDe':'de','#fPara':'para','#fFecha':'fecha','#fCancion':'cancion','#fYt':'yt','#fCarta':'carta','#fFinal':'final','#fTelDe':'telDe','#fTelPara':'telPara'};
@@ -864,6 +881,14 @@ $('#btnPrueba').onclick=()=>{location.href=location.pathname+'?r=prueba-'+nuevoC
 const copiar=async(txt,el)=>{try{await navigator.clipboard.writeText(txt);el.textContent='Copiado.'}catch(e){el.textContent='No se pudo copiar; selecciónalo a mano.'}};
 $('#copy').onclick=()=>copiar($('#link').textContent,$('#copied'));
 $('#copyEd').onclick=()=>copiar($('#linkEd').textContent,$('#copied'));
+/* Web NFC: graba el link en una tarjeta acercándola al celular. Solo existe en Chrome para Android;
+   iPhone no deja que las páginas web graben NFC, ahí se usa la app NFC Tools. */
+async function grabarNfc(url,msg){
+  if(!('NDEFReader' in window)){msg.innerHTML='Este celular no deja grabar NFC desde la web (iPhone no lo permite; en Android funciona con Chrome). Usa la app <b>NFC Tools</b>: Escribir → Agregar registro → URL → pega el link. El link ya quedó copiado.';try{await navigator.clipboard.writeText(url)}catch(e){}return}
+  try{msg.textContent='Acerca la tarjeta a la parte de atrás del celular…';const w=new NDEFReader();await w.write({records:[{recordType:'url',data:url}]});msg.textContent='¡Listo! La tarjeta quedó grabada ✓'}
+  catch(e){msg.textContent='No se pudo grabar: '+(e.name==='NotAllowedError'?'falta dar permiso de NFC.':e.message)}
+}
+$('#btnNfc').onclick=()=>ED&&grabarNfc(giftUrl(),$('#nfcMsg'));
 const salir=()=>{store.set(null);location.href=location.pathname};
 $('#nuevo').onclick=salir;
 /* ---------- perfil de quien regala: correo, contraseña y deshabilitar ---------- */
@@ -876,7 +901,7 @@ function pintarPerfil(){
   $('#pEstado').classList.toggle('off',!!PERFIL.off);
   $('#pEstado').innerHTML=PERFIL.off
     ?`<span>🚫 <b>Regalo deshabilitado.</b> Quien lo recibe ve un aviso en vez del regalo.</span><button class="pri" data-off="0">Volver a habilitar</button>`
-    :`<span>✅ <b>Regalo habilitado.</b> Si terminan, puedes deshabilitarlo; no se borra nada.</span><button class="ghost" data-off="1">Deshabilitar regalo</button>`;
+    :`<span>✅ <b>Regalo habilitado.</b> Si la relación se acaba, puedes deshabilitar este regalo desde este botón. No se borra nada, solo se suspende el servicio.</span><button class="ghost" data-off="1">Deshabilitar regalo</button>`;
 }
 async function perfilApi(cambios,msg){
   const m=$('#pMsg');m.textContent='Guardando…';
@@ -1027,8 +1052,8 @@ function initCuaderno(premios){
 function modosRueda(){
   const sec=$('#secRueda');if(!sec)return;
   const pend=S.cuaderno.filter(c=>c.e==='p'),m=[];
-  if(S.ruleta.on&&premiosR.length>1)m.push(['premios','🎁 Premios']);
-  if(pend.length>1)m.push(['cita','💘 Nuestra próxima cita']);
+  if(S.ruleta.on&&vis('juegos')&&premiosR.length>1)m.push(['premios','🎁 Premios']);
+  if(vis('citas')&&pend.length>1)m.push(['cita','💘 Nuestra próxima cita']);
   sec.style.display=m.length?'':'none';if(!m.length)return;
   if(!m.some(x=>x[0]===ruedaModo)){ruedaModo=m[0][0];pintarRueda()}
   $('#ruedaModos').innerHTML=m.length>1?m.map(([k,t])=>`<button data-modo="${k}" class="${k===ruedaModo?'on':''}">${t}</button>`).join(''):'';
@@ -1071,23 +1096,23 @@ function renderRegalo(){
     <p class="script" style="font-size:22px">de ${esc(S.de)}</p>
   </div></section>
   <div id="inside" class="hide">
-  ${S.wrapped?`<section class="scene"><div class="wrapped-cta"><p class="script" style="font-size:26px;margin:0">Nuestro Wrapped</p><h2 style="margin:.3em 0 .6em">Nuestra relación en números</h2><button id="btnWrapped" class="pri">Ver nuestro Wrapped</button></div></section>`:''}
+  ${S.wrapped&&vis('juegos')?`<section class="scene"><div class="wrapped-cta"><p class="script" style="font-size:26px;margin:0">Nuestro Wrapped</p><h2 style="margin:.3em 0 .6em">Nuestra relación en números</h2><button id="btnWrapped" class="pri">Ver nuestro Wrapped</button></div></section>`:''}
   ${together()?`<section class="scene s-red"><div><p class="lbl">Llevamos juntos</p><div class="count"><div><b id="cD">0</b><small>días</small></div><div><b id="cH">0</b><small>horas</small></div><div><b id="cM">0</b><small>minutos</small></div><div><b id="cS">0</b><small>segundos</small></div></div><p class="lbl" style="margin-top:18px">desde el ${fecha(S.fecha)}</p></div></section>`:''}
-  ${sp||yS?`<section class="scene"><div><h2>Nuestra canción</h2>${sp?`<iframe class="spot" src="${sp}" allow="encrypted-media" loading="lazy"></iframe>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yS}" allowfullscreen loading="lazy"></iframe>`}<p class="note"><a href="${esc(S.cancion)}">Abrir la canción</a></p></div></section>`:''}
-  ${fotos.length?`<section class="scene"><div><h2>Nuestros momentos</h2><div class="album" id="album">${fotos.map(f=>`<figure><img src="${f.url}" alt="${esc(f.cap)}" loading="lazy"><figcaption>${esc(f.cap)}</figcaption></figure>`).join('')}</div><div class="nav"><button class="ghost" id="prev" aria-label="Foto anterior">←</button><button class="ghost" id="next" aria-label="Foto siguiente">→</button></div></div></section>`:''}
-  ${rz.length?`<section class="scene"><div><h2>${rz.length} razones por las que te amo</h2><div class="deck" id="deck"></div><div class="pips" id="pips"></div><div class="nav"><button class="ghost" id="rzPrev" aria-label="Razón anterior">←</button><button id="rzNext" class="pri">Siguiente razón</button></div></div></section>`:''}
-  ${S.carta?`<section class="scene"><div><h2>Una carta para ti</h2><div class="paper">${esc(S.carta)}</div></div></section>`:''}
-  ${S.cielo.on&&(S.cielo.f||S.fecha)?`<section class="scene s-sky"><div><p class="lbl">Así estaba el cielo</p><h2>${esc(city[0])}, ${fecha(S.cielo.f||S.fecha)}</h2>${skySvg(S.cielo,true)}<p class="lbl" style="font-size:14px">a las ${esc(S.cielo.h||'22:00')} · las estrellas más brillantes sobre nosotros</p></div></section>`:''}
-  ${tl.length?`<section class="scene"><div><h2>Nuestra historia</h2><ul class="tl">${tl.sort((a,b)=>a.f<b.f?-1:1).map(x=>`<li><time>${x.f?fecha(x.f):''}</time>${esc(x.t)}</li>`).join('')}</ul></div></section>`:''}
-  ${S.voz?`<section class="scene"><div><h2>Escúchame</h2><p style="color:var(--mute)">Te dejé un mensaje con mi voz</p><audio controls src="${S.voz.url}" style="width:100%"></audio></div></section>`:''}
-  ${S.video||yV?`<section class="scene"><div><h2>Un video para ti</h2>${S.video?`<video class="media" controls playsinline src="${S.video.url}"></video>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yV}" allowfullscreen loading="lazy"></iframe><p class="note"><a href="${esc(S.yt)}">Abrir en YouTube</a></p>`}</div></section>`:''}
-  <section class="scene" id="secCuad"><div><p class="script" style="font-size:26px;margin:0">Nuestro</p><h2 style="margin-top:0">Cuaderno de citas</h2>
+  ${(sp||yS)&&vis('cancion')?`<section class="scene"><div><h2>Nuestra canción</h2>${sp?`<iframe class="spot" src="${sp}" allow="encrypted-media" loading="lazy"></iframe>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yS}" allowfullscreen loading="lazy"></iframe>`}<p class="note"><a href="${esc(S.cancion)}">Abrir la canción</a></p></div></section>`:''}
+  ${fotos.length&&vis('fotos')?`<section class="scene"><div><h2>Nuestros momentos</h2><div class="album" id="album">${fotos.map(f=>`<figure><img src="${f.url}" alt="${esc(f.cap)}" loading="lazy"><figcaption>${esc(f.cap)}</figcaption></figure>`).join('')}</div><div class="nav"><button class="ghost" id="prev" aria-label="Foto anterior">←</button><button class="ghost" id="next" aria-label="Foto siguiente">→</button></div></div></section>`:''}
+  ${rz.length&&vis('razones')?`<section class="scene"><div><h2>${rz.length} razones por las que te amo</h2><div class="deck" id="deck"></div><div class="pips" id="pips"></div><div class="nav"><button class="ghost" id="rzPrev" aria-label="Razón anterior">←</button><button id="rzNext" class="pri">Siguiente razón</button></div></div></section>`:''}
+  ${S.carta&&vis('carta')?`<section class="scene"><div><h2>Una carta para ti</h2><div class="paper">${esc(S.carta)}</div></div></section>`:''}
+  ${S.cielo.on&&vis('cielo')&&(S.cielo.f||S.fecha)?`<section class="scene s-sky"><div><p class="lbl">Así estaba el cielo</p><h2>${esc(city[0])}, ${fecha(S.cielo.f||S.fecha)}</h2>${skySvg(S.cielo,true)}<p class="lbl" style="font-size:14px">a las ${esc(S.cielo.h||'22:00')} · las estrellas más brillantes sobre nosotros</p></div></section>`:''}
+  ${tl.length&&vis('historia')?`<section class="scene"><div><h2>Nuestra historia</h2><ul class="tl">${tl.sort((a,b)=>a.f<b.f?-1:1).map(x=>`<li><time>${x.f?fecha(x.f):''}</time>${esc(x.t)}</li>`).join('')}</ul></div></section>`:''}
+  ${S.voz&&vis('voz')?`<section class="scene"><div><h2>Escúchame</h2><p style="color:var(--mute)">Te dejé un mensaje con mi voz</p><audio controls src="${S.voz.url}" style="width:100%"></audio></div></section>`:''}
+  ${(S.video||yV)&&vis('video')?`<section class="scene"><div><h2>Un video para ti</h2>${S.video?`<video class="media" controls playsinline src="${S.video.url}"></video>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yV}" allowfullscreen loading="lazy"></iframe><p class="note"><a href="${esc(S.yt)}">Abrir en YouTube</a></p>`}</div></section>`:''}
+  <section class="scene${vis('citas')?'':' hide'}" id="secCuad"><div><p class="script" style="font-size:26px;margin:0">Nuestro</p><h2 style="margin-top:0">Cuaderno de citas</h2>
     <div class="seg" role="tablist"><button role="tab" data-tab="p">Pendientes</button><button role="tab" data-tab="h">Hechas</button></div>
     <div id="cuadLista" class="citas cuad"></div>
     <form class="cuad-add" id="cuadForm"><input type="text" id="cuadNueva" maxlength="80" placeholder="Anotar una cita pendiente…" aria-label="Nueva cita"><button class="pri">Anotar</button></form>
     <p class="note" id="cuadMsg" aria-live="polite"></p></div></section>
   <section class="scene" id="secRueda"><div><h2>Rueda de la fortuna</h2><div class="seg" id="ruedaModos"></div><p style="color:var(--mute)" id="ruedaTxt"></p><div class="wheel-wrap"><div class="pointer"></div><div id="ruedaSvg"></div></div><button id="btnGirar" class="pri">Girar</button><div class="premio" id="premio" aria-live="polite"></div></div></section>
-  <section class="scene s-env"><div id="quiz"></div></section>
+  <section class="scene s-env${vis('sorpresa')?'':' hide'}"><div id="quiz"></div></section>
   ${S.telDe?`<div class="foot"><a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`Vi tu regalo y me encantó 💕`)}">Responder a ${esc(S.de)} por WhatsApp</a></div>`:''}
   </div>`;
   parallax($('#hero'));
@@ -1096,7 +1121,7 @@ function renderRegalo(){
   if($('#btnWrapped'))$('#btnWrapped').onclick=openWrapped;
   const al=$('#album');
   if(al){const go=d=>al.scrollBy({left:d*al.clientWidth*.8,behavior:'smooth'});$('#prev').onclick=()=>go(-1);$('#next').onclick=()=>go(1);al.tabIndex=0;al.onkeydown=e=>{if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1)}}
-  if(rz.length){
+  if(rz.length&&$('#deck')){
     let k=0;const draw=()=>{const x=rz[k];$('#deck').innerHTML=`<button class="rcard flip ${x.url?'':'noimg'}" aria-label="Siguiente razón">${x.url?`<img src="${x.url}" alt="">`:''}<div class="n">Razón ${k+1}</div><p>${esc(x.t)}</p></button>`;$('#pips').innerHTML=rz.map((_,j)=>`<i class="${j===k?'on':''}"></i>`).join('');$('#rzNext').textContent=k===rz.length-1?'Volver a empezar':'Siguiente razón';$('#deck .rcard').onclick=nx};
     const nx=()=>{k=(k+1)%rz.length;draw()};$('#rzNext').onclick=nx;$('#rzPrev').onclick=()=>{k=(k-1+rz.length)%rz.length;draw()};draw();
   }
@@ -1111,7 +1136,7 @@ function renderRegalo(){
     $('#quiz').innerHTML=`<p class="script" style="font-size:30px;margin:0">El último regalo</p><h2 style="margin:.2em 0 .4em">¡Desbloqueaste 2 juegos!</h2>
     ${S.final?`<div class="paper" style="text-align:center;white-space:pre-wrap;margin-bottom:18px">${esc(S.final)}</div>`:''}
     <div class="juegos${nuevo?' unlock':''}">
-      <a class="juego" href="mascota/${slug?'?r='+encodeURIComponent(slug):''}"><span class="ico">🥚</span><b>Nuestro hijo</b><small>Una mascota virtual que cuidamos entre los dos: comida, entrenamientos, batallas y evoluciones.</small><span class="btn pri">Hacerlo nacer</span></a>
+      <a class="juego" href="mascota/${slug?'?r='+encodeURIComponent(slug):''}"><span class="ico">🥚</span><b>Virtual Monster</b><small>Una mascota virtual que cuidamos entre los dos: comida, entrenamientos, batallas y evoluciones.</small><span class="btn pri">Hacerlo nacer</span></a>
       <div class="juego pronto"><span class="ico">🗝️</span><b>Escape room de parejas</b><small>Acertijos para resolver juntos y competir con otras parejas.</small><span class="tag">Próximamente</span></div>
     </div>`;if(nuevo)rain(60)};
   const showQ=()=>{
@@ -1180,7 +1205,7 @@ function route(){
   scrollTo(0,0);
 }
 function edHero(){const t=document.createElement('div');t.innerHTML=heroLayers(3);const h=$('#heroEd');h.querySelectorAll(':scope>.layer').forEach(l=>l.remove());h.prepend(...t.children)}
-function renderAll(){pintarPerfil();edHero();fill();renderFotos();renderRz();renderTL();renderQ();renderRuleta();renderCitas();renderCartas();songInfo();showVideo();showVoz();skyPrev();showSaved();route()}
+function renderAll(){pintarPerfil();pintarSwitches();edHero();fill();renderFotos();renderRz();renderTL();renderQ();renderRuleta();renderCitas();renderCartas();songInfo();showVideo();showVoz();skyPrev();showSaved();route()}
 addEventListener('hashchange',()=>{if(!RECIP)route()});
 async function init(){
   const p=new URLSearchParams(location.search),aviso=$('#aviso');

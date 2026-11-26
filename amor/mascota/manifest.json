@@ -1,6 +1,6 @@
 {
-  "name": "Nuestro hijo",
-  "short_name": "Nuestro hijo",
+  "name": "Virtual Monster",
+  "short_name": "Virtual Monster",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

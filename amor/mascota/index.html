@@ -7,10 +7,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Nuestro hijo">
+<meta name="apple-mobile-web-app-title" content="Virtual Monster">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icono-180.png">
-<title>Nuestro hijo · demo</title>
+<title>Virtual Monster</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -357,7 +357,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 <!-- Mensajes -->
 <div class="sheet" id="shMensaje"><div>
   <h3 id="mTit">Mandar un mensaje</h3>
-  <p style="margin:-4px 0 10px;font-size:13px;color:var(--mute)">Su hijo se lo va a decir en voz alta cuando abra la app.</p>
+  <p style="margin:-4px 0 10px;font-size:13px;color:var(--mute)">Su Virtual Monster se lo va a decir en voz alta cuando abra la app.</p>
   <div class="msgs" id="msgs"></div>
   <button class="cerrar" style="width:100%;margin-top:12px">Cerrar</button>
 </div></div>
@@ -372,7 +372,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <p><b>Enfermedad 💀:</b> también si la pancita queda en 0 más de 6 horas o una herida no se cura en 6 horas. Necesita de 1 a 3 dosis, con 1 hora entre cada una.</p>
   <p><b>Entrenar:</b> los entrenamientos de niveles anteriores siguen disponibles al evolucionar. <b>Cortafrutas (Bebé I):</b> pancita −10, fuerza +5, energía −10, felicidad +5, peso −1. Necesita energía y pancita de al menos 10.</p>
   <p><b>Comida:</b> cada uno puede darle máximo 2 comidas por hora.</p>
-  <p><b>Mensajes 💌:</b> cada uno elige un mensaje corto y el hijo se lo dice al otro cuando abra la app, con una animación. En la prueba, cambia a la otra persona con "Soy…" para recibirlo.</p>
+  <p><b>Mensajes 💌:</b> cada uno elige un mensaje corto y el Virtual Monster se lo dice al otro cuando abra la app, con una animación. En la prueba, cambia a la otra persona con "Soy…" para recibirlo.</p>
   <p><b>Batallas:</b> desde Bebé I, con enemigos de su nivel. No cambian los indicadores, pero la fuerza, el nivel y la energía (velocidad) ayudan a ganar. Puede quedar herido 🩹.</p>
   <p><b>Ataques y tipos:</b> 12 ataques propios que se aprenden al evolucionar; antes de pelear se eligen 4. 🍗 Proteína le gana a 🍬 Dulce, 🍬 Dulce a 🥦 Verdura y 🥦 Verdura a 🍗 Proteína (×1,5); 💗 Amor es neutro. El tipo del hijo es la comida que más ha comido.</p>
   <p><b>Evolución:</b> con 2 victorias en un nivel queda listo, y solo la otra persona (la que no ganó la segunda batalla) puede apretar "Evolucionar". Niveles: Bebé I → Bebé II → Novato → Novato Rebelde → Campeón → Definitivo.</p>
@@ -1390,7 +1390,7 @@ $('#btnGal').onclick=galeria;
 /* ===== Despedida (abuelos) ===== */
 function despedida(){if($('#despedida').classList.contains('on'))return;
   const dias=Math.floor((S.fin-S.nace)/(24*H));
-  $('#despCard').innerHTML=`<p style="font-size:44px;margin:0">👵🏻💕👴🏻</p><h2>${esc(S.nombre||'Su hijo')} se fue con los abuelos</h2><p style="opacity:.85">${esc(S.motivo)}</p>
+  $('#despCard').innerHTML=`<p style="font-size:44px;margin:0">👵🏻💕👴🏻</p><h2>${esc(S.nombre||'Su Virtual Monster')} se fue con los abuelos</h2><p style="opacity:.85">${esc(S.motivo)}</p>
    <div class="res"><span>Vivió ${dias} día${dias===1?'':'s'}</span><span>Peso ${S.peso} kg</span><span>${S.victorias} victoria${S.victorias===1?'':'s'}</span><span>Récord ${S.record} frutas</span></div>
    <p style="opacity:.75">Lo van a cuidar bien. Y llegó un huevo nuevo…</p><button class="pri" id="btnHuevo" style="width:100%">Recibir el huevo nuevo</button>`;
   $('#despedida').classList.add('on');

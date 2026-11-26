@@ -125,6 +125,8 @@ function limpiar(d, id) {
     },
     citas: (Array.isArray(d.citas) ? d.citas : []).slice(0, 15).map(x => txt(x, 80)).filter(Boolean),
     cartas: lista(d.cartas, 5).map(x => ({ t: txt(x.t, 60), x: txt(x.x, 1000) })),
+    // secciones que quien regala apagó con su interruptor
+    ocultas: (Array.isArray(d.ocultas) ? d.ocultas : []).filter(x => ["fotos", "razones", "cancion", "video", "voz", "carta", "cielo", "historia", "juegos", "citas", "sorpresa"].includes(x)),
     razones: lista(d.razones, 10).map(r => ({ t: txt(r.t, 160), ruta: ruta(r.ruta), peso: ruta(r.ruta) ? num(r.peso) : 0, orig: ruta(r.ruta) ? num(r.orig) : 0 })),
     fotos: lista(d.fotos, 20)
       .filter(f => ruta(f.ruta) && ruta(f.mini))

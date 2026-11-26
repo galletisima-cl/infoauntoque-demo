@@ -21,6 +21,9 @@
   .t{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center;break-inside:avoid}
   .t svg{width:120px;height:120px}
   .t b{display:block;font-family:ui-monospace,Menlo,monospace;font-size:15px;margin:8px 0 4px}
+  .t .nfc{margin-top:10px;font-size:14px}
+  #nfcMsg{font-weight:600}
+  @media print{.nfc,#nfcMsg{display:none}}
   .t small{display:block;color:var(--mute);word-break:break-all;font-size:11px}
   @media print{.panel,.hint,h1{display:none}body{background:#fff}.t{border-color:#ccc}}
 </style>
@@ -36,6 +39,7 @@
     <button class="g" id="csv" disabled>Descargar CSV</button>
     <button class="g" id="imp" disabled>Imprimir con QR</button>
   </div>
+  <p class="hint" id="nfcMsg" aria-live="polite"></p>
   <div class="grid" id="lista"></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -50,7 +54,7 @@ $('#gen').onclick=()=>{
   const n=Math.max(1,Math.min(500,+$('#n').value||1)),base=$('#base').value.trim();
   filas=Array.from({length:n},()=>{const c=codigo();return{c,url:base+c}});
   $('#lista').innerHTML=filas.map(f=>{let svg='';try{const q=qrcode(0,'M');q.addData(f.url);q.make();svg=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){}
-    return `<div class="t">${svg}<b>${f.c}</b><small>${f.url}</small></div>`}).join('');
+    return `<div class="t">${svg}<b>${f.c}</b><small>${f.url}</small><button class="g nfc" data-url="${f.url}">📲 Grabar en tarjeta</button></div>`}).join('');
   $('#csv').disabled=$('#imp').disabled=false;
 };
 $('#csv').onclick=()=>{
@@ -59,6 +63,11 @@ $('#csv').onclick=()=>{
   a.download='tarjetas-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 };
 $('#imp').onclick=()=>print();
+// Web NFC: graba el link acercando la tarjeta (solo Chrome en Android; iPhone no lo permite desde la web)
+$('#lista').onclick=async e=>{const url=e.target.dataset.url;if(!url)return;const m=$('#nfcMsg');
+  if(!('NDEFReader' in window)){try{await navigator.clipboard.writeText(url)}catch(x){}m.textContent='Este celular no deja grabar NFC desde la web (iPhone no lo permite). Link copiado: pégalo en la app NFC Tools → Escribir → URL.';return}
+  try{m.textContent='Acerca la tarjeta a la parte de atrás del celular…';await new NDEFReader().write({records:[{recordType:'url',data:url}]});m.textContent='¡Listo! Tarjeta grabada ✓ ('+url.split('=').pop()+')';e.target.textContent='✓ Grabada'}
+  catch(x){m.textContent='No se pudo grabar: '+x.message}};
 </script>
 </body>
 </html>
