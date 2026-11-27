@@ -88,6 +88,10 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .crema{display:none}.con-crema .crema{display:inline}
 .venda{display:none}.herido .venda{display:inline}
 .orejas{display:none}.conejo .orejas{display:inline}
+.disf{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.disf button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;font-size:13px}
+.disf button svg{width:86px;height:86px;overflow:visible}
+.disf button.on{border-color:var(--red);box-shadow:var(--neu-in)}
 /* Huevo */
 .huevo{transform-origin:100px 180px;cursor:pointer}
 .huevo.vibra{animation:vibra .38s linear}
@@ -128,7 +132,7 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .flt{position:absolute;z-index:12;font-weight:700;font-size:15px;pointer-events:none;white-space:nowrap;text-shadow:0 2px 8px rgba(0,0,0,.5);color:#fff;animation:sube 1.4s ease-out forwards}
 @keyframes sube{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-60px);opacity:0}}
 /* Acciones */
-.acciones{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.acciones{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .acciones button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px;font-size:11px;position:relative}
 .acciones button .i{font-size:24px;line-height:1}
 .acciones button.alerta::after{content:"!";position:absolute;top:-6px;right:-4px;width:20px;height:20px;border-radius:50%;background:#ff3b3b;color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
@@ -263,6 +267,11 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   --neu:6px 6px 14px rgba(125,95,75,.32),-6px -6px 14px rgba(255,255,255,.75);--neu-in:inset 4px 4px 10px rgba(125,95,75,.32),inset -4px -4px 10px rgba(255,255,255,.75);
   --pet1:#f3c9b8;--pet2:#c97b6b}
 </style>
+<style>html,body{touch-action:manipulation}a,button,label,input,select,textarea,[role=button]{touch-action:manipulation}</style>
+<script>/* Sin zoom con doble toque: touch-action en CSS y, por si el navegador lo ignora, el segundo toque rápido se cambia por un clic normal */
+(function(){var u=0;document.addEventListener('touchend',function(e){var t=Date.now(),el=e.target;if(el.nodeType!==1)el=el.parentElement;
+ if(t-u<350&&e.changedTouches.length===1&&!(el.closest&&el.closest('input,textarea,select,[contenteditable],video,audio'))){e.preventDefault();el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}))}u=t},{passive:false});
+ document.addEventListener('dblclick',function(e){e.preventDefault()},{passive:false})})();</script>
 </head>
 <body data-tema="pasion">
 <div class="mesh" aria-hidden="true"></div>
@@ -302,6 +311,8 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <button data-a="luz"><span class="i" id="iLuz">💡</span><span id="tLuz">Luz</span></button>
     <button data-a="mensaje"><span class="i">💌</span>Mensaje</button>
     <button data-a="diario"><span class="i">📖</span>Diario</button>
+    <button data-a="ataques"><span class="i">🗡️</span>Ataques</button>
+    <button data-a="disfraz"><span class="i">🎭</span>Disfraz</button>
   </nav>
 
   <section class="prueba glass">
@@ -311,7 +322,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <p id="buzon" style="margin:8px 0 0;font-size:12px;color:var(--mute)"></p>
     <div class="fila">
       <button data-skip="1">+1 hora</button><button data-skip="3">+3 horas</button><button data-skip="8">+8 horas</button><button data-skip="24">+1 día</button>
-      <button id="btnEvo">✨ Evolucionar</button><button id="btnGal">👾 Enemigos</button><button id="btnReglas">Reglas</button><button id="btnReset">Reiniciar</button>
+      <button id="btnEvo">✨ Evolucionar</button><button id="btnGal">👾 Enemigos</button><button id="btnSucio">💩 Ensuciar</button><button id="btnHerir">🤕 Herir</button><button id="btnEnfermar">🤒 Enfermar</button><button id="btnReglas">Reglas</button><button id="btnReset">Reiniciar</button>
       <select id="selTema" aria-label="Tema"><option value="pasion">Pasión</option><option value="pastel">Pastel</option><option value="noche">Noche</option><option value="vintage">Vintage</option></select>
     </div>
   </section>
@@ -337,10 +348,18 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <button class="cerrar" style="width:100%">Cerrar</button>
 </div></div>
 
+<!-- Disfraces -->
+<div class="sheet" id="shDisfraz"><div>
+  <h3>Disfraces</h3>
+  <p style="margin:-4px 0 10px;font-size:13px;color:var(--mute)">Se ve en casa y en las batallas. Se puede cambiar cuando quieran.</p>
+  <div class="disf" id="disfLista"></div>
+  <button class="cerrar" style="width:100%;margin-top:10px">Listo</button>
+</div></div>
+
 <!-- Ataques para la batalla -->
 <div class="sheet" id="shAtaques"><div>
   <h3>Elige 4 ataques <small id="atqCont" style="font-size:14px;color:var(--mute)"></small></h3>
-  <p style="margin:-4px 0 10px;font-size:13px;color:var(--mute)">🍗 Proteína le gana a 🍬 Dulce · 🍬 Dulce le gana a 🥦 Verdura · 🥦 Verdura le gana a 🍗 Proteína · 💗 Amor es neutro. El tipo de su hijo depende de lo que más come.</p>
+  <p style="margin:-4px 0 10px;font-size:13px;color:var(--mute)">🍗 Proteína le gana a 🍬 Dulce · 🍬 Dulce le gana a 🥦 Verdura · 🥦 Verdura le gana a 🍗 Proteína · 💗 Amor es neutro. El tipo de tu Virtual Monster depende de lo que más come. Quedan guardados para todas las batallas.</p>
   <div class="atq" id="atqLista"></div>
   <button class="pri" id="atqOk" style="width:100%;margin-top:10px">¡A pelear!</button>
   <button class="cerrar" style="width:100%;margin-top:8px">Cancelar</button>
@@ -507,8 +526,8 @@ function simular(hasta){
 
 /* ===== Mascota original (SVG) ===== */
 /* Cara compartida por todas las etapas (en coordenadas de Bebé I; cada etapa la mueve y escala) */
-const CARA=(id,cejas)=>`
- <g class="orejas" fill="var(--pet2)"><ellipse cx="72" cy="40" rx="11" ry="30" transform="rotate(-14 72 40)"/><ellipse cx="128" cy="40" rx="11" ry="30" transform="rotate(14 128 40)"/></g>
+const CARA=(id,cejas,capucha)=>`
+ <g class="orejas" fill="var(--pet2)"><ellipse cx="72" cy="40" rx="11" ry="30" transform="rotate(-14 72 40)"/><ellipse cx="128" cy="40" rx="11" ry="30" transform="rotate(14 128 40)"/></g>${capucha?`<g class="capucha">${capucha}</g>`:''}
  <ellipse cx="62" cy="128" rx="13" ry="8" fill="#ff7aa2" opacity=".55"/><ellipse cx="138" cy="128" rx="13" ry="8" fill="#ff7aa2" opacity=".55"/>
  <g class="ojos" fill="#2a1420" stroke="#2a1420" stroke-linecap="round">
   <g class="mood m-normal"><ellipse cx="78" cy="106" rx="8" ry="11"/><ellipse cx="122" cy="106" rx="8" ry="11"/><circle cx="81" cy="101" r="3" fill="#fff" stroke="none"/><circle cx="125" cy="101" r="3" fill="#fff" stroke="none"/></g>
@@ -578,13 +597,25 @@ const ETAPA={
   ${CORAZON(100,136,1.7,'var(--red)')}
   <ellipse cx="100" cy="74" rx="42" ry="38" fill="${g}"/>`,
   frente:`<path d="M70 34l6-22 12 14 12-20 12 20 12-14 6 22z" fill="#ffd34d" stroke="#c9961a" stroke-width="2" stroke-linejoin="round"/><circle cx="100" cy="22" r="4" fill="var(--red)"/>`})};
-const petSVG=(id='pet',fase=S.fase)=>{const g=`url(#${id}g)`,e=(ETAPA[fase]||ETAPA.bebe1)(g);
- return`<svg viewBox="0 0 200 200" id="${id}" data-mood="normal" data-etapa="${fase}" aria-label="Mascota">
+/* Disfraces: un "mameluco" (cambia el color del cuerpo) + capucha que enmarca la cara (en coordenadas de la cara) + detalles detrás del cuerpo */
+const CAPUCHA=c=>`<path fill-rule="evenodd" d="M20 104a80 78 0 1 0 160 0a80 78 0 1 0 -160 0zM44 118a56 44 0 1 0 112 0a56 44 0 1 0 -112 0z" fill="${c}" stroke="rgba(0,0,0,.18)" stroke-width="2"/>`;
+const DISFRACES={
+ dino:{n:'Dinosaurio',e:'🦖',p1:'#b5ec8c',p2:'#4fae45',
+  atras:`<path d="M140 176q40 6 52-26q-22 18 -50 8z" fill="#4fae45"/><path d="M160 168l6-12 6 10zM176 160l7-12 4 12z" fill="#ff9f43"/>`,
+  capucha:`<g fill="#ff9f43" stroke="#d9741f" stroke-width="2" stroke-linejoin="round"><path d="M70 34l12-26 12 22z"/><path d="M90 28l10-26 10 26z"/><path d="M106 30l12-22 12 26z"/><path d="M50 52l2-24 18 14z"/><path d="M130 42l18-14 2 24z"/></g>${CAPUCHA('#6cc25a')}<g fill="#fff"><path d="M56 82l6 10 4-12z"/><path d="M144 82l-6 10-4-12z"/></g>`},
+ tiburon:{n:'Tiburón',e:'🦈',p1:'#cfe2f3',p2:'#5f8fbf',
+  atras:`<path d="M146 170q30 -4 46 -34q-4 26 6 44q-26 -12 -52 -2z" fill="#5f8fbf"/>`,
+  capucha:`<path d="M84 30q10 -34 40 -30q-14 10 -10 32z" fill="#4a77a6" stroke="#36597f" stroke-width="2" stroke-linejoin="round"/>${CAPUCHA('#6f9ccb')}<g fill="#fff" stroke="#c9d6e2" stroke-width="1"><path d="M60 84l7 12 5-14z"/><path d="M74 77l6 13 6-14z"/><path d="M90 73l5 13 5-13z"/><path d="M105 73l5 13 5-13z"/><path d="M120 76l6 14 6-12z"/><path d="M134 82l5 14 7-12z"/></g><g stroke="#3e6690" stroke-width="3" stroke-linecap="round" fill="none"><path d="M30 104q4 8 2 16M38 100q4 8 2 16"/></g>`},
+ abeja:{n:'Abejita',e:'🐝',p1:'#ffe680',p2:'#f2b705',
+  atras:`<g fill="rgba(255,255,255,.75)" stroke="#9fd3ff" stroke-width="2"><ellipse cx="22" cy="78" rx="32" ry="19" transform="rotate(-28 22 78)"/><ellipse cx="178" cy="78" rx="32" ry="19" transform="rotate(28 178 78)"/></g><path d="M100 196l-7-12h14z" fill="#2a1420"/>`,
+  capucha:`<g stroke="#2a1420" stroke-width="4" stroke-linecap="round" fill="none"><path d="M82 30q-8 -18 -20 -24"/><path d="M118 30q8 -18 20 -24"/></g><circle cx="60" cy="6" r="8" fill="#2a1420"/><circle cx="140" cy="6" r="8" fill="#2a1420"/>${CAPUCHA('#ffd23f')}<g fill="none" stroke="#2a1420" stroke-width="8"><path d="M40 70q60 -40 120 0"/><path d="M24 104q8 -10 18 -10M176 104q-8 -10 -18 -10"/></g>`}};
+const petSVG=(id='pet',fase=S.fase)=>{const g=`url(#${id}g)`,e=(ETAPA[fase]||ETAPA.bebe1)(g),d=DISFRACES[S.disfraz];
+ return`<svg viewBox="0 0 200 200" id="${id}" data-mood="normal" data-etapa="${fase}" aria-label="Mascota"${d?` data-disfraz="${S.disfraz}" style="--pet1:${d.p1};--pet2:${d.p2}"`:''}>
 <defs><radialGradient id="${id}g" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".25" stop-color="var(--pet1)"/><stop offset="1" stop-color="var(--pet2)"/></radialGradient>
 <radialGradient id="${id}a"><stop offset=".4" stop-color="#ffd34d" stop-opacity=".55"/><stop offset="1" stop-color="#ffd34d" stop-opacity="0"/></radialGradient></defs>
 ${e.aura?`<circle class="aura" cx="100" cy="110" r="100" fill="url(#${id}a)"/>`:''}
 <ellipse cx="100" cy="194" rx="58" ry="8" fill="rgba(0,0,0,.25)"/>
-<g class="pet">${e.cuerpo}<g class="cara" transform="${e.cara}">${CARA(id,e.cejas)}</g>${e.frente}</g></svg>`};
+<g class="pet">${d?d.atras:''}${e.cuerpo}<g class="cara" transform="${e.cara}">${CARA(id,e.cejas,d&&d.capucha)}</g>${d?'':e.frente}</g></svg>`};
 const huevoSVG=()=>`<svg viewBox="0 0 200 200" aria-label="Huevo: tócalo"><ellipse cx="100" cy="192" rx="46" ry="8" fill="rgba(0,0,0,.25)"/>
 <g class="huevo-idle"><g class="huevo" id="huevo">
 <defs><radialGradient id="hg" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#ffe9f0"/><stop offset="1" stop-color="#f5b8cb"/></radialGradient></defs>
@@ -776,7 +807,7 @@ async function entregar(m){ocupado=true;const tpl=MENSAJES.find(x=>x.id===m.id)|
   const txt=tpl.dice(nom(m.de),nom(m.para)),sp=g.querySelector('span');for(const ch of txt){sp.textContent+=ch;await espera(28)}
   await espera(2600);g.classList.add('sale');petWrap.classList.remove(tpl.anim);await espera(300);g.remove();
   m.visto=true;anota(S.nombre+' le dijo a '+nom(m.para)+': '+tpl.t+' '+tpl.e);if(svg)delete svg.dataset.fijo;ocupado=false;guardar();render()}
-const ACC={mensaje:abrirMensajes,comer:()=>{if(!puede('comer'))return;const n=MAX_COMIDAS-comidasHora(quien).length,o=MAX_COMIDAS-comidasHora(otro(quien)).length;$('#cupo').innerHTML=`${nom(quien)}: te quedan <b>${n}</b> de ${MAX_COMIDAS} comidas esta hora · ${nom(otro(quien))}: ${o}`;abrir('#shComer')},entrenar:abrirEntreno,batalla:()=>batalla(),limpiar,medicina,botiquin,luz,diario};
+const ACC={ataques:()=>{if(S.fase==='huevo')return toast('Los ataques se aprenden desde Bebé I');elegirEquipo(true)},disfraz:abrirDisfraces,mensaje:abrirMensajes,comer:()=>{if(!puede('comer'))return;const n=MAX_COMIDAS-comidasHora(quien).length,o=MAX_COMIDAS-comidasHora(otro(quien)).length;$('#cupo').innerHTML=`${nom(quien)}: te quedan <b>${n}</b> de ${MAX_COMIDAS} comidas esta hora · ${nom(otro(quien))}: ${o}`;abrir('#shComer')},entrenar:abrirEntreno,batalla:()=>batalla(),limpiar,medicina,botiquin,luz,diario};
 $$('#acciones button').forEach(b=>b.onclick=()=>{audioCtx=audioCtx||(window.AudioContext?new AudioContext():null);ACC[b.dataset.a]()});
 
 /* ===== Entrenamiento Bebé I: Cortafrutas (tipo Fruit Ninja) ===== */
@@ -951,13 +982,14 @@ const ANIM={
 // La mascota y su ficha se ubican justo encima de la caja de texto, mida lo que mida
 try{new ResizeObserver(e=>{const h=e[0].target.getBoundingClientRect().height;$('#batalla').style.setProperty('--cajaH',Math.round(h+12)+'px')}).observe($('#batalla .caja'))}catch(_){}
 /* --- Elegir los 4 ataques antes de pelear --- */
-function elegirEquipo(){return new Promise(res=>{const ap=aprendidos();equipo();
-  if(ap.length<=4)return res(true);
+function elegirEquipo(prep){return new Promise(res=>{const ap=aprendidos();equipo();
+  if(!prep&&(ap.length<=4||S.equipoOk))return res(true);
+  $('#atqOk').textContent=prep?'Guardar ataques':'¡A pelear!';
   const pinta=()=>{$('#atqLista').innerHTML=ap.map(a=>`<button data-at="${a.id}" class="${S.equipo.includes(a.id)?'on':''}"><span>${TIPOS[a.t].e}</span><span><b>${a.n}</b><small>${a.d}${a.usos?' · '+a.usos+' usos':''}</small></span></button>`).join('');
     $('#atqCont').textContent=S.equipo.length+'/4';$('#atqOk').disabled=!S.equipo.length;
     $$('#atqLista button').forEach(b=>b.onclick=()=>{const id=b.dataset.at,i=S.equipo.indexOf(id);if(i>=0)S.equipo.splice(i,1);else if(S.equipo.length<4)S.equipo.push(id);else return toast('Máximo 4: quita uno primero');pinta()})};
   pinta();abrir('#shAtaques');
-  $('#atqOk').onclick=()=>{cerrarHojas();guardar();res(true)};
+  $('#atqOk').onclick=()=>{S.equipoOk=true;cerrarHojas();guardar();if(prep)toast('Ataques listos para la próxima batalla ⚔️');res(true)};
   $('#shAtaques .cerrar').onclick=()=>{cerrarHojas();res(false)}})}
 
 async function batalla(){
@@ -1383,6 +1415,13 @@ function evolucionar(forzar){
         const r=stage.getBoundingClientRect();flota('✨ ¡'+sig.n+'! ✨',r.width/2,r.height*.15,'#ffe14d');
         for(let k=0;k<10;k++)setTimeout(()=>flota(['✨','💖','⭐'][k%3],rnd(20,r.width-20),rnd(r.height*.2,r.height*.7)),k*90)},450)}},n<6?380:220);
 }
+function abrirDisfraces(){if(S.fase==='huevo')return toast('Primero tiene que nacer');
+  const ops=[['', 'Sin disfraz','🙂'],...Object.entries(DISFRACES).map(([k,d])=>[k,d.n,d.e])],antes=S.disfraz;
+  $('#disfLista').innerHTML=ops.map(([k,n,e])=>{S.disfraz=k;return`<button data-d="${k}" class="${(antes||'')===k?'on':''}">${petSVG('dz'+(k||'0'))}<span>${e} ${n}</span></button>`}).join('');S.disfraz=antes;
+  $$('#disfLista button').forEach(b=>b.onclick=()=>{S.disfraz=b.dataset.d;$$('#disfLista button').forEach(x=>x.classList.toggle('on',x===b));
+    faseDibujada='';anota(nom(quien)+(S.disfraz?' le puso el disfraz de '+DISFRACES[S.disfraz].n+' '+DISFRACES[S.disfraz].e:' le sacó el disfraz'));guardar();render();
+    const r=stage.getBoundingClientRect();flota('✨',r.width/2,r.height*.4)});
+  abrir('#shDisfraz')}
 $('#evoBtn').onclick=()=>evolucionar(false);
 $('#btnEvo').onclick=()=>evolucionar(true);
 $('#btnGal').onclick=galeria;
@@ -1402,6 +1441,11 @@ $$('[data-q]').forEach(b=>b.onclick=()=>{quien=b.dataset.q;$$('[data-q]').forEac
 for(const [id,q] of [['#nomEl','Él'],['#nomElla','Ella']])$(id).oninput=e=>{S.nombres[q]=e.target.value.trim().slice(0,14)||(q==='Él'?'Matías':'Sofía');render()};
 $('#btnReset').onclick=()=>{if(!confirm('¿Reiniciar la mascota desde el huevo?'))return;S=nuevo(1,0,S.tema);faseDibujada='';guardar();render()};
 $('#btnReglas').onclick=()=>abrir('#shReglas');
+// Para revisar Limpiar, Botiquín y Medicina sin esperar
+const prueba=f=>()=>{if(ocupado)return;if(!vive()||S.fase==='huevo')return toast('Primero tiene que nacer');f();guardar();render()};
+$('#btnSucio').onclick=prueba(()=>{if(S.caca>=3)return toast('Ya tiene 3 cacas');S.caca++;if(!S.cacaDesde)S.cacaDesde=ahora();anota('(prueba) Hizo caca 💩');toast('💩 Listo: prueba el botón Limpiar')});
+$('#btnHerir').onclick=prueba(()=>{if(S.herido)return toast('Ya está herido');S.herido=true;S.heridoDesde=ahora();anota('(prueba) Quedó con una herida 🤕');toast('🤕 Listo: prueba el botón Botiquín')});
+$('#btnEnfermar').onclick=prueba(()=>{if(S.enfermo)return toast('Ya está enfermo');enfermar(ahora(),'(prueba)');toast('🤒 Listo: prueba el botón Medicina')});
 $('#selTema').onchange=e=>{S.tema=e.target.value;render()};
 
 /* ===== Inicio ===== */

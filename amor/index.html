@@ -347,6 +347,11 @@ body[data-tema=navidad]{color-scheme:dark;--bg:#07170f;--ink:#fff7ea;--mute:#f0d
   --neu:6px 6px 16px rgba(0,0,0,.55),-5px -5px 14px rgba(255,255,255,.07);--neu-in:inset 4px 4px 10px rgba(0,0,0,.55),inset -3px -3px 9px rgba(255,255,255,.07)}
 body[data-tema=navidad] h1,body[data-tema=navidad] h2{color:#ffe7a8}
 </style>
+<style>html,body{touch-action:manipulation}a,button,label,input,select,textarea,[role=button]{touch-action:manipulation}</style>
+<script>/* Sin zoom con doble toque: touch-action en CSS y, por si el navegador lo ignora, el segundo toque rápido se cambia por un clic normal */
+(function(){var u=0;document.addEventListener('touchend',function(e){var t=Date.now(),el=e.target;if(el.nodeType!==1)el=el.parentElement;
+ if(t-u<350&&e.changedTouches.length===1&&!(el.closest&&el.closest('input,textarea,select,[contenteditable],video,audio'))){e.preventDefault();el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}))}u=t},{passive:false});
+ document.addEventListener('dblclick',function(e){e.preventDefault()},{passive:false})})();</script>
 </head>
 <body>
 <div class="mesh" aria-hidden="true"></div>
