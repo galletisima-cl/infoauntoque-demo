@@ -315,6 +315,9 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   --seg2:#9caf88;--seg3:#d8a7a7;
   --btn:linear-gradient(145deg,#f8f1e6,#e8dccb);--btn-ink:#7d2e3a;
   --neu:6px 6px 14px rgba(125,95,75,.32),-6px -6px 14px rgba(255,255,255,.75);--neu-in:inset 4px 4px 10px rgba(125,95,75,.32),inset -4px -4px 10px rgba(255,255,255,.75)}
+.cita.cupon{border:2px dashed var(--red);position:relative}
+.cita.cupon>p{font-weight:600}
+.cita.cupon.hecha{opacity:.85}
 .tipos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:6px 0 4px}
 .tipos label{display:grid;justify-items:center;text-align:center;gap:2px;padding:14px 8px;border-radius:18px;cursor:pointer;margin:0;
   background:var(--btn);border:1px solid var(--glass-b);box-shadow:var(--neu);color:var(--ink)}
@@ -405,21 +408,21 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
   <section class="sec" data-sec="razones">
     <h2 id="hRz">10 razones por las que te amo</h2>
-    <p class="hint">Cada razón con su foto. <span id="quienRz">Tu pareja</span> las verá como tarjetas que se dan vuelta una a una.</p>
+    <p class="hint"><span id="rzHint">Cada razón con su foto.</span> <span id="quienRz">Tu pareja</span> las verá como tarjetas que se dan vuelta una a una.</p>
     <div id="listRz"></div>
-    <button class="ghost" id="addRz">Agregar razón</button>
+    <button class="ghost" id="addRz">Agregar <span id="rzAdd">razón</span></button>
     <div class="msg" id="msgRz"></div>
   </section>
 
   <section class="sec" data-sec="cancion">
-    <h2>Su canción</h2>
+    <h2 id="hCancion">Su canción</h2>
     <p class="hint">Pega un link de Spotify o YouTube. No se sube ningún archivo, así que no ocupa espacio.</p>
     <label for="fCancion">Link de la canción</label><input type="url" id="fCancion" placeholder="https://open.spotify.com/track/…">
     <div class="note" id="songOk"></div>
   </section>
 
   <section class="sec" data-sec="video">
-    <h2>Video</h2>
+    <h2 id="hVideo">Video</h2>
     <p class="hint">Lo más liviano es un link de YouTube "no listado". También puedes subir un video de hasta 30 segundos: se comprime a 720p.</p>
     <label for="fYt">Link de YouTube</label><input type="url" id="fYt" placeholder="https://youtu.be/…">
     <p class="note">o</p>
@@ -429,7 +432,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   </section>
 
   <section class="sec" data-sec="voz">
-    <h2>Nota de voz</h2>
+    <h2 id="hVoz">Nota de voz</h2>
     <p class="hint">Hasta 1 minuto, grabada en Opus a 32 kbps (un minuto pesa unos 250 KB).</p>
     <button id="btnRec">Grabar</button>
     <span class="btn file ghost" style="background:var(--soft);color:var(--ink)">Subir audio<input type="file" id="inVoz" accept="audio/*"></span>
@@ -484,7 +487,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <h2>Preguntas para desbloquear la sorpresa</h2>
     <p class="hint">Escribe hasta 4 opciones y marca la correcta. <span id="quienQ">Tu pareja</span> tiene que acertar todas para desbloquear los juegos.</p>
     <div id="listQ"></div>
-    <button class="ghost" id="addQ">Agregar pregunta</button>
+    <button class="ghost" id="addQ">Agregar pregunta</button> <button class="ghost" id="addQT" type="button">💡 Usar una plantilla</button>
   </section>
 
   <section class="sec" data-sec="sorpresa" data-sigue="1">
@@ -565,6 +568,22 @@ const TIPOS_R=[['amor','💘','Amor','Para tu pareja'],['familia','🏡','Famili
 const PANORAMAS={
   familia:['Desayuno juntos un domingo','Cocinar la receta familiar','Ver fotos antiguas de la familia','Paseo al parque o a la plaza','Tarde de juegos de mesa','Ir al cine juntos','Hornear galletas juntos','Visitar a los abuelos','Salir a andar en bicicleta','Ir a la playa por el día','Plantar algo juntos','Una tarde de manualidades'],
   amistad:['Asado en la casa de alguien','Noche de series y cabritas','Ir a un concierto juntos','Subir un cerro','Tarde de juegos de mesa','Viaje de fin de semana','Probar un restorán nuevo','Ir a la playa','Karaoke','Noche de videojuegos','Recorrer una feria','Ver un partido juntos']};
+/* Familia: el cuaderno se transforma en cupones de actividades ("Vale por…") que quien recibe canjea */
+const CUPONES=['Vale por un desayuno en la cama','Vale por una tarde de cine en casa','Vale por un abrazo de oso','Vale por cocinar juntos tu plato favorito','Vale por un paseo al parque','Vale por una tarde de juegos de mesa','Vale por ver fotos antiguas juntos','Vale por hornear galletas juntos','Vale por un día sin quehaceres','Vale por una salida a tomar helado','Vale por una videollamada larga','Vale por un masaje de pies'];
+/* Plantillas de preguntas para desbloquear la sorpresa (las opciones vacías las completa quien regala) */
+const PREG_T={
+  amor:[{q:'¿Dónde fue nuestra primera cita?',ops:['','','','']},{q:'¿Cuál es mi comida favorita?',ops:['','','','']},{q:'¿Qué canción nos representa?',ops:['','','','']},
+    {q:'¿Quién dijo "te amo" primero?',ops:['Yo','Tú','Los dos a la vez','Todavía lo discutimos']}],
+  familia:[{q:'¿Cuál es mi comida favorita?',ops:['','','','']},{q:'¿A dónde fue nuestro viaje familiar favorito?',ops:['','','','']},
+    {q:'¿Cómo se llamaba nuestra primera mascota?',ops:['','','','']},{q:'¿Qué canción cantamos siempre en el auto?',ops:['','','','']},
+    {q:'¿Qué es lo que más me gusta hacer los domingos?',ops:['Dormir hasta tarde','Almorzar en familia','Salir a pasear','Ver películas']},
+    {q:'¿Quién de la familia cocina mejor?',ops:['Yo','Tú','La abuela','Mejor pidamos delivery']}],
+  amistad:[{q:'¿Quién llega siempre tarde?',ops:['Yo','Tú','Los dos','Nadie (mentira)']},
+    {q:'Si nos perdemos en el bosque, ¿quién sobrevive?',ops:['Yo','Tú','Ninguno','El que tenga batería']},
+    {q:'¿Quién es el más dramático de los dos?',ops:['Yo','Tú','Empate técnico','El que tenga hambre']},
+    {q:'¿Quién le debe plata a quién?',ops:['Yo a ti','Tú a mí','Ya perdimos la cuenta','Mejor no hablemos de eso']},
+    {q:'¿Qué pedimos siempre cuando salimos?',ops:['Papas fritas','Completos','Pizza','Lo que sea, pero con mayo']},
+    {q:'¿Cuál es nuestro chiste interno?',ops:['','','','']}]};
 const PREMIOS={
   amor:['Un masaje de 15 minutos','Desayuno en la cama','Tú eliges la película','Cena que tú elijas','Un día sin lavar la loza','Salida sorpresa'],
   familia:['Un abrazo de un minuto','Tú eliges el almuerzo del domingo','Te libro de una tarea de la casa','Helado a elección','Tú eliges la película','Una tarde solo para los dos'],
@@ -574,11 +593,15 @@ const IDEAS_T={
     (d,p,r)=>`${p}:\n\nGracias por cada cosa que hiciste por mí, incluso las que nunca vi. Todo lo bueno que tengo empezó contigo.\n\nTe quiero mucho, ${r.trato}.\n${d}`,
     (d,p,r)=>`Querid${r.rolPara==='madre'?'a':'o'} ${r.trato}:\n\nAhora que crecí entiendo lo mucho que te costó y lo bien que lo hiciste. Gracias por tu paciencia, tus consejos y tus abrazos.\n\nCon todo mi cariño,\n${d}`,
     (d,p,r)=>`${p}:\n\nNo te lo digo tan seguido como debería: eres mi ejemplo. Gracias por estar siempre, en los días buenos y en los difíciles.\n\nTu ${TRATO[r.rolDe]},\n${d}`,
+    (d,p,r)=>`${p}:\n\nPasan los años y sigo buscando tu abrazo cuando las cosas se ponen difíciles. Gracias por ser mi casa.\n\nTe quiero muchísimo,\n${d}`,
+    (d,p,r)=>`Querid${r.rolPara==='madre'?'a':'o'} ${r.trato}:\n\nSi hoy soy buena persona es porque te vi serlo todos los días. Ojalá algún día pueda devolverte aunque sea la mitad de todo lo que me diste.\n\nTu ${TRATO[r.rolDe]} que te quiere,\n${d}`,
     (d,p,r)=>`Para ${p}:\n\nGracias por enseñarme a andar en bicicleta, a levantarme cuando me caigo y a reírme de mí mism${r.rolDe==='hija'?'a':'o'}. Lo sigo usando todos los días.\n\nTe quiero,\n${d}`],
   hijos:[ // de papá o mamá a hijo/hija
     (d,p,r)=>`${p}:\n\nDesde el día en que llegaste, mi vida es más bonita. Verte crecer es el regalo más grande que tengo.\n\nTe quiero con todo mi corazón.\nTu ${TRATO[r.rolDe]}`,
     (d,p,r)=>`Querid${r.rolPara==='hija'?'a':'o'} ${p}:\n\nQuiero que nunca se te olvide: estoy orgullos${r.rolDe==='madre'?'a':'o'} de ti, no por lo que logras, sino por la persona que eres.\n\nSiempre voy a estar aquí.\nTu ${TRATO[r.rolDe]}`,
     (d,p,r)=>`${p}:\n\nGracias por las risas, los abrazos y hasta por los días difíciles: contigo aprendí a ser ${r.rolDe==='madre'?'mamá':'papá'}.\n\nTe quiero hoy y siempre.\n${d}`,
+    (d,p,r)=>`${p}:\n\nAunque crezcas, para mí siempre vas a ser esa guagua que me cambió la vida. Gracias por dejarme acompañarte.\n\nTe quiero infinito.\nTu ${TRATO[r.rolDe]}`,
+    (d,p,r)=>`Querid${r.rolPara==='hija'?'a':'o'} ${p}:\n\nGuarda esta carta para los días difíciles: no estás sol${r.rolPara==='hija'?'a':'o'}, nunca. Pase lo que pase, aquí tienes a tu ${TRATO[r.rolDe]}.\n\nCon todo mi cariño,\n${d}`,
     (d,p,r)=>`Para ${p}:\n\nOjalá nunca dejes de soñar en grande. Yo voy a estar en primera fila aplaudiéndote.\n\nCon todo mi amor,\nTu ${TRATO[r.rolDe]}`],
   amistad:[
     (d,p)=>`${p}:\n\nGracias por estar en las buenas, en las malas y en las ridículas. Eres de esas personas que hacen la vida más fácil.\n\nPor muchos años más de amistad.\n${d}`,
@@ -595,7 +618,12 @@ function P(){
     icoProx:'📅',hint:'Elige los panoramas con que parte el cuaderno. Después los dos pueden agregar más, ponerles fecha, marcarlos como hechos y anotar cómo les fue, desde el regalo.',
     ejemplo:'Ej: volver a ese lugar al que siempre íbamos',anotar:'Anotar un panorama pendiente…',vacioP:'No hay panoramas pendientes. ¡Anoten uno!',vacioH:'Todavía no marcan ningún panorama como hecho.',
     borrar:'¿Borrar este panorama del cuaderno?',waCita:'📅 Nuestro panorama',sym:'♥',offTxt:'Si necesitas suspender este regalo, puedes deshabilitarlo desde este botón. No se borra nada, solo se suspende el servicio.',
-    escape:'Escape room',escapeTxt:'Acertijos para resolver juntos y competir con otros equipos.',citas:PANORAMAS[tipo]||[],premios:PREMIOS[tipo]};
+    escape:'Escape room',escapeTxt:'Acertijos para resolver juntos y competir con otros equipos.',citas:PANORAMAS[tipo]||[],premios:PREMIOS[tipo],
+    sin:[],cupones:false,preguntas:PREG_T[tipo],rzItem:'Razón',rzHint:'Cada razón con su foto.',cancion:'Nuestra canción',cancionEd:'Su canción',
+    voz:'Escúchame',vozSub:'Te dejé un mensaje con mi voz',vozEd:'Nota de voz',videoEd:'Video',
+    tabP:'Pendientes',tabH:'Hechas',hacer:'✔ ¡La hicimos!',volver:'Volver a pendientes',fechaP:'📅 Ponerle fecha',nota:'¿Cómo estuvo? Anoten un recuerdo…',hechaIco:'✔',cuadScript:'Nuestro',
+    tema0:'pasion',fondo0:'corazones'};
+  const mismo={cancion:'La canción que me recuerdas',cancionEd:'La canción que me recuerdas',voz:'Escucha este mensaje',vozSub:'',vozEd:'Escucha este mensaje',videoEd:'Un video para ti'};
   if(tipo==='amor')return Object.assign(base,{marca:'Con amor',titulo:'Regalo de amor',h1:'Arma tu regalo de amor',quien:'tu pareja',
     fecha:'¿Desde cuándo están juntos?',contador:'Llevamos juntos',dias:'días juntos',aniv:'nuestro aniversario',anivDias:'días para nuestro próximo aniversario',
     razones:'razones por las que te amo',sobre:'Te amo',wrapped:'Nuestra relación en números',wrappedSw:'Wrapped: resumen animado de su relación',
@@ -608,12 +636,17 @@ function P(){
   if(tipo==='familia')return Object.assign(base,{marca:'Con cariño',titulo:'Regalo para '+(trato?'mi '+trato:'la familia'),h1:'Arma tu regalo para '+(trato?'tu '+trato:'tu familia'),quien:trato?'tu '+trato:'quien recibe',
     fecha:aHijo?'¿Cuándo nació tu '+trato+'?':'¿Cuándo naciste tú? (desde ahí cuenta el tiempo juntos)',contador:'Llevamos juntos',dias:'días juntos',
     aniv:aHijo?'tu cumpleaños':'mi cumpleaños',anivDias:aHijo?'días para tu cumpleaños':'días para mi cumpleaños',
-    razones:'razones por las que te quiero',sobre:'Te quiero',wrapped:'Nuestra familia en números',wrappedSw:'Wrapped: resumen animado de su historia juntos',
-    ideas:aHijo?IDEAS_T.hijos:IDEAS_T.padres});
+    razones:'recuerdos sobre ti',rzItem:'Recuerdo',rzHint:'Cada recuerdo con su foto.',sobre:'Te quiero',wrapped:'Nuestra familia en números',wrappedSw:'Wrapped: resumen animado de su historia juntos',
+    ideas:aHijo?IDEAS_T.hijos:IDEAS_T.padres,sin:['historia','juegos'],tema0:'vintage',fondo0:'coronas'},mismo,{
+    cupones:true,cita:'cupón',citaP:'cupones',cuaderno:'Cupones de actividades',badge:'Próximo cupón',citas:CUPONES,cuadScript:'Tus',
+    hint:'Elige los cupones que vienen en el regalo. Quien lo recibe los canjea cuando quiera, les ponen fecha y después pueden anotar cómo les fue.',
+    ejemplo:'Ej: Vale por una tarde de pesca juntos',anotar:'Agregar un cupón…',vacioP:'No quedan cupones por canjear. ¡Agreguen uno!',vacioH:'Todavía no canjean ningún cupón.',
+    borrar:'¿Borrar este cupón?',waCita:'🎟️ Quiero canjear mi cupón',tabP:'Por canjear',tabH:'Canjeados',hacer:'🎟️ ¡Canjear!',volver:'Volver a por canjear',
+    fechaP:'📅 ¿Cuándo lo canjeamos?',nota:'¿Cómo estuvo? Anoten un recuerdo…',hechaIco:'🎟️'});
   return Object.assign(base,{marca:'Con cariño',titulo:'Regalo de amistad',h1:'Arma tu regalo de amistad',quien:'tu amigo o amiga',
     fecha:'¿Desde cuándo son amigos?',contador:'Somos amigos hace',dias:'días de amistad',aniv:'nuestro aniversario de amistad',anivDias:'días para nuestro aniversario de amistad',
-    razones:'razones por las que eres tan importante para mí',sobre:'Para ti',wrapped:'Nuestra amistad en números',wrappedSw:'Wrapped: resumen animado de su amistad',
-    sym:'★',ideas:IDEAS_T.amistad});
+    razones:'razones para ser amigos',sobre:'Para ti',wrapped:'Nuestra amistad en números',wrappedSw:'Wrapped: resumen animado de su amistad',
+    sym:'★',ideas:IDEAS_T.amistad,sin:['carta','cielo','historia','juegos','citas'],tema0:'pastel',fondo0:'likes'},mismo);
 }
 /* Selector de tipo (registro y editor). pre = prefijo de ids */
 const tipoHtml=pre=>`<div class="tipos" id="${pre}Tipos" role="radiogroup" aria-label="Tipo de regalo">${TIPOS_R.map(([k,i,n,s])=>`<label><input type="radio" name="${pre}Tipo" value="${k}"><span class="ico">${i}</span><b>${n}</b><small>${s}</small></label>`).join('')}</div>
@@ -778,7 +811,7 @@ $('#inFotos').addEventListener('change',async e=>{
 
 /* ---------- 10 razones ---------- */
 function renderRz(){
-  $('#listRz').innerHTML=S.razones.map((r,i)=>`<div class="rz"><div class="pic">${r.url?`<img src="${r.url}" alt="">`:r.subiendo?'subiendo…':'+ foto'}<input type="file" accept="image/*" data-rzf="${i}" aria-label="Foto de la razón ${i+1}"></div><div><label style="margin-top:0" for="rz${i}">Razón ${i+1}</label><input type="text" id="rz${i}" data-rz="${i}" value="${esc(r.t)}" maxlength="160"></div><button class="x" data-drz="${i}" aria-label="Quitar razón">✕</button></div>`).join('');
+  $('#listRz').innerHTML=S.razones.map((r,i)=>`<div class="rz"><div class="pic">${r.url?`<img src="${r.url}" alt="">`:r.subiendo?'subiendo…':'+ foto'}<input type="file" accept="image/*" data-rzf="${i}" aria-label="Foto de la razón ${i+1}"></div><div><label style="margin-top:0" for="rz${i}">${P().rzItem} ${i+1}</label><input type="text" id="rz${i}" data-rz="${i}" value="${esc(r.t)}" maxlength="160"></div><button class="x" data-drz="${i}" aria-label="Quitar razón">✕</button></div>`).join('');
   $('#addRz').disabled=S.razones.length>=10;renderQuota();
 }
 $('#addRz').onclick=()=>{if(S.razones.length<10){S.razones.push({t:''});renderRz()}};
@@ -947,6 +980,9 @@ $('#listQ').addEventListener('input',e=>{const d=e.target.dataset;if(d.q!=null)S
 $('#listQ').addEventListener('change',e=>{const d=e.target.dataset;if(d.qok!=null){S.qs[+d.qok].ok=+e.target.value;scheduleSave()}});
 $('#listQ').addEventListener('click',e=>{const i=e.target.dataset.dq;if(i!=null){S.qs.splice(+i,1);renderQ();scheduleSave()}});
 $('#addQ').onclick=()=>{if(S.qs.length<10){S.qs.push({q:'',ops:['','','',''],ok:0});renderQ()}};
+/* Plantillas según el perfil: agrega la siguiente que todavía no esté */
+$('#addQT').onclick=()=>{if(S.qs.length>=10)return;const t=P().preguntas.find(x=>!S.qs.some(q=>q.q===x.q));
+  if(!t){$('#addQT').textContent='💡 Ya usaste todas las plantillas';return}S.qs.push({q:t.q,ops:[...t.ops],ok:0});renderQ();scheduleSave()};
 
 /* ---------- cartas por WhatsApp ---------- */
 const firma=()=>S.de?`\n\n— ${S.de}`:'';
@@ -961,7 +997,7 @@ function updWa(){
 /* La sección "Cartas por WhatsApp" se quitó del editor (26 nov 2026); los datos antiguos se conservan */
 
 /* ---------- interruptor por sección: quien regala decide qué secciones ve su pareja ---------- */
-const vis=k=>!(S.ocultas||[]).includes(k);
+const vis=k=>!(S.ocultas||[]).includes(k)&&!P().sin.includes(k);
 function pintarSwitches(){
   document.querySelectorAll('#crear section[data-sec]').forEach(sec=>{
     const k=sec.dataset.sec;let sw=sec.querySelector(':scope>.sec-sw');
@@ -981,14 +1017,18 @@ function pintarTipo(){
   document.title=t.titulo;set('marca',t.marca);set('edH1',t.h1);set('lFecha',t.fecha);set('lTelPara','WhatsApp de '+t.quien);
   set('hRz','10 '+t.razones);set('quienRz',cap(t.quien));set('quienQ',cap(t.quien));set('lWrapped',t.wrappedSw);
   set('nProx',t.proxima);set('nPend',t.cita==='cita'?'las citas pendientes':'los panoramas pendientes');
-  set('hCuad',t.cuaderno);set('hintCuad',t.hint);set('nEscape',t.escape);set('verComo','Ver como '+t.quien);
+  set('hCuad',t.cuaderno);set('hCancion',t.cancionEd);set('hVideo',t.videoEd);set('hVoz',t.vozEd);set('rzHint',t.rzHint);set('rzAdd',t.rzItem.toLowerCase());
+  document.querySelectorAll('#crear section[data-sec]').forEach(x=>x.classList.toggle('hide',t.sin.includes(x.dataset.sec)));if($('#addQT'))$('#addQT').textContent='💡 Usar una plantilla';
+  set('hintCuad',t.hint);set('nEscape',t.escape);set('verComo','Ver como '+t.quien);
   const fc=$('#fCitaNueva');if(fc)fc.placeholder=t.ejemplo;
   const pf=$('#edPerfiles');if(pf)pf.innerHTML=perfilesHtml(t)+(S.tipo==='familia'&&!t.rolDe?'<span>⚠️ Elige a quién se lo regalas y quién eres tú</span>':'');
 }
 let pintarSelTipo=null;
 function initTipoEditor(){
   if(!pintarSelTipo){$('#edTipo').innerHTML=tipoHtml('ed');
-    pintarSelTipo=tipoWire('ed',S,()=>{pintarTipo();renderCitas();if(S.tipo!=='familia'||rolesOk(S.rolDe,S.rolPara))scheduleSave()})}
+    let tipoAntes=S.tipo;pintarSelTipo=tipoWire('ed',S,()=>{
+      if(S.tipo!==tipoAntes){tipoAntes=S.tipo;const t=P();S.tema=t.tema0;S.fondo=t.fondo0;document.body.dataset.tema=S.tema;fill();edHero();parallax($('#heroEd'));pintarSwitches()}
+      pintarTipo();renderCitas();renderRz();if(S.tipo!=='familia'||rolesOk(S.rolDe,S.rolPara))scheduleSave()})}
   else pintarSelTipo();
   pintarTipo();
 }
@@ -1160,16 +1200,16 @@ function pintarCuaderno(){
   const L=$('#cuadLista');if(!L)return;
   const pend=S.cuaderno.filter(c=>c.e==='p').sort((a,b)=>(a.f||'9')<(b.f||'9')?-1:(a.f||'9')>(b.f||'9')?1:0),
         hechas=S.cuaderno.filter(c=>c.e==='h').sort((a,b)=>(b.f||'')<(a.f||'')?-1:1),h=hoy();
-  const prox=pend.find(c=>c.f&&c.f>=h);
-  $('#secCuad').querySelectorAll('[data-tab]').forEach(b=>{const n=b.dataset.tab==='p'?pend.length:hechas.length;b.textContent=(b.dataset.tab==='p'?'Pendientes':'Hechas')+' ('+n+')';b.classList.toggle('on',b.dataset.tab===cuadTab);b.setAttribute('aria-selected',b.dataset.tab===cuadTab)});
+  const prox=pend.find(c=>c.f&&c.f>=h),T=P(),cup=T.cupones?' cupon':'';
+  $('#secCuad').querySelectorAll('[data-tab]').forEach(b=>{const n=b.dataset.tab==='p'?pend.length:hechas.length;b.textContent=(b.dataset.tab==='p'?T.tabP:T.tabH)+' ('+n+')';b.classList.toggle('on',b.dataset.tab===cuadTab);b.setAttribute('aria-selected',b.dataset.tab===cuadTab)});
   const lista=cuadTab==='p'?pend:hechas;
-  L.innerHTML=lista.length?lista.map(c=>cuadTab==='p'?`<div class="cita${c===prox?' prox':''}">
+  L.innerHTML=lista.length?lista.map(c=>cuadTab==='p'?`<div class="cita${cup}${c===prox?' prox':''}">
       ${c===prox?`<span class="badge">${P().badge}</span>`:''}<p>${esc(c.t)}</p>
-      <label class="cfecha">${c.f?`📅 ${c.f<h?'Era el':'El'} ${fLarga(c.f)}`:'📅 Ponerle fecha'}<input type="date" data-f="${c.id}" value="${c.f}" aria-label="Fecha"></label>
-      <div class="cbt"><button data-hecha="${c.id}">✔ ¡La hicimos!</button>${S.telDe&&c.f?`<a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`${P().waCita}: ${c.t}, el ${fLarga(c.f)}`)}">Avisar</a>`:''}<button class="x" data-borrar="${c.id}" aria-label="Borrar">✕</button></div></div>`
-    :`<div class="cita hecha"><p>✔ ${esc(c.t)}</p><small class="lbl">${c.f?fLarga(c.f):''}</small>
-      <textarea data-n="${c.id}" maxlength="300" placeholder="¿Cómo estuvo? Anoten un recuerdo…">${esc(c.n)}</textarea>
-      <div class="cbt"><button class="ghost" data-volver="${c.id}">Volver a pendientes</button></div></div>`).join('')
+      <label class="cfecha">${c.f?`📅 ${c.f<h?'Era el':'El'} ${fLarga(c.f)}`:T.fechaP}<input type="date" data-f="${c.id}" value="${c.f}" aria-label="Fecha"></label>
+      <div class="cbt"><button data-hecha="${c.id}">${T.hacer}</button>${S.telDe&&c.f?`<a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`${P().waCita}: ${c.t}, el ${fLarga(c.f)}`)}">Avisar</a>`:''}<button class="x" data-borrar="${c.id}" aria-label="Borrar">✕</button></div></div>`
+    :`<div class="cita hecha${cup}"><p>${T.hechaIco} ${esc(c.t)}</p><small class="lbl">${c.f?fLarga(c.f):''}</small>
+      <textarea data-n="${c.id}" maxlength="300" placeholder="${T.nota}">${esc(c.n)}</textarea>
+      <div class="cbt"><button class="ghost" data-volver="${c.id}">${T.volver}</button></div></div>`).join('')
     :`<p class="note" style="grid-column:1/-1">${cuadTab==='p'?P().vacioP:P().vacioH}</p>`;
   // la rueda de citas se redibuja solo si cambió la lista de pendientes (para no borrar el resultado)
   const firma=pend.map(c=>c.id+c.t).join('|');if(firma!==firmaRueda){firmaRueda=firma;if(ruedaModo==='cita')pintarRueda()}modosRueda();
@@ -1194,7 +1234,7 @@ function modosRueda(){
   const sec=$('#secRueda');if(!sec)return;
   const pend=S.cuaderno.filter(c=>c.e==='p'),m=[];
   if(S.ruleta.on&&vis('juegos')&&premiosR.length>1)m.push(['premios','🎁 Premios']);
-  if(vis('citas')&&pend.length>1)m.push(['cita',P().icoProx+' '+P().proxima]);
+  if(vis('citas')&&!P().cupones&&pend.length>1)m.push(['cita',P().icoProx+' '+P().proxima]);
   sec.style.display=m.length?'':'none';if(!m.length)return;
   if(!m.some(x=>x[0]===ruedaModo)){ruedaModo=m[0][0];pintarRueda()}
   $('#ruedaModos').innerHTML=m.length>1?m.map(([k,t])=>`<button data-modo="${k}" class="${k===ruedaModo?'on':''}">${t}</button>`).join(''):'';
@@ -1239,18 +1279,18 @@ function renderRegalo(){
   <div id="inside" class="hide">
   ${S.wrapped&&vis('juegos')?`<section class="scene"><div class="wrapped-cta"><p class="script" style="font-size:26px;margin:0">Nuestro Wrapped</p><h2 style="margin:.3em 0 .6em">${esc(TX.wrapped)}</h2><button id="btnWrapped" class="pri">Ver nuestro Wrapped</button></div></section>`:''}
   ${together()?`<section class="scene s-red"><div><p class="lbl">${esc(TX.contador)}</p><div class="count"><div><b id="cD">0</b><small>días</small></div><div><b id="cH">0</b><small>horas</small></div><div><b id="cM">0</b><small>minutos</small></div><div><b id="cS">0</b><small>segundos</small></div></div><p class="lbl" style="margin-top:18px">desde el ${fecha(S.fecha)}</p></div></section>`:''}
-  ${(sp||yS)&&vis('cancion')?`<section class="scene"><div><h2>Nuestra canción</h2>${sp?`<iframe class="spot" src="${sp}" allow="encrypted-media" loading="lazy"></iframe>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yS}" allowfullscreen loading="lazy"></iframe>`}<p class="note"><a href="${esc(S.cancion)}">Abrir la canción</a></p></div></section>`:''}
+  ${(sp||yS)&&vis('cancion')?`<section class="scene"><div><h2>${esc(TX.cancion)}</h2>${sp?`<iframe class="spot" src="${sp}" allow="encrypted-media" loading="lazy"></iframe>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yS}" allowfullscreen loading="lazy"></iframe>`}<p class="note"><a href="${esc(S.cancion)}">Abrir la canción</a></p></div></section>`:''}
   ${fotos.length&&vis('fotos')?`<section class="scene"><div><h2>Nuestros momentos</h2><div class="album" id="album">${fotos.map(f=>`<figure><img src="${f.url}" alt="${esc(f.cap)}" loading="lazy"><figcaption>${esc(f.cap)}</figcaption></figure>`).join('')}</div><div class="nav"><button class="ghost" id="prev" aria-label="Foto anterior">←</button><button class="ghost" id="next" aria-label="Foto siguiente">→</button></div></div></section>`:''}
-  ${rz.length&&vis('razones')?`<section class="scene"><div><h2>${rz.length} ${esc(TX.razones)}</h2><div class="deck" id="deck"></div><div class="pips" id="pips"></div><div class="nav"><button class="ghost" id="rzPrev" aria-label="Razón anterior">←</button><button id="rzNext" class="pri">Siguiente razón</button></div></div></section>`:''}
+  ${rz.length&&vis('razones')?`<section class="scene"><div><h2>${rz.length} ${esc(TX.razones)}</h2><div class="deck" id="deck"></div><div class="pips" id="pips"></div><div class="nav"><button class="ghost" id="rzPrev" aria-label="Razón anterior">←</button><button id="rzNext" class="pri">Siguiente ${TX.rzItem.toLowerCase()}</button></div></div></section>`:''}
   ${S.carta&&vis('carta')?`<section class="scene"><div><h2>Una carta para ti</h2><div class="paper">${esc(S.carta)}</div></div></section>`:''}
   ${S.cielo.on&&vis('cielo')&&(S.cielo.f||S.fecha)?`<section class="scene s-sky"><div><p class="lbl">Así estaba el cielo</p><h2>${esc(city[0])}, ${fecha(S.cielo.f||S.fecha)}</h2>${skySvg(S.cielo,true)}<p class="lbl" style="font-size:14px">a las ${esc(S.cielo.h||'22:00')} · las estrellas más brillantes sobre nosotros</p></div></section>`:''}
   ${tl.length&&vis('historia')?`<section class="scene"><div><h2>Nuestra historia</h2><ul class="tl">${tl.sort((a,b)=>a.f<b.f?-1:1).map(x=>`<li><time>${x.f?fecha(x.f):''}</time>${esc(x.t)}</li>`).join('')}</ul></div></section>`:''}
-  ${S.voz&&vis('voz')?`<section class="scene"><div><h2>Escúchame</h2><p style="color:var(--mute)">Te dejé un mensaje con mi voz</p><audio controls src="${S.voz.url}" style="width:100%"></audio></div></section>`:''}
+  ${S.voz&&vis('voz')?`<section class="scene"><div><h2>${esc(TX.voz)}</h2>${TX.vozSub?`<p style="color:var(--mute)">${esc(TX.vozSub)}</p>`:''}<audio controls src="${S.voz.url}" style="width:100%"></audio></div></section>`:''}
   ${(S.video||yV)&&vis('video')?`<section class="scene"><div><h2>Un video para ti</h2>${S.video?`<video class="media" controls playsinline src="${S.video.url}"></video>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yV}" allowfullscreen loading="lazy"></iframe><p class="note"><a href="${esc(S.yt)}">Abrir en YouTube</a></p>`}</div></section>`:''}
-  <section class="scene${vis('citas')?'':' hide'}" id="secCuad"><div><p class="script" style="font-size:26px;margin:0">Nuestro</p><h2 style="margin-top:0">${esc(TX.cuaderno)}</h2>
+  <section class="scene${vis('citas')?'':' hide'}" id="secCuad"><div><p class="script" style="font-size:26px;margin:0">${TX.cuadScript}</p><h2 style="margin-top:0">${esc(TX.cuaderno)}</h2>
     <div class="seg" role="tablist"><button role="tab" data-tab="p">Pendientes</button><button role="tab" data-tab="h">Hechas</button></div>
     <div id="cuadLista" class="citas cuad"></div>
-    <form class="cuad-add" id="cuadForm"><input type="text" id="cuadNueva" maxlength="80" placeholder="${esc(TX.anotar)}" aria-label="Anotar"><button class="pri">Anotar</button></form>
+    <form class="cuad-add" id="cuadForm"><input type="text" id="cuadNueva" maxlength="80" placeholder="${esc(TX.anotar)}" aria-label="Anotar"><button class="pri">${TX.cupones?'Agregar':'Anotar'}</button></form>
     <p class="note" id="cuadMsg" aria-live="polite"></p></div></section>
   <section class="scene" id="secRueda"><div><h2>Rueda de la fortuna</h2><div class="seg" id="ruedaModos"></div><p style="color:var(--mute)" id="ruedaTxt"></p><div class="wheel-wrap"><div class="pointer"></div><div id="ruedaSvg"></div></div><button id="btnGirar" class="pri">Girar</button><div class="premio" id="premio" aria-live="polite"></div></div></section>
   <section class="scene s-env${vis('sorpresa')?'':' hide'}"><div id="quiz"></div></section>
@@ -1263,7 +1303,7 @@ function renderRegalo(){
   const al=$('#album');
   if(al){const go=d=>al.scrollBy({left:d*al.clientWidth*.8,behavior:'smooth'});$('#prev').onclick=()=>go(-1);$('#next').onclick=()=>go(1);al.tabIndex=0;al.onkeydown=e=>{if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1)}}
   if(rz.length&&$('#deck')){
-    let k=0;const draw=()=>{const x=rz[k];$('#deck').innerHTML=`<button class="rcard flip ${x.url?'':'noimg'}" aria-label="Siguiente razón">${x.url?`<img src="${x.url}" alt="">`:''}<div class="n">Razón ${k+1}</div><p>${esc(x.t)}</p></button>`;$('#pips').innerHTML=rz.map((_,j)=>`<i class="${j===k?'on':''}"></i>`).join('');$('#rzNext').textContent=k===rz.length-1?'Volver a empezar':'Siguiente razón';$('#deck .rcard').onclick=nx};
+    let k=0;const draw=()=>{const x=rz[k];$('#deck').innerHTML=`<button class="rcard flip ${x.url?'':'noimg'}" aria-label="Siguiente razón">${x.url?`<img src="${x.url}" alt="">`:''}<div class="n">${TX.rzItem} ${k+1}</div><p>${esc(x.t)}</p></button>`;$('#pips').innerHTML=rz.map((_,j)=>`<i class="${j===k?'on':''}"></i>`).join('');$('#rzNext').textContent=k===rz.length-1?'Volver a empezar':'Siguiente '+TX.rzItem.toLowerCase();$('#deck .rcard').onclick=nx};
     const nx=()=>{k=(k+1)%rz.length;draw()};$('#rzNext').onclick=nx;$('#rzPrev').onclick=()=>{k=(k-1+rz.length)%rz.length;draw()};draw();
   }
   initCuaderno(premios);
@@ -1293,9 +1333,11 @@ function renderRegalo(){
 
 /* ---------- tarjeta sin registrar: registro de quien regala ---------- */
 /* Con qué parte el regalo según el tipo elegido al registrar */
-const inicio=tipo=>({tema:tipo==='amor'?'pasion':'pastel',wrapped:true,
-  citas:tipo==='amor'?['Picnic al atardecer','Ver las estrellas lejos de la ciudad','Cocinar juntos una receta nueva']:PANORAMAS[tipo].slice(0,3),
-  ruleta:{on:true,items:PREMIOS[tipo]}});
+const inicio=tipo=>({tema:{amor:'pasion',familia:'vintage',amistad:'pastel'}[tipo],fondo:{amor:'corazones',familia:'coronas',amistad:'likes'}[tipo],
+  wrapped:tipo==='amor',
+  citas:tipo==='amor'?['Picnic al atardecer','Ver las estrellas lejos de la ciudad','Cocinar juntos una receta nueva']:tipo==='familia'?CUPONES.slice(0,4):[],
+  ruleta:{on:tipo==='amor',items:PREMIOS[tipo]},
+  qs:tipo==='amor'?[]:PREG_T[tipo].slice(0,2).map(x=>({q:x.q,ops:[...x.ops],ok:0}))});
 function vistaRegistro(codigo){
   document.body.dataset.tema='pasion';
   $('#regalo').innerHTML=`<main class="wrap reg"><div class="lead"><p class="script" style="font-size:30px;margin:0">¡Hola!</p><h1 style="margin:.1em 0">Esta tarjeta todavía no tiene regalo</h1><p class="hint">Si tú la vas a regalar, regístrala y arma tu regalo. Quien la reciba verá el regalo al acercar su celular.</p><p class="note">Tarjeta <b>${esc(codigo)}</b></p></div>
@@ -1317,7 +1359,7 @@ function vistaRegistro(codigo){
   const RT={tipo:'',rolDe:'',rolPara:''};
   const regTxt=()=>{const tm={amor:'tu pareja',amistad:'tu amigo o amiga'}[RT.tipo]||(RT.rolPara?'tu '+TRATO[RT.rolPara]:'');
     $('#rHDe').textContent='Tus datos (quien regala'+(RT.tipo==='familia'&&RT.rolDe?' · '+ROLES[RT.rolDe]:'')+')';
-    $('#rHPara').textContent='Quien recibe'+(tm?' · '+tm:'');document.body.dataset.tema=RT.tipo&&RT.tipo!=='amor'?'pastel':'pasion';$('#marca').textContent=RT.tipo&&RT.tipo!=='amor'?'Con cariño':'Con amor';$('#rTipoMsg').textContent=''};
+    $('#rHPara').textContent='Quien recibe'+(tm?' · '+tm:'');document.body.dataset.tema={familia:'vintage',amistad:'pastel'}[RT.tipo]||'pasion';$('#marca').textContent=RT.tipo&&RT.tipo!=='amor'?'Con cariño':'Con amor';$('#rTipoMsg').textContent=''};
   tipoWire('r',RT,regTxt);
   $('#regForm').onsubmit=async e=>{e.preventDefault();const m=$('#regMsg'),v=id=>$('#'+id).value.trim();
     if(!RT.tipo){$('#rTipoMsg').textContent='Elige el tipo de regalo.';$('#rTipos').scrollIntoView({behavior:'smooth',block:'center'});return}
