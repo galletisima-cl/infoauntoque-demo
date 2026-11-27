@@ -329,6 +329,23 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 .perfiles{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0}.perfiles span{background:var(--soft);border-radius:99px;padding:5px 12px;font-size:14px}
 #temas label,#fondos label{white-space:nowrap;gap:7px;padding:6px 10px;font-size:15px;min-width:0;min-height:44px}
 .temas input[type=radio]{margin:0}
+/* Comics: colores pop, bordes negros, sombras duras y trama de puntos (halftone) */
+body[data-tema=comics]{color-scheme:light;--bg:#fff6cc;--ink:#151515;--mute:#4a4a4a;--red:#e4002b;--acc2:#0057ff;--pri-ink:#fff;
+  --b1:#ffd400;--b2:#00b3ff;--b3:#ff3b3b;--b4:#ffffff;--b5:#fff0a0;
+  --card:rgba(255,255,255,.92);--topbg:rgba(255,246,204,.9);--glass-b:#151515;--glass-sh:rgba(0,0,0,0);--soft:#ffe98a;--line:rgba(0,0,0,.18);--field:#fff;
+  --seg2:#00b3ff;--seg3:#ffd400;--btn:#fff;--btn-ink:#151515;
+  --neu:4px 4px 0 #151515;--neu-in:inset 3px 3px 0 rgba(0,0,0,.25)}
+body[data-tema=comics] .mesh::after{content:"";position:absolute;inset:0;background-image:radial-gradient(#151515 1.1px,transparent 1.6px);background-size:11px 11px;opacity:.13}
+body[data-tema=comics] .sec,body[data-tema=comics] .hero-ed{box-shadow:6px 6px 0 #151515;border-width:2px}
+body[data-tema=comics] h1,body[data-tema=comics] h2{text-shadow:2px 2px 0 #ffd400}
+/* Navidad: verde pino, rojo y dorado */
+body[data-tema=navidad]{color-scheme:dark;--bg:#07170f;--ink:#fff7ea;--mute:#f0d3a3;--red:#ff3b4e;--acc2:#1f8a4c;--pri-ink:#fff;
+  --b1:rgba(200,16,46,.75);--b2:rgba(31,138,76,.8);--b3:rgba(242,193,78,.5);--b4:rgba(11,61,36,.9);--b5:rgba(0,0,0,.6);
+  --card:rgba(255,255,255,.08);--topbg:rgba(7,23,15,.6);--glass-b:rgba(255,255,255,.18);--glass-sh:rgba(0,0,0,.6);--soft:rgba(255,255,255,.12);--line:rgba(255,255,255,.14);--field:rgba(0,0,0,.3);
+  --seg2:#1f8a4c;--seg3:#c9a227;
+  --btn:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.03));--btn-ink:#fff7ea;
+  --neu:6px 6px 16px rgba(0,0,0,.55),-5px -5px 14px rgba(255,255,255,.07);--neu-in:inset 4px 4px 10px rgba(0,0,0,.55),inset -3px -3px 9px rgba(255,255,255,.07)}
+body[data-tema=navidad] h1,body[data-tema=navidad] h2{color:#ffe7a8}
 </style>
 </head>
 <body>
@@ -348,7 +365,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <div class="layer" data-k=".12" id="edL1"></div><div class="layer" data-k=".28" id="edL2"></div><div class="layer" data-k=".5" id="edL3"></div>
     <span class="tag" id="edTag">Vista de prueba · para guardar, registra tu tarjeta</span>
     <h1 id="edH1">Arma tu regalo de amor</h1>
-    <p class="hint" style="color:var(--mute);margin:0">Todo se comprime en tu celular antes de subirse: fotos a WebP, notas de voz a 32 kbps y videos a 720p. Elige un tema y verás el cambio aquí mismo.</p>
+    <p class="hint" style="color:var(--mute);margin:0">Tus fotos, videos y audios se ajustan solos para que el regalo cargue rápido. Elige un tema y verás el cambio aquí mismo.</p>
   </header>
 
   <section class="sec hide" id="secPerfil">
@@ -400,7 +417,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
   <section class="sec" data-sec="fotos">
     <h2>Álbum de fotos</h2>
-    <p class="hint">Hasta 20 fotos. Se reducen a 1600 px y WebP al 75 %, más una miniatura de 400 px.</p>
+    <p class="hint">Hasta 20 fotos. Se ajustan solas para que carguen rápido.</p>
     <span class="btn file pri">Agregar fotos<input type="file" id="inFotos" accept="image/*" multiple></span>
     <div class="msg" id="msgFotos"></div>
     <div class="grid" id="gridFotos"></div>
@@ -423,7 +440,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
   <section class="sec" data-sec="video">
     <h2 id="hVideo">Video</h2>
-    <p class="hint">Lo más liviano es un link de YouTube "no listado". También puedes subir un video de hasta 30 segundos: se comprime a 720p.</p>
+    <p class="hint">Pega un link de YouTube (si lo subes como "no listado", solo lo ve quien tenga el link) o sube un video de hasta 30 segundos.</p>
     <label for="fYt">Link de YouTube</label><input type="url" id="fYt" placeholder="https://youtu.be/…">
     <p class="note">o</p>
     <span class="btn file">Subir video (máx. 30 s)<input type="file" id="inVideo" accept="video/*"></span>
@@ -433,7 +450,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
   <section class="sec" data-sec="voz">
     <h2 id="hVoz">Nota de voz</h2>
-    <p class="hint">Hasta 1 minuto, grabada en Opus a 32 kbps (un minuto pesa unos 250 KB).</p>
+    <p class="hint">Hasta 1 minuto. Grábala aquí mismo o sube un audio de tu celular.</p>
     <button id="btnRec">Grabar</button>
     <span class="btn file ghost" style="background:var(--soft);color:var(--ink)">Subir audio<input type="file" id="inVoz" accept="audio/*"></span>
     <button class="x hide" id="delVoz">Quitar</button>
@@ -494,6 +511,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <h2>El último regalo: 2 juegos</h2>
     <p class="hint">Al acertar todas las preguntas se desbloquean <b>🥚 Virtual Monster</b> (la mascota virtual que cuidan entre los dos) y <b>🗝️ <span id="nEscape">Escape room de parejas</span></b> (próximamente).</p>
     <label for="fFinal">Mensaje que acompaña la sorpresa (opcional)</label><textarea id="fFinal" style="min-height:100px"></textarea>
+    <button class="ghost" id="btnFinal" type="button" style="margin-top:8px">Usar el mensaje sugerido</button>
   </section>
 
   <section class="sec">
@@ -545,7 +563,12 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const store={get(){try{return JSON.parse(localStorage.getItem('amor_ed'))}catch(e){return null}},set(v){try{v?localStorage.setItem('amor_ed',JSON.stringify(v)):localStorage.removeItem('amor_ed')}catch(e){}}};
 
 /* ---------- catálogos ---------- */
-const TEMAS=[['pasion','Pasión',['#e0102f','#7b2ff7','#ff7a18','#ff4d8d','#0d0208']],['pastel','Pastel',['#ffd1e1','#ffffff','#fbc4d6','#fff0f5','#fff8fb']],['noche','Noche',['#000','#4fc3f7','#b39ddb','#14123a','#020309']],['vintage','Vintage',['#d8a7a7','#7d2e3a','#9caf88','#f6efe2','#f1e8d9']]];
+/* Temporadas: el tema y la figura de temporada se ofrecen solo mientras dura (mes-día, desde/hasta).
+   Para agregar otra (Fiestas Patrias, San Valentín, Halloween…) basta sumar una fila aquí, su tema CSS y su figura. */
+const TEMPORADAS=[{k:'navidad',n:'Navidad',desde:'11-01',hasta:'12-31'}];
+const enTemporada=k=>{const t=TEMPORADAS.find(x=>x.k===k);if(!t)return true;const md=new Date().toISOString().slice(5,10);
+  return t.desde<=t.hasta?md>=t.desde&&md<=t.hasta:md>=t.desde||md<=t.hasta};
+const TEMAS=[['pasion','Pasión',['#e0102f','#7b2ff7','#ff7a18','#ff4d8d','#0d0208']],['pastel','Pastel',['#ffd1e1','#ffffff','#fbc4d6','#fff0f5','#fff8fb']],['noche','Noche',['#000','#4fc3f7','#b39ddb','#14123a','#020309']],['vintage','Vintage',['#d8a7a7','#7d2e3a','#9caf88','#f6efe2','#f1e8d9']],['comics','Comics',['#ffd400','#00b3ff','#ff3b3b','#ffffff','#fff3b0']],['navidad','Navidad',['#c8102e','#1f8a4c','#f2c14e','#0b3d24','#0b1f14']]];
 const miniMesh=c=>`radial-gradient(at 20% 20%,${c[0]},transparent 60%),radial-gradient(at 85% 25%,${c[1]},transparent 55%),radial-gradient(at 70% 85%,${c[2]},transparent 60%),radial-gradient(at 15% 85%,${c[3]},transparent 55%),${c[4]}`;
 const CIUDADES={arica:['Arica',-18.48,-70.31,'America/Santiago'],antofagasta:['Antofagasta',-23.65,-70.40,'America/Santiago'],laserena:['La Serena',-29.90,-71.25,'America/Santiago'],valparaiso:['Valparaíso',-33.05,-71.62,'America/Santiago'],santiago:['Santiago',-33.45,-70.67,'America/Santiago'],concepcion:['Concepción',-36.83,-73.05,'America/Santiago'],temuco:['Temuco',-38.74,-72.60,'America/Santiago'],puertomontt:['Puerto Montt',-41.47,-72.94,'America/Santiago'],puntaarenas:['Punta Arenas',-53.16,-70.91,'America/Punta_Arenas']};
 const CITAS=['Picnic al atardecer','Noche de películas con cabritas','Cocinar juntos una receta nueva','Subir un cerro a ver la ciudad','Desayuno en la cama','Escapada de fin de semana','Ver las estrellas lejos de la ciudad','Clase de baile juntos','Ir a la playa a ver el atardecer','Tarde de juegos de mesa','Recorrer una feria y probar algo nuevo','Cena a la luz de las velas'];
@@ -584,6 +607,8 @@ const PREG_T={
     {q:'¿Quién le debe plata a quién?',ops:['Yo a ti','Tú a mí','Ya perdimos la cuenta','Mejor no hablemos de eso']},
     {q:'¿Qué pedimos siempre cuando salimos?',ops:['Papas fritas','Completos','Pizza','Lo que sea, pero con mayo']},
     {q:'¿Cuál es nuestro chiste interno?',ops:['','','','']}]};
+/* Mensaje que acompaña la sorpresa: habla de la mascota que cuidan juntos */
+const FINALES={amor: 'Estos juegos son para los dos. Nos toca cuidar juntos a nuestra mascota virtual: darle de comer, entrenarla y verla crecer. Te amo.', familia: 'Estos juegos son para los dos. Tenemos una mascota virtual para cuidar juntos: darle de comer, jugar con ella y verla crecer.', amistad: 'Estos juegos son para los dos. Nos tocó una mascota virtual para cuidar en equipo: hay que darle de comer, entrenarla y que no se nos muera. ¡Cuento contigo!'};
 const PREMIOS={
   amor:['Un masaje de 15 minutos','Desayuno en la cama','Tú eliges la película','Cena que tú elijas','Un día sin lavar la loza','Salida sorpresa'],
   familia:['Un abrazo de un minuto','Tú eliges el almuerzo del domingo','Te libro de una tarea de la casa','Helado a elección','Tú eliges la película','Una tarde solo para los dos'],
@@ -622,7 +647,7 @@ function P(){
     sin:[],cupones:false,preguntas:PREG_T[tipo],rzItem:'Razón',rzHint:'Cada razón con su foto.',cancion:'Nuestra canción',cancionEd:'Su canción',
     voz:'Escúchame',vozSub:'Te dejé un mensaje con mi voz',vozEd:'Nota de voz',videoEd:'Video',
     tabP:'Pendientes',tabH:'Hechas',hacer:'✔ ¡La hicimos!',volver:'Volver a pendientes',fechaP:'📅 Ponerle fecha',nota:'¿Cómo estuvo? Anoten un recuerdo…',hechaIco:'✔',cuadScript:'Nuestro',
-    tema0:'pasion',fondo0:'corazones'};
+    tema0:'pasion',fondo0:'corazones',waResp:'Vi tu regalo y me encantó 💕'};
   const mismo={cancion:'La canción que me recuerdas',cancionEd:'La canción que me recuerdas',voz:'Escucha este mensaje',vozSub:'',vozEd:'Escucha este mensaje',videoEd:'Un video para ti'};
   if(tipo==='amor')return Object.assign(base,{marca:'Con amor',titulo:'Regalo de amor',h1:'Arma tu regalo de amor',quien:'tu pareja',
     fecha:'¿Desde cuándo están juntos?',contador:'Llevamos juntos',dias:'días juntos',aniv:'nuestro aniversario',anivDias:'días para nuestro próximo aniversario',
@@ -643,7 +668,7 @@ function P(){
     ejemplo:'Ej: Vale por una tarde de pesca juntos',anotar:'Agregar un cupón…',vacioP:'No quedan cupones por canjear. ¡Agreguen uno!',vacioH:'Todavía no canjean ningún cupón.',
     borrar:'¿Borrar este cupón?',waCita:'🎟️ Quiero canjear mi cupón',tabP:'Por canjear',tabH:'Canjeados',hacer:'🎟️ ¡Canjear!',volver:'Volver a por canjear',
     fechaP:'📅 ¿Cuándo lo canjeamos?',nota:'¿Cómo estuvo? Anoten un recuerdo…',hechaIco:'🎟️'});
-  return Object.assign(base,{marca:'Con cariño',titulo:'Regalo de amistad',h1:'Arma tu regalo de amistad',quien:'tu amigo o amiga',
+  return Object.assign(base,{marca:'Entre amigos',waResp:'Vi tu regalo y me encantó 🙌',titulo:'Regalo de amistad',h1:'Arma tu regalo de amistad',quien:'tu amigo o amiga',
     fecha:'¿Desde cuándo son amigos?',contador:'Somos amigos hace',dias:'días de amistad',aniv:'nuestro aniversario de amistad',anivDias:'días para nuestro aniversario de amistad',
     razones:'razones para ser amigos',sobre:'Para ti',wrapped:'Nuestra amistad en números',wrappedSw:'Wrapped: resumen animado de su amistad',
     sym:'★',ideas:IDEAS_T.amistad,sin:['carta','cielo','historia','juegos','citas'],tema0:'pastel',fondo0:'likes'},mismo);
@@ -669,6 +694,8 @@ function tipoWire(pre,v,cb){
    Cada figura es un trazo SVG dibujado en una caja de unos 18×16 centrada en 0,0. */
 const circ=(x,y,r)=>`M${x-r} ${y}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0`;
 const FLOR=[0,1,2,3,4].map(k=>{const a=(k*72-90)*Math.PI/180;return circ(+(4.6*Math.cos(a)).toFixed(2),+(4.6*Math.sin(a)).toFixed(2),3.4)}).join('')+circ(0,0,2.4);
+const barra=(a,l,w)=>{const c=Math.cos(a*Math.PI/180),s=Math.sin(a*Math.PI/180),P=[[-w,-l],[w,-l],[w,l],[-w,l]].map(([x,y])=>`${(x*c-y*s).toFixed(2)} ${(x*s+y*c).toFixed(2)}`);return 'M'+P.join('L')+'z'};
+const COPO=[0,60,120].map(a=>barra(a,8.5,1.1)).join('')+[0,60,120,180,240,300].map(a=>barra(a,1,3).replace(/(-?[\d.]+) (-?[\d.]+)/g,(m,x,y)=>{const k=a*Math.PI/180;return `${(+x+5.5*Math.sin(k)).toFixed(2)} ${(+y-5.5*Math.cos(k)).toFixed(2)}`})).join('');
 const FONDOS={
   corazones:{n:'Corazones',ico:'❤️',sym:'',paths:['M0 8C-9 1-9-6-4-7c2 0 3 1 4 3 1-2 2-3 4-3 5 1 5 8-4 15z']},
   coronas:{n:'Coronas',t:'Coronas de rey y de reina',ico:'👑',sym:'👑',paths:[
@@ -676,7 +703,12 @@ const FONDOS={
     'M-8 6l-1-9 5 4 4-6 4 6 5-4-1 9z'+circ(-9,-3,1.7)+circ(0,-6,1.7)+circ(9,-3,1.7)+'M-8 7.2h16v1.8h-16z']}, // reina: puntas con perlas
   flores:{n:'Flores',ico:'🌸',sym:'🌸',paths:[FLOR]},
   copas:{n:'Copas',t:'Copas de primer lugar',ico:'🏆',sym:'🏆',paths:['M-6-7h12v4c0 4.5-2.7 7-5 7.5V6h3.5v2.5h-9V6H-1V4.5C-3.3 4-6 1.5-6-3zM-6-6h-3.5c0 4.2 2 6.2 4.2 6.3l-.4-1.8C-7.2-1.8-7.8-3.2-7.9-4.5H-6zM6-6h3.5c0 4.2-2 6.2-4.2 6.3l.4-1.8C7.2-1.8 7.8-3.2 7.9-4.5H6z']},
-  likes:{n:'Me gusta',ico:'👍',sym:'👍',paths:['M-8-1h3v9h-3zM-4-1L0-8c2.2 0 2.6 1.8 2 3.6L1.2-2H6c1.8 0 2.6 1.4 2.1 2.8L6.3 6.6C6 7.5 5.2 8 4.3 8H-4z']}};
+  likes:{n:'Me gusta',ico:'👍',sym:'👍',paths:['M-8-1h3v9h-3zM-4-1L0-8c2.2 0 2.6 1.8 2 3.6L1.2-2H6c1.8 0 2.6 1.4 2.1 2.8L6.3 6.6C6 7.5 5.2 8 4.3 8H-4z']},
+  navidad:{n:'Navidad',t:'Árboles, estrellas, regalos y copos de nieve',ico:'🎄',sym:'🎄',paths:[
+    'M0-9l6 7H3l5 6H2v3h-4v-3h-6l5-6h-3z',                                                        // árbol
+    'M0-8l2.4 5 5.4.6-4 3.8 1 5.4L0 4.2-4.8 6.8l1-5.4-4-3.8 5.4-.6z',                              // estrella
+    'M-7-2h14v10h-14zM-8-5h16v3h-16zM0-5C-2-9-6-8-4-5zM0-5C2-9 6-8 4-5z',                           // regalo
+    COPO]}};
 const fondo=()=>FONDOS[S.fondo]||FONDOS.corazones;
 const figura=i=>{const p=fondo().paths;return p[i%p.length]};
 /* Estrellas brillantes: nombre, AR (horas), Dec (grados), magnitud */
@@ -694,7 +726,7 @@ const S={
   ruleta:{on:true,items:['Un masaje de 15 minutos','Desayuno en la cama','Tú eliges la película','Cena que tú elijas','Un día sin lavar la loza','Una carta escrita a mano','Salida sorpresa','Un abrazo de un minuto']},
   citas:['Picnic al atardecer','Ver las estrellas lejos de la ciudad','Cocinar juntos una receta nueva'],
   qs:[{q:'¿Dónde fue nuestra primera cita?',ops:['En la costanera','En el cine','En un café',''],ok:0},{q:'¿Cómo se llama nuestra perrita?',ops:['Luna','Canela','Mora',''],ok:1}],
-  final:'Estos juegos son para los dos. Cuidemos juntos a nuestro hijo. Te amo.',
+  final:'Estos juegos son para los dos. Nos toca cuidar juntos a nuestra mascota virtual: darle de comer, entrenarla y verla crecer. Te amo.',
   cartas:[{t:'Abre cuando me extrañes',x:'Cierra los ojos y piensa en nuestro último abrazo. Ya falta menos para el próximo. Te amo.'},{t:'Buenos días, mi amor',x:'Que tengas un día lindo. Acuérdate de que alguien está pensando en ti y sonriendo.'}]
 };
 let ED=null,online=false,RECIP=false;
@@ -723,7 +755,7 @@ const pack=()=>({fondo:S.fondo,tipo:S.tipo,rolDe:S.rolDe,rolPara:S.rolPara,de:S.
   video:med(S.video),voz:med(S.voz)});
 function unpack(d,base){
   for(const k of['de','para','fecha','cancion','yt','carta','final','telDe','telPara'])S[k]=d[k]||'';
-  S.tema=d.tema||'pasion';S.tl=d.tl||[];S.tipo=d.tipo||'amor';S.fondo=FONDOS[d.fondo]?d.fondo:'corazones';S.rolDe=d.rolDe||'';S.rolPara=d.rolPara||'';
+  S.tema=d.tema||'pasion';S.tl=d.tl||[];S.tipo=d.tipo||'amor';if(/nuestro hijo/i.test(S.final))S.final=FINALES[S.tipo]||FINALES.amor;S.fondo=FONDOS[d.fondo]?d.fondo:'corazones';S.rolDe=d.rolDe||'';S.rolPara=d.rolPara||'';
   S.qs=(d.qs||[]).map(q=>q.ops?q:{q:q.q,ops:[q.ok,...String(q.no||'').split('|')].map(s=>s.trim()).concat(['','','']).slice(0,4),ok:0});
   S.cielo=Object.assign({on:false,ciudad:'santiago',f:d.fecha||'',h:'22:00'},d.cielo||{});
   S.wrapped=!!d.wrapped;S.ruleta=Object.assign({on:false,items:[]},d.ruleta||{});
@@ -767,7 +799,7 @@ function renderQuota(){
   const rows=[['Fotos',sum(S.fotos,f=>f.size)],['Razones',sum(S.razones,r=>r.size||0)],['Video',S.video?.size||0],['Voz',S.voz?.size||0]];
   const o=orig();
   $('#meter').innerHTML=rows.map(([n,b])=>`<span>${n}</span><span class="b"><i style="width:${Math.min(100,b/QUOTA*100)}%"></i></span><span>${fmt(b)}</span>`).join('')+
-   `<span><b>Total</b></span><span class="note" style="margin:0">${o>u?'Sin comprimir habría pesado '+fmt(o)+' · ahorro '+Math.round((1-u/o)*100)+' %':''}</span><span><b>${fmt(u)}</b></span>`;
+   `<span><b>Total</b></span><span class="note" style="margin:0">${o>u?'Ahorraste un '+Math.round((1-u/o)*100)+' % de espacio':''}</span><span><b>${fmt(u)}</b></span>`;
 }
 const room=b=>used()+b<=QUOTA;
 
@@ -784,7 +816,7 @@ async function shrink(file,max,q){
 
 /* ---------- fotos ---------- */
 function renderFotos(){
-  $('#gridFotos').innerHTML=S.fotos.length?S.fotos.map((f,i)=>`<div class="ph"><img src="${f.thumb}" alt=""><div class="m"><span>${f.subiendo?'subiendo…':fmt(f.orig||f.size)+' → <span class="save">'+fmt(f.size)+'</span>'}</span><button class="x" data-del="${i}" aria-label="Quitar foto">✕</button></div><input type="text" data-cap="${i}" value="${esc(f.cap)}" placeholder="Pie de foto"></div>`).join(''):'<p class="note">Aún no hay fotos.</p>';
+  $('#gridFotos').innerHTML=S.fotos.length?S.fotos.map((f,i)=>`<div class="ph"><img src="${f.thumb}" alt=""><div class="m"><span>${f.subiendo?'subiendo…':'<span class="save">Lista ✓</span>'}</span><button class="x" data-del="${i}" aria-label="Quitar foto">✕</button></div><input type="text" data-cap="${i}" value="${esc(f.cap)}" placeholder="Pie de foto"></div>`).join(''):'<p class="note">Aún no hay fotos.</p>';
   renderQuota();
 }
 $('#gridFotos').addEventListener('click',e=>{const i=e.target.dataset.del;if(i!=null){const f=S.fotos.splice(+i,1)[0];borrar(f.ruta,f.mini);renderFotos();scheduleSave()}});
@@ -794,10 +826,10 @@ $('#inFotos').addEventListener('change',async e=>{
   let ok=0,before=0,after=0;
   for(const f of files){
     if(S.fotos.length>=20){m.textContent='Llegaste al máximo de 20 fotos.';break}
-    m.textContent=`Comprimiendo ${ok+1} de ${files.length}…`;
+    m.textContent=`Preparando ${ok+1} de ${files.length}…`;
     let full,th;
     try{full=await shrink(f,1600,.75);th=await shrink(f,400,.7)}catch(err){m.textContent='No se pudo leer '+f.name+'. Prueba con JPG o PNG.';continue}
-    if(!room(full.size+th.size)){m.textContent='No queda espacio para esta foto (tope 15 MB).';break}
+    if(!room(full.size+th.size)){m.textContent='Ya no queda espacio para más fotos.';break}
     const it={url:URL.createObjectURL(full),thumb:URL.createObjectURL(th),size:full.size+th.size,orig:f.size,cap:'',subiendo:online&&!!ED};
     S.fotos.push(it);renderFotos();
     if(online&&ED){
@@ -806,7 +838,7 @@ $('#inFotos').addEventListener('change',async e=>{
     }
     ok++;before+=f.size;after+=full.size+th.size;renderFotos();
   }
-  if(ok){m.textContent=`${ok} foto${ok>1?'s':''}: ${fmt(before)} → ${fmt(after)} (ahorro ${Math.round((1-after/before)*100)} %).`+(online?'':' Modo prueba: no se guardan.');scheduleSave()}
+  if(ok){m.textContent=`${ok} foto${ok>1?'s':''} lista${ok>1?'s':''} ✓`+(online?'':' Modo prueba: no se guardan.');scheduleSave()}
 });
 
 /* ---------- 10 razones ---------- */
@@ -824,7 +856,7 @@ $('#listRz').addEventListener('change',async e=>{
   const old=r.ruta;r.subiendo=true;renderRz();
   if(online&&ED){try{r.ruta=await upload(b,'razon')}catch(err){r.subiendo=false;renderRz();m.textContent=err.message;return}}
   borrar(old);r.subiendo=false;r.url=URL.createObjectURL(b);r.size=b.size;r.orig=f.size;
-  m.textContent=`Foto lista: ${fmt(f.size)} → ${fmt(b.size)}.`;renderRz();scheduleSave();
+  m.textContent='Foto lista ✓';renderRz();scheduleSave();
 });
 
 /* ---------- canción y YouTube ---------- */
@@ -855,18 +887,18 @@ async function shrinkVideo(file,onp){
 $('#inVideo').addEventListener('change',async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;const m=$('#msgVideo');
   if(f.size>200*MB){m.textContent='Ese video es muy pesado. Usa uno más corto o un link de YouTube.';return}
-  m.textContent='Comprimiendo a 720p… se procesa en tiempo real, no cierres la pantalla.';
+  m.textContent='Preparando el video… no cierres la pantalla.';
   let blob;
-  try{blob=await shrinkVideo(f,p=>m.textContent=`Comprimiendo a 720p… ${Math.round(p*100)} %`)}
+  try{blob=await shrinkVideo(f,p=>m.textContent=`Preparando el video… ${Math.round(p*100)} %`)}
   catch(err){
     if(err==='dur'){m.textContent='El video dura más de 30 segundos. Recórtalo o usa un link de YouTube.';return}
-    if(f.size<=6*MB)blob=f;else{m.textContent='Este navegador no pudo comprimir el video. Prueba con uno de menos de 6 MB o con un link de YouTube.';return}
+    if(f.size<=6*MB)blob=f;else{m.textContent='Este navegador no pudo preparar el video. Prueba con uno más corto o con un link de YouTube.';return}
   }
-  if(!room(blob.size-(S.video?.size||0))){m.textContent=`Comprimido quedó en ${fmt(blob.size)} y supera el espacio disponible.`;return}
+  if(!room(blob.size-(S.video?.size||0))){m.textContent='El video no cabe en el espacio que queda. Prueba con uno más corto o con un link de YouTube.';return}
   const it={url:URL.createObjectURL(blob),size:blob.size,orig:f.size};
-  if(online&&ED){try{m.textContent=`Subiendo video (${fmt(blob.size)})…`;it.ruta=await upload(blob,'video')}catch(err){m.textContent=err.message;return}}
+  if(online&&ED){try{m.textContent='Subiendo video…';it.ruta=await upload(blob,'video')}catch(err){m.textContent=err.message;return}}
   if(S.video)borrar(S.video.ruta);
-  S.video=it;showVideo();m.textContent=`Video listo: ${fmt(f.size)} → ${fmt(blob.size)}.`;renderQuota();scheduleSave();
+  S.video=it;showVideo();m.textContent='Video listo ✓';renderQuota();scheduleSave();
 });
 const showVideo=()=>$('#delVideo').classList.toggle('hide',!S.video);
 $('#delVideo').onclick=()=>{borrar(S.video?.ruta);S.video=null;$('#msgVideo').textContent='';showVideo();renderQuota();scheduleSave()};
@@ -888,7 +920,7 @@ $('#btnRec').onclick=async()=>{
     const mime=['audio/webm;codecs=opus','audio/ogg;codecs=opus','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t));
     recV=new MediaRecorder(st,{mimeType:mime,audioBitsPerSecond:32000});const parts=[];let s=0;
     recV.ondataavailable=e=>parts.push(e.data);
-    recV.onstop=()=>{clearInterval(tmr);st.getTracks().forEach(t=>t.stop());const bl=new Blob(parts,{type:mime.split(';')[0]});recV=null;b.textContent='Grabar de nuevo';setVoz(bl,bl.size,`Nota de ${s} s grabada: ${fmt(bl.size)}.`)};
+    recV.onstop=()=>{clearInterval(tmr);st.getTracks().forEach(t=>t.stop());const bl=new Blob(parts,{type:mime.split(';')[0]});recV=null;b.textContent='Grabar de nuevo';setVoz(bl,bl.size,`Mensaje de ${s} segundos listo ✓`)};
     recV.start();b.textContent='Detener (0 s)';
     tmr=setInterval(()=>{s++;b.textContent=`Detener (${s} s)`;if(s>=60)recV.stop()},1000);
   }catch(e){m.textContent='Aquí no se puede usar el micrófono. Sube un audio grabado con tu celular.'}
@@ -898,8 +930,8 @@ $('#inVoz').addEventListener('change',e=>{
   const a=new Audio(URL.createObjectURL(f));
   a.onloadedmetadata=()=>{
     if(a.duration>61){m.textContent='La nota dura más de 1 minuto.';return}
-    if(f.size>1.5*MB){m.textContent=`El audio pesa ${fmt(f.size)}. Grábalo desde aquí y quedará en unos 250 KB.`;return}
-    setVoz(f,f.size,`Audio de ${Math.round(a.duration)} s: ${fmt(f.size)}.`);
+    if(f.size>1.5*MB){m.textContent='Ese audio es muy pesado. Grábalo aquí mismo y quedará más liviano.';return}
+    setVoz(f,f.size,`Audio de ${Math.round(a.duration)} segundos listo ✓`);
   };
   a.onerror=()=>m.textContent='No pude leer ese audio.';
 });
@@ -910,8 +942,9 @@ let idea=0;
 $('#btnIdea').onclick=()=>{const t=P(),L=t.ideas;S.carta=L[idea++%L.length](S.de||'Yo',S.para||(t.tipo==='amor'?'Mi amor':t.trato?t.trato[0].toUpperCase()+t.trato.slice(1):'Amigo'),t);$('#fCarta').value=S.carta;scheduleSave()};
 
 /* ---------- temas ---------- */
-$('#temas').innerHTML=TEMAS.map(([k,n,c])=>`<label><input type="radio" name="tema" value="${k}"><span class="mini" style="background:${miniMesh(c)}"></span>${n}</label>`).join('');
-$('#fondos').innerHTML=Object.entries(FONDOS).map(([k,f])=>`<label title="${f.t||f.n}"><input type="radio" name="fondo" value="${k}"><span class="fico" aria-hidden="true">${f.ico}</span>${f.n}</label>`).join('');
+/* Los temas y figuras de temporada solo aparecen en su época (o si el regalo ya los tiene elegidos) */
+const pintarTemas=()=>{$('#temas').innerHTML=TEMAS.filter(([k])=>enTemporada(k)||S.tema===k).map(([k,n,c])=>`<label><input type="radio" name="tema" value="${k}"><span class="mini" style="background:${miniMesh(c)}"></span>${n}</label>`).join('');}
+const pintarFondos=()=>{$('#fondos').innerHTML=Object.entries(FONDOS).filter(([k])=>enTemporada(k)||S.fondo===k).map(([k,f])=>`<label title="${f.t||f.n}"><input type="radio" name="fondo" value="${k}"><span class="fico" aria-hidden="true">${f.ico}</span>${f.n}</label>`).join('');};pintarTemas();pintarFondos();
 $('#fondos').addEventListener('change',e=>{S.fondo=e.target.value;pintarFondo();edHero();parallax($('#heroEd'));scheduleSave()});
 $('#temas').addEventListener('change',e=>{S.tema=e.target.value;document.body.dataset.tema=S.tema;scheduleSave()});
 
@@ -979,6 +1012,7 @@ function renderQ(){$('#listQ').innerHTML=S.qs.map((x,i)=>`<div class="q"><label 
 $('#listQ').addEventListener('input',e=>{const d=e.target.dataset;if(d.q!=null)S.qs[+d.q].q=e.target.value;if(d.qo!=null)S.qs[+d.qo].ops[+d.j]=e.target.value});
 $('#listQ').addEventListener('change',e=>{const d=e.target.dataset;if(d.qok!=null){S.qs[+d.qok].ok=+e.target.value;scheduleSave()}});
 $('#listQ').addEventListener('click',e=>{const i=e.target.dataset.dq;if(i!=null){S.qs.splice(+i,1);renderQ();scheduleSave()}});
+$('#btnFinal').onclick=()=>{S.final=FINALES[P().tipo];$('#fFinal').value=S.final;scheduleSave()};
 $('#addQ').onclick=()=>{if(S.qs.length<10){S.qs.push({q:'',ops:['','','',''],ok:0});renderQ()}};
 /* Plantillas según el perfil: agrega la siguiente que todavía no esté */
 $('#addQT').onclick=()=>{if(S.qs.length>=10)return;const t=P().preguntas.find(x=>!S.qs.some(q=>q.q===x.q));
@@ -1027,7 +1061,7 @@ let pintarSelTipo=null;
 function initTipoEditor(){
   if(!pintarSelTipo){$('#edTipo').innerHTML=tipoHtml('ed');
     let tipoAntes=S.tipo;pintarSelTipo=tipoWire('ed',S,()=>{
-      if(S.tipo!==tipoAntes){tipoAntes=S.tipo;const t=P();S.tema=t.tema0;S.fondo=t.fondo0;document.body.dataset.tema=S.tema;fill();edHero();parallax($('#heroEd'));pintarSwitches()}
+      if(S.tipo!==tipoAntes){tipoAntes=S.tipo;const t=P();S.tema=t.tema0;S.fondo=t.fondo0;if(!S.final||Object.values(FINALES).includes(S.final)||/hijo/i.test(S.final))S.final=FINALES[t.tipo];document.body.dataset.tema=S.tema;fill();edHero();parallax($('#heroEd'));pintarSwitches()}
       pintarTipo();renderCitas();renderRz();if(S.tipo!=='familia'||rolesOk(S.rolDe,S.rolPara))scheduleSave()})}
   else pintarSelTipo();
   pintarTipo();
@@ -1037,6 +1071,7 @@ function initTipoEditor(){
 const F={'#fDe':'de','#fPara':'para','#fFecha':'fecha','#fCancion':'cancion','#fYt':'yt','#fCarta':'carta','#fFinal':'final','#fTelDe':'telDe','#fTelPara':'telPara'};
 for(const[id,k]of Object.entries(F))$(id).addEventListener('input',e=>{S[k]=e.target.value;if(k==='cancion')songInfo();if(k==='telPara'||k==='de'||k==='para')updWa();if(k==='de'||k==='para')pintarTipo()});
 function fill(){
+  pintarTemas();pintarFondos();
   for(const[id,k]of Object.entries(F))$(id).value=S[k]||'';
   const t=document.querySelector(`#temas input[value="${S.tema}"]`)||document.querySelector('#temas input');t.checked=true;
   const fo=document.querySelector(`#fondos input[value="${S.fondo||'corazones'}"]`);if(fo)fo.checked=true;pintarFondo();
@@ -1294,7 +1329,7 @@ function renderRegalo(){
     <p class="note" id="cuadMsg" aria-live="polite"></p></div></section>
   <section class="scene" id="secRueda"><div><h2>Rueda de la fortuna</h2><div class="seg" id="ruedaModos"></div><p style="color:var(--mute)" id="ruedaTxt"></p><div class="wheel-wrap"><div class="pointer"></div><div id="ruedaSvg"></div></div><button id="btnGirar" class="pri">Girar</button><div class="premio" id="premio" aria-live="polite"></div></div></section>
   <section class="scene s-env${vis('sorpresa')?'':' hide'}"><div id="quiz"></div></section>
-  ${S.telDe?`<div class="foot"><a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`Vi tu regalo y me encantó 💕`)}">Responder a ${esc(S.de)} por WhatsApp</a></div>`:''}
+  ${S.telDe?`<div class="foot"><a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,TX.waResp)}">Responder a ${esc(S.de)} por WhatsApp</a></div>`:''}
   </div>`;
   parallax($('#hero'));
   const env=$('#env');
@@ -1337,7 +1372,7 @@ const inicio=tipo=>({tema:{amor:'pasion',familia:'vintage',amistad:'pastel'}[tip
   wrapped:tipo==='amor',
   citas:tipo==='amor'?['Picnic al atardecer','Ver las estrellas lejos de la ciudad','Cocinar juntos una receta nueva']:tipo==='familia'?CUPONES.slice(0,4):[],
   ruleta:{on:tipo==='amor',items:PREMIOS[tipo]},
-  qs:tipo==='amor'?[]:PREG_T[tipo].slice(0,2).map(x=>({q:x.q,ops:[...x.ops],ok:0}))});
+  final:FINALES[tipo],qs:tipo==='amor'?[]:PREG_T[tipo].slice(0,2).map(x=>({q:x.q,ops:[...x.ops],ok:0}))});
 function vistaRegistro(codigo){
   document.body.dataset.tema='pasion';
   $('#regalo').innerHTML=`<main class="wrap reg"><div class="lead"><p class="script" style="font-size:30px;margin:0">¡Hola!</p><h1 style="margin:.1em 0">Esta tarjeta todavía no tiene regalo</h1><p class="hint">Si tú la vas a regalar, regístrala y arma tu regalo. Quien la reciba verá el regalo al acercar su celular.</p><p class="note">Tarjeta <b>${esc(codigo)}</b></p></div>
@@ -1359,7 +1394,7 @@ function vistaRegistro(codigo){
   const RT={tipo:'',rolDe:'',rolPara:''};
   const regTxt=()=>{const tm={amor:'tu pareja',amistad:'tu amigo o amiga'}[RT.tipo]||(RT.rolPara?'tu '+TRATO[RT.rolPara]:'');
     $('#rHDe').textContent='Tus datos (quien regala'+(RT.tipo==='familia'&&RT.rolDe?' · '+ROLES[RT.rolDe]:'')+')';
-    $('#rHPara').textContent='Quien recibe'+(tm?' · '+tm:'');document.body.dataset.tema={familia:'vintage',amistad:'pastel'}[RT.tipo]||'pasion';$('#marca').textContent=RT.tipo&&RT.tipo!=='amor'?'Con cariño':'Con amor';$('#rTipoMsg').textContent=''};
+    $('#rHPara').textContent='Quien recibe'+(tm?' · '+tm:'');document.body.dataset.tema={familia:'vintage',amistad:'pastel'}[RT.tipo]||'pasion';$('#marca').textContent={familia:'Con cariño',amistad:'Entre amigos'}[RT.tipo]||'Con amor';$('#rTipoMsg').textContent=''};
   tipoWire('r',RT,regTxt);
   $('#regForm').onsubmit=async e=>{e.preventDefault();const m=$('#regMsg'),v=id=>$('#'+id).value.trim();
     if(!RT.tipo){$('#rTipoMsg').textContent='Elige el tipo de regalo.';$('#rTipos').scrollIntoView({behavior:'smooth',block:'center'});return}
