@@ -1,0 +1,10 @@
+const {chromium}=require('/opt/npm-tools/node_modules/playwright');
+(async()=>{const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',args:['--autoplay-policy=no-user-gesture-required']});
+const p=await b.newPage({viewport:{width:400,height:820}});const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('dialog',d=>{errs.push('dialog:'+d.message());d.accept()});
+await p.goto('http://localhost:8767/amor/mascota/');await p.waitForTimeout(700);
+await p.evaluate(()=>evolucionar(true));await p.waitForTimeout(6000);
+await p.fill('input[placeholder="Ej: Mochi"]','Pichón');await p.click('text=Ponerle nombre');await p.waitForTimeout(1500);
+await p.click('#btnReset');await p.waitForTimeout(1500);
+console.log(await p.evaluate(()=>S.fase), await p.evaluate(()=>document.querySelector('#petWrap').innerHTML.slice(0,80)));
+const box=await p.$eval('#btnReset',e=>{const r=e.getBoundingClientRect();const el=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el.id+'|'+el.className});console.log('top element:',box);
+console.log(errs);await b.close()})();
