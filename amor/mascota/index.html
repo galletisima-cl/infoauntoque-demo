@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icono-180.png">
 <title>Virtual Monster</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Arima:wght@400;500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Demo de la mascota de pareja ("el hijo de los dos"). Se guarda en este navegador (localStorage).
    Mismos temas que /amor: gradient mesh, vidrio y neumorfismo. */
@@ -21,9 +21,9 @@ html,body{margin:0;height:100%;overscroll-behavior:none}
 /* Bloqueo de scroll mientras hay un juego abierto: el dedo no mueve la página ni la barra del navegador */
 body.bloqueado{position:fixed;left:0;right:0;overflow:hidden;width:100%}
 .full{touch-action:none;overscroll-behavior:none}
-body{background:var(--bg);color:var(--ink);font:15px/1.45 "DM Sans",system-ui,sans-serif;overflow-x:hidden;user-select:none;-webkit-user-select:none}
-h1,h2,h3{font-family:"DM Serif Display",Georgia,serif;font-weight:400;margin:0;line-height:1.1}
-.script{font-family:"Dancing Script",cursive}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 "Mulish",system-ui,sans-serif;overflow-x:hidden;user-select:none;-webkit-user-select:none}
+h1,h2,h3{font-family:"Arima",Georgia,serif;font-weight:700;margin:0;line-height:1.1}
+.script{font-family:"Arima",serif}
 .mesh{position:fixed;inset:-10%;z-index:-2;pointer-events:none;
   background:radial-gradient(at 12% 16%,var(--b1) 0,transparent 52%),radial-gradient(at 88% 10%,var(--b2) 0,transparent 50%),
   radial-gradient(at 78% 86%,var(--b3) 0,transparent 55%),radial-gradient(at 14% 88%,var(--b4) 0,transparent 50%),
@@ -41,7 +41,7 @@ button:disabled{opacity:.4}
 .volver{display:inline-block;margin:0 0 8px;padding:8px 14px;border-radius:999px;color:inherit;text-decoration:none;font-size:14px}
 .volver[hidden]{display:none}
 .head{display:flex;align-items:center;gap:10px;padding:10px 14px}
-.head .nom{font-family:"Dancing Script",cursive;font-size:28px;color:var(--red);line-height:1}
+.head .nom{font-family:"Arima",serif;font-size:28px;color:var(--red);line-height:1}
 .head .fase{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em}
 .head .info{margin-left:auto;display:flex;gap:12px;text-align:center}
 .head .info b{display:block;font-size:16px}.head .info small{font-size:11px;color:var(--mute)}
@@ -64,7 +64,7 @@ button:disabled{opacity:.4}
 @keyframes titila{50%{opacity:.2}}
 .oscuro{position:absolute;inset:0;background:rgba(0,0,10,.82);opacity:0;transition:opacity .6s;pointer-events:none;z-index:5}
 .stage.apagado .oscuro{opacity:1}
-.zzz{position:absolute;left:58%;top:22%;z-index:6;font-family:"DM Serif Display";color:#cfe0ff;font-size:22px;opacity:0;pointer-events:none}
+.zzz{position:absolute;left:58%;top:22%;z-index:6;font-family:"Arima";font-weight:700;color:#cfe0ff;font-size:22px;opacity:0;pointer-events:none}
 .stage.duerme .zzz{opacity:1}
 .zzz span{display:inline-block;animation:zz 2.4s ease-in-out infinite}
 .zzz span:nth-child(2){animation-delay:.5s;font-size:.8em}.zzz span:nth-child(3){animation-delay:1s;font-size:.6em}
@@ -219,7 +219,7 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .card .res{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0;font-size:14px}
 .card input{width:100%;font:inherit;font-size:18px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;text-align:center;margin:8px 0}
 /* Batalla por turnos estilo RPG clásico (mecánica, con criaturas originales) */
-#batalla{background:linear-gradient(180deg,#a8e0ff 0,#d9f3ff 48%,#9bd77e 48%,#6fbf54 100%);color:#222;font-family:"DM Sans",sans-serif}
+#batalla{background:linear-gradient(180deg,#a8e0ff 0,#d9f3ff 48%,#9bd77e 48%,#6fbf54 100%);color:#222;font-family:"Mulish",sans-serif}
 #batalla.sacude{animation:sacude .35s}
 @keyframes sacude{20%{transform:translate(-6px,3px)}40%{transform:translate(6px,-3px)}60%{transform:translate(-4px,2px)}80%{transform:translate(4px,0)}}
 .ring{position:absolute;border-radius:50%;background:rgba(60,120,40,.35)}
@@ -863,7 +863,7 @@ function ninja(){
     if(trazo.length>1){for(let i=1;i<trazo.length;i++){const a=trazo[i-1],b=trazo[i],k=i/trazo.length;
       ctx.strokeStyle=`rgba(255,255,255,${k})`;ctx.lineWidth=2+k*8;ctx.lineCap='round';ctx.shadowColor='#ff8fb0';ctx.shadowBlur=14;
       ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}ctx.shadowBlur=0}
-    if(now-combo<700){ctx.font='bold 30px DM Sans,sans-serif';ctx.fillStyle='#ffe14d';ctx.fillText('¡Combo! +2',W/2,Hh*.3)}
+    if(now-combo<700){ctx.font='bold 30px Mulish,sans-serif';ctx.fillStyle='#ffe14d';ctx.fillText('¡Combo! +2',W/2,Hh*.3)}
     if(quedan<=0)return terminar();requestAnimationFrame(loop)};
   requestAnimationFrame(loop);
   function terminar(){vivo=false;removeEventListener('resize',size);
