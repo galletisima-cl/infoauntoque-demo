@@ -4,7 +4,8 @@
 //                                      { registro:false } si la tarjeta aún no se registra
 //                                      { off:true } si quien regala lo deshabilitó
 //   GET  /api/regalo?id=ID&k=TOKEN   → regalo para editar (solo quien regala)
-//   POST {accion:"registrar", r, de:{nombre,email,tel}, para:{nombre,tel}, pass} → registra la tarjeta
+//   POST {accion:"registrar", r, tipo, rolDe?, rolPara?, de:{nombre,email,tel}, para:{nombre,tel}, pass} → registra la tarjeta
+//        tipo: "amor" (pareja) | "familia" (rolDe/rolPara: hijo, hija, padre, madre) | "amistad"
 //   POST {accion:"entrar", r, pass}  → inicia sesión de quien regala (devuelve id y token de sesión)
 //   POST {accion:"perfil", id, token, email?, off?, passActual?, passNueva?} → perfil, contraseña y deshabilitar
 //   POST {accion:"crear", datos}     → (antiguo) crea un regalo sin tarjeta, con link secreto de edición
@@ -51,6 +52,15 @@ const esId = s => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
 const RUTA = /^[0-9a-f-]{36}\/[a-z]+-[0-9a-f]+\.[a-z0-9]+$/;
 const TEMAS = ["pasion", "pastel", "noche", "vintage"];
 const CIUDADES = ["arica", "antofagasta", "laserena", "valparaiso", "santiago", "concepcion", "temuco", "puertomontt", "puntaarenas"];
+// Tipo de regalo y perfiles. En familia, uno es hijo/hija y el otro padre/madre.
+const TIPOS_REGALO = ["amor", "familia", "amistad"];
+const HIJOS = ["hijo", "hija"], PADRES = ["padre", "madre"];
+const rolesOk = (de, para) => (HIJOS.includes(de) && PADRES.includes(para)) || (PADRES.includes(de) && HIJOS.includes(para));
+function tipoDe(d) {
+  const tipo = TIPOS_REGALO.includes(d && d.tipo) ? d.tipo : "amor";
+  if (tipo === "familia" && rolesOk(d.rolDe, d.rolPara)) return { tipo, rolDe: d.rolDe, rolPara: d.rolPara };
+  return { tipo: tipo === "familia" ? "amor" : tipo, rolDe: "", rolPara: "" };
+}
 const tel = t => String(t || "").replace(/[^\d+ ]/g, "").slice(0, 20);
 
 async function llamar(base, path, opt = {}) {
@@ -96,7 +106,7 @@ function limpiar(d, id) {
   const num = n => Math.max(0, Math.round(+n || 0));
   const media = m => m && ruta(m.ruta) ? { ruta: m.ruta, peso: num(m.peso), orig: num(m.orig) } : null;
   const lista = (a, n) => (Array.isArray(a) ? a : []).slice(0, n).filter(x => x && typeof x === "object");
-  return {
+  return Object.assign(tipoDe(d), {
     de: txt(d.de, 40), para: txt(d.para, 40), fecha: fecha(d.fecha),
     cancion: txt(d.cancion, 300), yt: txt(d.yt, 300),
     carta: txt(d.carta, 5000), final: txt(d.final, 1500),
@@ -133,7 +143,7 @@ function limpiar(d, id) {
       .map(f => ({ ruta: f.ruta, mini: f.mini, cap: txt(f.cap, 120), peso: num(f.peso), orig: num(f.orig) })),
     video: media(d.video),
     voz: media(d.voz)
-  };
+  });
 }
 
 /* Cuaderno de citas: lista compartida { id, t (texto), e ("p" pendiente | "h" hecha), f (fecha), n (recuerdo) }.
@@ -223,9 +233,12 @@ module.exports = async (req, res) => {
       if (!String(de.nombre || "").trim() || !String(para.nombre || "").trim()) { res.status(400).json({ error: "Faltan los nombres" }); return; }
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { res.status(400).json({ error: "Revisa el correo" }); return; }
       if (pass.length < 6) { res.status(400).json({ error: "La contraseña debe tener al menos 6 caracteres" }); return; }
+      if (!TIPOS_REGALO.includes(b.tipo)) { res.status(400).json({ error: "Elige el tipo de regalo" }); return; }
+      if (b.tipo === "familia" && !rolesOk(b.rolDe, b.rolPara)) { res.status(400).json({ error: "Elige quién eres tú y a quién se lo regalas" }); return; }
       const id = crypto.randomUUID(), th = passHash(pass);
       const datos = limpiar(Object.assign({ tema: "pasion", wrapped: true }, b.datos || {}, {
-        de: de.nombre, para: para.nombre, telDe: de.tel, telPara: para.tel }), id);
+        de: de.nombre, para: para.nombre, telDe: de.tel, telPara: para.tel,
+        tipo: b.tipo, rolDe: b.rolDe, rolPara: b.rolPara }), id);
       datos.cuaderno = semilla(datos.citas);
       datos._priv = { email, registrado: new Date().toISOString() };
       const r = await db("amor_regalos", { method: "POST", headers: { Prefer: "return=minimal" },

@@ -311,13 +311,22 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   --seg2:#9caf88;--seg3:#d8a7a7;
   --btn:linear-gradient(145deg,#f8f1e6,#e8dccb);--btn-ink:#7d2e3a;
   --neu:6px 6px 14px rgba(125,95,75,.32),-6px -6px 14px rgba(255,255,255,.75);--neu-in:inset 4px 4px 10px rgba(125,95,75,.32),inset -4px -4px 10px rgba(255,255,255,.75)}
+.tipos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:6px 0 4px}
+.tipos label{display:grid;justify-items:center;text-align:center;gap:2px;padding:14px 8px;border-radius:18px;cursor:pointer;margin:0;
+  background:var(--btn);border:1px solid var(--glass-b);box-shadow:var(--neu);color:var(--ink)}
+.tipos label:has(input:checked){box-shadow:var(--neu-in);border-color:var(--red)}
+.tipos input{position:absolute;opacity:0;pointer-events:none}
+.tipos .ico{font-size:28px;line-height:1.2}.tipos b{font-size:16px}.tipos small{font-size:12px;color:var(--mute);line-height:1.25}
+.tipos small,.tipos b{text-align:center;hyphens:manual;-webkit-hyphens:manual}
+.tipos label:has(input:focus-visible){outline:2px solid var(--red);outline-offset:2px}
+.perfiles{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0}.perfiles span{background:var(--soft);border-radius:99px;padding:5px 12px;font-size:14px}
 </style>
 </head>
 <body>
 <div class="mesh" aria-hidden="true"></div>
 <div class="hbg" aria-hidden="true"><i data-k=".15"></i><i data-k=".35"></i><i data-k=".6"></i></div>
 <header class="top">
-  <span class="brand">Con amor</span>
+  <span class="brand" id="marca">Con amor</span>
   <nav class="tabs"><a href="#crear" id="tCrear">Crear regalo</a><a href="#regalo" id="tRegalo">Ver regalo</a></nav>
   <button class="quien hide" id="tQuien" type="button">👤 Quien regala</button>
   <div class="quota" id="quotaTop"><span id="estado">Sin guardar</span><span>·</span><span>Espacio</span><span class="bar"><i id="qBar"></i></span><span id="qTxt">0 KB de 15 MB</span></div>
@@ -329,7 +338,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <header class="hero hero-ed" id="heroEd">
     <div class="layer" data-k=".12" id="edL1"></div><div class="layer" data-k=".28" id="edL2"></div><div class="layer" data-k=".5" id="edL3"></div>
     <span class="tag" id="edTag">Vista de prueba · para guardar, registra tu tarjeta</span>
-    <h1>Arma tu regalo de San Valentín</h1>
+    <h1 id="edH1">Arma tu regalo de amor</h1>
     <p class="hint" style="color:var(--mute);margin:0">Todo se comprime en tu celular antes de subirse: fotos a WebP, notas de voz a 32 kbps y videos a 720p. Elige un tema y verás el cambio aquí mismo.</p>
   </header>
 
@@ -353,15 +362,22 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   </section>
 
   <section class="sec">
+    <h2>Tipo de regalo</h2>
+    <p class="hint">Cambia los textos del regalo, las ideas de carta, el cuaderno y los premios de partida.</p>
+    <div id="edTipo"></div>
+    <div class="perfiles" id="edPerfiles"></div>
+  </section>
+
+  <section class="sec">
     <h2>Ustedes</h2>
     <div class="row">
       <div><label for="fDe">De</label><input type="text" id="fDe"></div>
       <div><label for="fPara">Para</label><input type="text" id="fPara"></div>
     </div>
-    <label for="fFecha">¿Desde cuándo están juntos?</label><input type="date" id="fFecha">
+    <label for="fFecha" id="lFecha">¿Desde cuándo están juntos?</label><input type="date" id="fFecha">
     <div class="row">
       <div><label for="fTelDe">Tu WhatsApp (para que te responda)</label><input type="tel" id="fTelDe" placeholder="9 1234 5678" inputmode="tel"></div>
-      <div><label for="fTelPara">WhatsApp de tu pareja</label><input type="tel" id="fTelPara" placeholder="9 1234 5678" inputmode="tel"></div>
+      <div><label for="fTelPara" id="lTelPara">WhatsApp de tu pareja</label><input type="tel" id="fTelPara" placeholder="9 1234 5678" inputmode="tel"></div>
     </div>
     <p class="note">Los números son opcionales. Sin número, WhatsApp te deja elegir el contacto.</p>
   </section>
@@ -380,8 +396,8 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   </section>
 
   <section class="sec" data-sec="razones">
-    <h2>10 razones por las que te amo</h2>
-    <p class="hint">Cada razón con su foto. Tu pareja las verá como tarjetas que se dan vuelta una a una.</p>
+    <h2 id="hRz">10 razones por las que te amo</h2>
+    <p class="hint">Cada razón con su foto. <span id="quienRz">Tu pareja</span> las verá como tarjetas que se dan vuelta una a una.</p>
     <div id="listRz"></div>
     <button class="ghost" id="addRz">Agregar razón</button>
     <div class="msg" id="msgRz"></div>
@@ -441,16 +457,16 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
   <section class="sec" data-sec="juegos">
     <h2>Juegos</h2>
-    <div class="sw"><input type="checkbox" id="fWrapped"><label for="fWrapped">Wrapped: resumen animado de su relación</label></div>
+    <div class="sw"><input type="checkbox" id="fWrapped"><label for="fWrapped" id="lWrapped">Wrapped: resumen animado de su relación</label></div>
     <div class="sw" style="margin-top:16px"><input type="checkbox" id="fRuletaOn"><label for="fRuletaOn">Rueda de la fortuna con premios</label></div>
-    <p class="note">La rueda también trae el modo <b>Nuestra próxima cita</b>: gira entre las citas pendientes del cuaderno y elige la siguiente. Premios (hasta 8):</p>
+    <p class="note">La rueda también trae el modo <b id="nProx">Nuestra próxima cita</b>: gira entre <span id="nPend">las citas pendientes</span> del cuaderno y elige la siguiente. Premios (hasta 8):</p>
     <div id="listRuleta"></div>
     <button class="ghost" id="addPremio">Agregar premio</button>
   </section>
 
   <section class="sec" data-sec="citas">
-    <h2>Cuaderno de citas</h2>
-    <p class="hint">Elige las ideas con que parte el cuaderno. Después los dos pueden agregar citas, ponerles fecha, marcarlas como hechas y anotar cómo les fue, desde el regalo.</p>
+    <h2 id="hCuad">Cuaderno de citas</h2>
+    <p class="hint" id="hintCuad">Elige las ideas con que parte el cuaderno.</p>
     <div class="chips" id="chipsCitas"></div>
     <label for="fCitaNueva">Agregar una idea propia</label>
     <div style="display:flex;gap:8px"><input type="text" id="fCitaNueva" placeholder="Ej: volver al lugar donde nos conocimos"><button class="ghost" id="addCita">Agregar</button></div>
@@ -458,14 +474,14 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
   <section class="sec" data-sec="sorpresa">
     <h2>Preguntas para desbloquear la sorpresa</h2>
-    <p class="hint">Escribe hasta 4 opciones y marca la correcta. Tu pareja tiene que acertar todas para desbloquear los juegos.</p>
+    <p class="hint">Escribe hasta 4 opciones y marca la correcta. <span id="quienQ">Tu pareja</span> tiene que acertar todas para desbloquear los juegos.</p>
     <div id="listQ"></div>
     <button class="ghost" id="addQ">Agregar pregunta</button>
   </section>
 
   <section class="sec" data-sec="sorpresa" data-sigue="1">
     <h2>El último regalo: 2 juegos</h2>
-    <p class="hint">Al acertar todas las preguntas se desbloquean <b>🥚 Virtual Monster</b> (la mascota virtual que cuidan entre los dos) y <b>🗝️ Escape room de parejas</b> (próximamente).</p>
+    <p class="hint">Al acertar todas las preguntas se desbloquean <b>🥚 Virtual Monster</b> (la mascota virtual que cuidan entre los dos) y <b>🗝️ <span id="nEscape">Escape room de parejas</span></b> (próximamente).</p>
     <label for="fFinal">Mensaje que acompaña la sorpresa (opcional)</label><textarea id="fFinal" style="min-height:100px"></textarea>
   </section>
 
@@ -490,7 +506,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
           <p style="margin:0 0 12px;word-break:break-all"><b id="link"></b></p>
           <button id="copy" class="pri">Copiar link</button>
           <a class="btn wa" id="waRegalo" target="_blank" rel="noopener">Enviar por WhatsApp</a>
-          <a class="btn ghost" href="#regalo" style="background:var(--soft);color:var(--ink)">Ver como tu pareja</a>
+          <a class="btn ghost" href="#regalo" style="background:var(--soft);color:var(--ink)" id="verComo">Ver como tu pareja</a>
           <p class="note" id="copied"></p>
         </div>
       </div>
@@ -530,12 +546,90 @@ const IDEAS=[
   (d,p)=>`Querida/o ${p}:\n\nHemos pasado por días buenos y otros no tanto, y en todos estuviste. Eso es lo que más admiro de nosotros: que siempre volvemos a encontrarnos.\n\nPor muchos años más de abrazos largos y conversaciones hasta tarde.\n${d}`,
   (d,p)=>`${p}:\n\nHice una lista de las cosas que amo de ti y me quedé sin papel. Así que te dejo la versión corta: todo.\n\nGracias por hacer mi vida más bonita y más divertida.\nTe amo, ${d}`
 ];
+/* ---------- tipos de regalo y perfiles ----------
+   amor: pareja (sin definir sexo) · familia: hijo/hija ↔ padre/madre · amistad: amigos.
+   Cada tipo cambia los textos, las ideas de carta, las citas/panoramas y los premios de partida. */
+const ROLES={hijo:'Hijo',hija:'Hija',padre:'Padre',madre:'Madre'};
+const TRATO={hijo:'hijo',hija:'hija',padre:'papá',madre:'mamá'};
+const HIJOS=['hijo','hija'],PADRES=['padre','madre'];
+const rolesOk=(a,b)=>(HIJOS.includes(a)&&PADRES.includes(b))||(PADRES.includes(a)&&HIJOS.includes(b));
+const TIPOS_R=[['amor','💘','Amor','Para tu pareja'],['familia','🏡','Familia','Hijo, hija, padre o madre'],['amistad','🤝','Amistad','Para un amigo o amiga']];
+const PANORAMAS={
+  familia:['Desayuno juntos un domingo','Cocinar la receta familiar','Ver fotos antiguas de la familia','Paseo al parque o a la plaza','Tarde de juegos de mesa','Ir al cine juntos','Hornear galletas juntos','Visitar a los abuelos','Salir a andar en bicicleta','Ir a la playa por el día','Plantar algo juntos','Una tarde de manualidades'],
+  amistad:['Asado en la casa de alguien','Noche de series y cabritas','Ir a un concierto juntos','Subir un cerro','Tarde de juegos de mesa','Viaje de fin de semana','Probar un restorán nuevo','Ir a la playa','Karaoke','Noche de videojuegos','Recorrer una feria','Ver un partido juntos']};
+const PREMIOS={
+  amor:['Un masaje de 15 minutos','Desayuno en la cama','Tú eliges la película','Cena que tú elijas','Un día sin lavar la loza','Salida sorpresa'],
+  familia:['Un abrazo de un minuto','Tú eliges el almuerzo del domingo','Te libro de una tarea de la casa','Helado a elección','Tú eliges la película','Una tarde solo para los dos'],
+  amistad:['Te invito un café','Tú eliges el panorama','Te debo un favor gigante','Yo pago las papas fritas','Tú eliges la serie','Una salida sorpresa']};
+const IDEAS_T={
+  padres:[ // de hijo/hija a papá o mamá
+    (d,p,r)=>`${p}:\n\nGracias por cada cosa que hiciste por mí, incluso las que nunca vi. Todo lo bueno que tengo empezó contigo.\n\nTe quiero mucho, ${r.trato}.\n${d}`,
+    (d,p,r)=>`Querid${r.rolPara==='madre'?'a':'o'} ${r.trato}:\n\nAhora que crecí entiendo lo mucho que te costó y lo bien que lo hiciste. Gracias por tu paciencia, tus consejos y tus abrazos.\n\nCon todo mi cariño,\n${d}`,
+    (d,p,r)=>`${p}:\n\nNo te lo digo tan seguido como debería: eres mi ejemplo. Gracias por estar siempre, en los días buenos y en los difíciles.\n\nTu ${TRATO[r.rolDe]},\n${d}`,
+    (d,p,r)=>`Para ${p}:\n\nGracias por enseñarme a andar en bicicleta, a levantarme cuando me caigo y a reírme de mí mism${r.rolDe==='hija'?'a':'o'}. Lo sigo usando todos los días.\n\nTe quiero,\n${d}`],
+  hijos:[ // de papá o mamá a hijo/hija
+    (d,p,r)=>`${p}:\n\nDesde el día en que llegaste, mi vida es más bonita. Verte crecer es el regalo más grande que tengo.\n\nTe quiero con todo mi corazón.\nTu ${TRATO[r.rolDe]}`,
+    (d,p,r)=>`Querid${r.rolPara==='hija'?'a':'o'} ${p}:\n\nQuiero que nunca se te olvide: estoy orgullos${r.rolDe==='madre'?'a':'o'} de ti, no por lo que logras, sino por la persona que eres.\n\nSiempre voy a estar aquí.\nTu ${TRATO[r.rolDe]}`,
+    (d,p,r)=>`${p}:\n\nGracias por las risas, los abrazos y hasta por los días difíciles: contigo aprendí a ser ${r.rolDe==='madre'?'mamá':'papá'}.\n\nTe quiero hoy y siempre.\n${d}`,
+    (d,p,r)=>`Para ${p}:\n\nOjalá nunca dejes de soñar en grande. Yo voy a estar en primera fila aplaudiéndote.\n\nCon todo mi amor,\nTu ${TRATO[r.rolDe]}`],
+  amistad:[
+    (d,p)=>`${p}:\n\nGracias por estar en las buenas, en las malas y en las ridículas. Eres de esas personas que hacen la vida más fácil.\n\nPor muchos años más de amistad.\n${d}`,
+    (d,p)=>`Para ${p}:\n\nNo sé en qué momento pasaste de ser alguien que conocía a ser familia, pero me alegro de que haya pasado.\n\nUn abrazo gigante,\n${d}`,
+    (d,p)=>`${p}:\n\nHice la cuenta de las veces que me salvaste el día y perdí la cuenta. Gracias por las risas, los consejos y las conversaciones hasta tarde.\n\nSiempre,\n${d}`,
+    (d,p)=>`${p}:\n\nUn amigo de verdad es el que se sabe todas tus historias y igual se ríe cuando las cuentas otra vez. Esa persona eres tú.\n\nGracias por tanto.\n${d}`]};
+/* P(): textos del tipo de regalo actual */
+function P(){
+  const tipo=['amor','familia','amistad'].includes(S.tipo)?S.tipo:'amor';
+  const rolDe=tipo==='familia'?S.rolDe:'',rolPara=tipo==='familia'?S.rolPara:'';
+  const trato=TRATO[rolPara]||'',aHijo=HIJOS.includes(rolPara);
+  const base={tipo,rolDe,rolPara,trato,
+    cita:'panorama',citaP:'panoramas',cuaderno:'Cuaderno de panoramas',proxima:'Nuestro próximo panorama',badge:'Próximo panorama',
+    icoProx:'📅',hint:'Elige los panoramas con que parte el cuaderno. Después los dos pueden agregar más, ponerles fecha, marcarlos como hechos y anotar cómo les fue, desde el regalo.',
+    ejemplo:'Ej: volver a ese lugar al que siempre íbamos',anotar:'Anotar un panorama pendiente…',vacioP:'No hay panoramas pendientes. ¡Anoten uno!',vacioH:'Todavía no marcan ningún panorama como hecho.',
+    borrar:'¿Borrar este panorama del cuaderno?',waCita:'📅 Nuestro panorama',sym:'♥',offTxt:'Si necesitas suspender este regalo, puedes deshabilitarlo desde este botón. No se borra nada, solo se suspende el servicio.',
+    escape:'Escape room',escapeTxt:'Acertijos para resolver juntos y competir con otros equipos.',citas:PANORAMAS[tipo]||[],premios:PREMIOS[tipo]};
+  if(tipo==='amor')return Object.assign(base,{marca:'Con amor',titulo:'Regalo de amor',h1:'Arma tu regalo de amor',quien:'tu pareja',
+    fecha:'¿Desde cuándo están juntos?',contador:'Llevamos juntos',dias:'días juntos',aniv:'nuestro aniversario',anivDias:'días para nuestro próximo aniversario',
+    razones:'razones por las que te amo',sobre:'Te amo',wrapped:'Nuestra relación en números',wrappedSw:'Wrapped: resumen animado de su relación',
+    cita:'cita',citaP:'citas',cuaderno:'Cuaderno de citas',proxima:'Nuestra próxima cita',badge:'Próxima cita',icoProx:'💘',
+    hint:'Elige las ideas con que parte el cuaderno. Después los dos pueden agregar citas, ponerles fecha, marcarlas como hechas y anotar cómo les fue, desde el regalo.',
+    ejemplo:'Ej: volver al lugar donde nos conocimos',anotar:'Anotar una cita pendiente…',vacioP:'No hay citas pendientes. ¡Anoten una!',vacioH:'Todavía no marcan ninguna cita como hecha.',
+    borrar:'¿Borrar esta cita del cuaderno?',waCita:'💕 Nuestra cita',citas:CITAS,ideas:IDEAS,
+    offTxt:'Si la relación se acaba, puedes deshabilitar este regalo desde este botón. No se borra nada, solo se suspende el servicio.',
+    escape:'Escape room de parejas',escapeTxt:'Acertijos para resolver juntos y competir con otras parejas.'});
+  if(tipo==='familia')return Object.assign(base,{marca:'Con cariño',titulo:'Regalo para '+(trato?'mi '+trato:'la familia'),h1:'Arma tu regalo para '+(trato?'tu '+trato:'tu familia'),quien:trato?'tu '+trato:'quien recibe',
+    fecha:aHijo?'¿Cuándo nació tu '+trato+'?':'¿Cuándo naciste tú? (desde ahí cuenta el tiempo juntos)',contador:'Llevamos juntos',dias:'días juntos',
+    aniv:aHijo?'tu cumpleaños':'mi cumpleaños',anivDias:aHijo?'días para tu cumpleaños':'días para mi cumpleaños',
+    razones:'razones por las que te quiero',sobre:'Te quiero',wrapped:'Nuestra familia en números',wrappedSw:'Wrapped: resumen animado de su historia juntos',
+    ideas:aHijo?IDEAS_T.hijos:IDEAS_T.padres});
+  return Object.assign(base,{marca:'Con cariño',titulo:'Regalo de amistad',h1:'Arma tu regalo de amistad',quien:'tu amigo o amiga',
+    fecha:'¿Desde cuándo son amigos?',contador:'Somos amigos hace',dias:'días de amistad',aniv:'nuestro aniversario de amistad',anivDias:'días para nuestro aniversario de amistad',
+    razones:'razones por las que eres tan importante para mí',sobre:'Para ti',wrapped:'Nuestra amistad en números',wrappedSw:'Wrapped: resumen animado de su amistad',
+    sym:'★',ideas:IDEAS_T.amistad});
+}
+/* Selector de tipo (registro y editor). pre = prefijo de ids */
+const tipoHtml=pre=>`<div class="tipos" id="${pre}Tipos" role="radiogroup" aria-label="Tipo de regalo">${TIPOS_R.map(([k,i,n,s])=>`<label><input type="radio" name="${pre}Tipo" value="${k}"><span class="ico">${i}</span><b>${n}</b><small>${s}</small></label>`).join('')}</div>
+  <div class="row hide" id="${pre}Fam"><div><label for="${pre}RolPara">Se lo regalas a tu…</label><select id="${pre}RolPara"><option value="">Elige</option>${Object.entries(ROLES).map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select></div>
+  <div><label for="${pre}RolDe">Y tú eres su…</label><select id="${pre}RolDe"><option value="">Elige</option></select></div></div>`;
+/* Conecta el selector: v = {tipo,rolDe,rolPara}; cb(v) se llama con cada cambio */
+function tipoWire(pre,v,cb){
+  const g=id=>document.getElementById(pre+id);
+  const opcDe=()=>{const p=g('RolPara').value,ok=HIJOS.includes(p)?PADRES:PADRES.includes(p)?HIJOS:[];
+    if(!ok.includes(v.rolDe))v.rolDe=ok.length===1?ok[0]:'';
+    g('RolDe').innerHTML='<option value="">Elige</option>'+ok.map(k=>`<option value="${k}"${k===v.rolDe?' selected':''}>${ROLES[k]}</option>`).join('');g('RolDe').disabled=!ok.length};
+  const pintar=()=>{const r=g('Tipos').querySelector(`input[value="${v.tipo}"]`);if(r)r.checked=true;
+    g('Fam').classList.toggle('hide',v.tipo!=='familia');g('RolPara').value=v.rolPara||'';opcDe()};
+  g('Tipos').onchange=e=>{v.tipo=e.target.value;pintar();cb(v)};
+  g('RolPara').onchange=e=>{v.rolPara=e.target.value;opcDe();cb(v)};
+  g('RolDe').onchange=e=>{v.rolDe=e.target.value;cb(v)};
+  pintar();return pintar;
+}
 /* Estrellas brillantes: nombre, AR (horas), Dec (grados), magnitud */
 const STARS=[['Sirio',6.752,-16.72,-1.46],['Canopus',6.399,-52.70,-.74],['Alfa Centauri',14.660,-60.83,-.27],['Arturo',14.261,19.18,-.05],['Vega',18.616,38.78,.03],['Capella',5.278,46.00,.08],['Rigel',5.242,-8.20,.13],['Proción',7.655,5.22,.34],['Achernar',1.629,-57.24,.46],['Betelgeuse',5.919,7.41,.5],['Hadar',14.064,-60.37,.61],['Altair',19.846,8.87,.76],['Acrux',12.443,-63.10,.77],['Aldebarán',4.599,16.51,.86],['Antares',16.490,-26.43,.96],['Espiga',13.420,-11.16,.97],['Pólux',7.755,28.03,1.14],['Fomalhaut',22.961,-29.62,1.16],['Deneb',20.690,45.28,1.25],['Mimosa',12.795,-59.69,1.25],['Régulo',10.140,11.97,1.35],['Adhara',6.977,-28.97,1.5],['Cástor',7.577,31.89,1.58],['Gacrux',12.519,-57.11,1.59],['Shaula',17.560,-37.10,1.62],['Bellatrix',5.419,6.35,1.64],['Elnath',5.438,28.61,1.65],['Miaplacidus',9.220,-69.72,1.68],['Alnilam',5.604,-1.20,1.69],['Alnair',22.137,-46.96,1.74],['Alnitak',5.679,-1.94,1.77],['Alioth',12.900,55.96,1.77],['Dubhe',11.062,61.75,1.79],['Mirfak',3.405,49.86,1.79],['Wezen',7.140,-26.39,1.83],['Kaus Australis',18.403,-34.38,1.85],['Sargas',17.622,-43.00,1.86],['Avior',8.375,-59.51,1.86],['Alkaid',13.792,49.31,1.86],['Menkalinan',5.992,44.95,1.9],['Atria',16.811,-69.03,1.91],['Alhena',6.629,16.40,1.93],['Peacock',20.427,-56.74,1.94],['Polaris',2.530,89.26,1.98],['Mirzam',6.378,-17.96,1.98],['Alphard',9.460,-8.66,1.98],['Hamal',2.120,23.46,2.0],['Diphda',.727,-17.99,2.04],['Nunki',18.921,-26.30,2.05],['Menkent',14.111,-36.37,2.06],['Saiph',5.796,-9.67,2.06],['Suhail',9.133,-43.43,2.21],['Mintaka',5.533,-.30,2.23],['Dschubba',16.006,-22.62,2.3],['Épsilon Escorpión',16.836,-34.29,2.3],['Lesath',17.513,-37.30,2.7],['Delta Cruz',12.252,-58.75,2.8]];
 const LINES=[['Acrux','Gacrux'],['Mimosa','Delta Cruz'],['Alfa Centauri','Hadar'],['Betelgeuse','Bellatrix'],['Bellatrix','Mintaka'],['Mintaka','Alnilam'],['Alnilam','Alnitak'],['Alnitak','Saiph'],['Saiph','Rigel'],['Rigel','Mintaka'],['Betelgeuse','Alnitak'],['Dschubba','Antares'],['Antares','Épsilon Escorpión'],['Épsilon Escorpión','Sargas'],['Sargas','Shaula'],['Shaula','Lesath']];
 
 const S={
-  de:'Matías',para:'Sofía',fecha:'2021-02-14',cancion:'',yt:'',telDe:'',telPara:'',tema:'pasion',
+  tipo:'amor',rolDe:'',rolPara:'',de:'Matías',para:'Sofía',fecha:'2021-02-14',cancion:'',yt:'',telDe:'',telPara:'',tema:'pasion',
   fotos:[],video:null,voz:null,razones:[
     {t:'Porque me haces reír incluso en los días malos.'},{t:'Porque siempre me esperas con un café.'},{t:'Porque contigo cualquier martes es especial.'}],
   carta:'Sofía:\n\nHay días en que todavía no creo la suerte que tengo. Gracias por reírte de mis chistes malos, por esperarme siempre con un café y por hacer de cualquier martes algo especial.\n\nTe elegiría otra vez, todas las veces.\n\nTuyo,\nMatías',
@@ -567,14 +661,14 @@ async function api(body){
   return j;
 }
 const med=x=>x?.ruta?{ruta:x.ruta,peso:x.size,orig:x.orig}:null;
-const pack=()=>({de:S.de,para:S.para,fecha:S.fecha,cancion:S.cancion,yt:S.yt,carta:S.carta,final:S.final,tl:S.tl,qs:S.qs,
+const pack=()=>({tipo:S.tipo,rolDe:S.rolDe,rolPara:S.rolPara,de:S.de,para:S.para,fecha:S.fecha,cancion:S.cancion,yt:S.yt,carta:S.carta,final:S.final,tl:S.tl,qs:S.qs,
   telDe:S.telDe,telPara:S.telPara,tema:S.tema,cielo:S.cielo,wrapped:S.wrapped,ruleta:S.ruleta,citas:S.citas,cartas:S.cartas,ocultas:S.ocultas||[],
   razones:S.razones.map(r=>({t:r.t,ruta:r.ruta||null,peso:r.size||0,orig:r.orig||0})),
   fotos:S.fotos.filter(f=>f.ruta&&f.mini).map(f=>({ruta:f.ruta,mini:f.mini,cap:f.cap,peso:f.size,orig:f.orig})),
   video:med(S.video),voz:med(S.voz)});
 function unpack(d,base){
   for(const k of['de','para','fecha','cancion','yt','carta','final','telDe','telPara'])S[k]=d[k]||'';
-  S.tema=d.tema||'pasion';S.tl=d.tl||[];
+  S.tema=d.tema||'pasion';S.tl=d.tl||[];S.tipo=d.tipo||'amor';S.rolDe=d.rolDe||'';S.rolPara=d.rolPara||'';
   S.qs=(d.qs||[]).map(q=>q.ops?q:{q:q.q,ops:[q.ok,...String(q.no||'').split('|')].map(s=>s.trim()).concat(['','','']).slice(0,4),ok:0});
   S.cielo=Object.assign({on:false,ciudad:'santiago',f:d.fecha||'',h:'22:00'},d.cielo||{});
   S.wrapped=!!d.wrapped;S.ruleta=Object.assign({on:false,items:[]},d.ruleta||{});
@@ -758,7 +852,7 @@ $('#delVoz').onclick=()=>{borrar(S.voz?.ruta);S.voz=null;showVoz();$('#msgVoz').
 
 /* ---------- carta ---------- */
 let idea=0;
-$('#btnIdea').onclick=()=>{S.carta=IDEAS[idea++%IDEAS.length](S.de||'Yo',S.para||'Mi amor');$('#fCarta').value=S.carta;scheduleSave()};
+$('#btnIdea').onclick=()=>{const t=P(),L=t.ideas;S.carta=L[idea++%L.length](S.de||'Yo',S.para||(t.tipo==='amor'?'Mi amor':t.trato?t.trato[0].toUpperCase()+t.trato.slice(1):'Amigo'),t);$('#fCarta').value=S.carta;scheduleSave()};
 
 /* ---------- temas ---------- */
 $('#temas').innerHTML=TEMAS.map(([k,n,c])=>`<label><input type="radio" name="tema" value="${k}"><span class="mini" style="background:${miniMesh(c)}"></span>${n}</label>`).join('');
@@ -816,7 +910,7 @@ $('#addPremio').onclick=()=>{if(S.ruleta.items.length<8){S.ruleta.items.push('')
 
 /* ---------- citas ---------- */
 function renderCitas(){
-  const all=[...new Set([...CITAS,...S.citas])];
+  const all=[...new Set([...P().citas,...S.citas])];
   $('#chipsCitas').innerHTML=all.map((c,i)=>`<label><input type="checkbox" data-cita="${esc(c)}" ${S.citas.includes(c)?'checked':''}>${esc(c)}</label>`).join('');
 }
 $('#chipsCitas').addEventListener('change',e=>{const c=e.target.dataset.cita;if(c==null)return;S.citas=e.target.checked?[...S.citas,c]:S.citas.filter(x=>x!==c);
@@ -854,16 +948,37 @@ function pintarSwitches(){
 document.getElementById('crear').addEventListener('change',e=>{const k=e.target.dataset.vis;if(!k)return;
   S.ocultas=(S.ocultas||[]).filter(x=>x!==k);if(!e.target.checked)S.ocultas.push(k);pintarSwitches();scheduleSave()});
 
+/* ---------- tipo de regalo en el editor: cambia los textos al tiro ---------- */
+const perfilesHtml=t=>{const de=t.rolDe?` (${ROLES[t.rolDe]})`:'',pa=t.rolPara?` (${ROLES[t.rolPara]})`:'';
+  return `<span>👤 Quien regala: <b>${esc(S.de||'—')}</b>${de}</span><span>🎁 Quien recibe: <b>${esc(S.para||'—')}</b>${pa}</span>`};
+const cap=x=>x?x[0].toUpperCase()+x.slice(1):x;
+function pintarTipo(){
+  const t=P(),set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  document.title=t.titulo;set('marca',t.marca);set('edH1',t.h1);set('lFecha',t.fecha);set('lTelPara','WhatsApp de '+t.quien);
+  set('hRz','10 '+t.razones);set('quienRz',cap(t.quien));set('quienQ',cap(t.quien));set('lWrapped',t.wrappedSw);
+  set('nProx',t.proxima);set('nPend',t.cita==='cita'?'las citas pendientes':'los panoramas pendientes');
+  set('hCuad',t.cuaderno);set('hintCuad',t.hint);set('nEscape',t.escape);set('verComo','Ver como '+t.quien);
+  const fc=$('#fCitaNueva');if(fc)fc.placeholder=t.ejemplo;
+  const pf=$('#edPerfiles');if(pf)pf.innerHTML=perfilesHtml(t)+(S.tipo==='familia'&&!t.rolDe?'<span>⚠️ Elige a quién se lo regalas y quién eres tú</span>':'');
+}
+let pintarSelTipo=null;
+function initTipoEditor(){
+  if(!pintarSelTipo){$('#edTipo').innerHTML=tipoHtml('ed');
+    pintarSelTipo=tipoWire('ed',S,()=>{pintarTipo();renderCitas();if(S.tipo!=='familia'||rolesOk(S.rolDe,S.rolPara))scheduleSave()})}
+  else pintarSelTipo();
+  pintarTipo();
+}
+
 /* ---------- campos simples, guardado y QR ---------- */
 const F={'#fDe':'de','#fPara':'para','#fFecha':'fecha','#fCancion':'cancion','#fYt':'yt','#fCarta':'carta','#fFinal':'final','#fTelDe':'telDe','#fTelPara':'telPara'};
-for(const[id,k]of Object.entries(F))$(id).addEventListener('input',e=>{S[k]=e.target.value;if(k==='cancion')songInfo();if(k==='telPara'||k==='de'||k==='para')updWa()});
+for(const[id,k]of Object.entries(F))$(id).addEventListener('input',e=>{S[k]=e.target.value;if(k==='cancion')songInfo();if(k==='telPara'||k==='de'||k==='para')updWa();if(k==='de'||k==='para')pintarTipo()});
 function fill(){
   for(const[id,k]of Object.entries(F))$(id).value=S[k]||'';
   const t=document.querySelector(`#temas input[value="${S.tema}"]`)||document.querySelector('#temas input');t.checked=true;
   $('#fCieloOn').checked=!!S.cielo.on;$('#fCiudad').value=S.cielo.ciudad;$('#fCieloF').value=S.cielo.f||'';$('#fCieloH').value=S.cielo.h||'22:00';
   $('#fWrapped').checked=!!S.wrapped;$('#fRuletaOn').checked=!!S.ruleta.on;
 }
-$('#crear').addEventListener('input',e=>{if(e.target.type!=='file')scheduleSave()});
+$('#crear').addEventListener('input',e=>{if(e.target.type!=='file'&&!e.target.closest('#edTipo'))scheduleSave()});
 const giftUrl=()=>location.origin+location.pathname+'?r='+ED.slug;
 function showSaved(){
   $('#sinGuardar').classList.toggle('hide',!!ED);$('#guardado').classList.toggle('hide',!ED);
@@ -901,7 +1016,7 @@ function pintarPerfil(){
   $('#pEstado').classList.toggle('off',!!PERFIL.off);
   $('#pEstado').innerHTML=PERFIL.off
     ?`<span>🚫 <b>Regalo deshabilitado.</b> Quien lo recibe ve un aviso en vez del regalo.</span><button class="pri" data-off="0">Volver a habilitar</button>`
-    :`<span>✅ <b>Regalo habilitado.</b> Si la relación se acaba, puedes deshabilitar este regalo desde este botón. No se borra nada, solo se suspende el servicio.</span><button class="ghost" data-off="1">Deshabilitar regalo</button>`;
+    :`<span>✅ <b>Regalo habilitado.</b> ${esc(P().offTxt)}</span><button class="ghost" data-off="1">Deshabilitar regalo</button>`;
 }
 async function perfilApi(cambios,msg){
   const m=$('#pMsg');m.textContent='Guardando…';
@@ -925,7 +1040,7 @@ function together(){
 }
 function rain(n){
   const h=$('#hearts');
-  for(let i=0;i<n;i++){const s=document.createElement('span');s.textContent='♥';s.style.left=Math.random()*100+'vw';s.style.fontSize=12+Math.random()*26+'px';s.style.animationDuration=3+Math.random()*3+'s';s.style.animationDelay=Math.random()*1.5+'s';h.appendChild(s);setTimeout(()=>s.remove(),7000)}
+  for(let i=0;i<n;i++){const s=document.createElement('span');s.textContent=P().sym;s.style.left=Math.random()*100+'vw';s.style.fontSize=12+Math.random()*26+'px';s.style.animationDuration=3+Math.random()*3+'s';s.style.animationDelay=Math.random()*1.5+'s';h.appendChild(s);setTimeout(()=>s.remove(),7000)}
 }
 const fecha=f=>new Date(f+'T00:00:00').toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
 const num=n=>Math.round(n).toLocaleString('es-CL');
@@ -935,14 +1050,14 @@ function nextAnniv(){
   return Math.round((a-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/DAY);
 }
 function slides(){
-  const t=together(),out=[],tl=S.tl.filter(x=>x.t&&x.f).sort((a,b)=>a.f<b.f?-1:1),rz=S.razones.filter(r=>r.t);
+  const T=P(),t=together(),out=[],tl=S.tl.filter(x=>x.t&&x.f).sort((a,b)=>a.f<b.f?-1:1),rz=S.razones.filter(r=>r.t);
   const bg=['#c8102e','#7a0a1c','#d6336c','#4a1f8c','#b3123b','#0f0b24','#8c2f39'];
-  if(t){out.push({k:num(t.d),t:'días juntos',s:`desde el ${fecha(S.fecha)}`});out.push({k:num(t.ms/36e5),t:'horas compartidas',s:`y unos ${num(t.d*100800/1e6)} millones de latidos (aprox.)`})}
-  if(tl.length)out.push({k:tl.length,t:`momentos que marcaron nuestra historia`,s:`el primero: ${tl[0].t}`});
+  if(t){out.push({k:num(t.d),t:T.dias,s:`desde el ${fecha(S.fecha)}`});out.push({k:num(t.ms/36e5),t:'horas compartidas',s:`y unos ${num(t.d*100800/1e6)} millones de latidos (aprox.)`})}
+  if(tl.length)out.push({k:tl.length,t:T.tipo==='amistad'?'momentos que marcaron nuestra amistad':'momentos que marcaron nuestra historia',s:`el primero: ${tl[0].t}`});
   if(S.fotos.length)out.push({k:S.fotos.length,t:'fotos que guardamos para este regalo'});
   if(S.cancion)out.push({k:'♫',t:'Nuestra canción sonó más que cualquier otra',s:'dale play cuando llegues a ella'});
-  if(rz.length)out.push({k:rz.length,t:'razones por las que te amo',s:'te las muestro más abajo'});
-  const na=nextAnniv();if(na!=null)out.push({k:na===0?'¡Hoy!':na,t:na===0?'es nuestro aniversario':'días para nuestro próximo aniversario'});
+  if(rz.length)out.push({k:rz.length,t:T.razones,s:'te las muestro más abajo'});
+  const na=nextAnniv();if(na!=null)out.push({k:na===0?'¡Hoy!':na,t:na===0?'es '+T.aniv:T.anivDias});
   out.push({k:'♥',t:'Y esto recién empieza',s:`${S.de} + ${S.para}`});
   return out.map((x,i)=>({...x,bg:bg[i%bg.length]}));
 }
@@ -1023,13 +1138,13 @@ function pintarCuaderno(){
   $('#secCuad').querySelectorAll('[data-tab]').forEach(b=>{const n=b.dataset.tab==='p'?pend.length:hechas.length;b.textContent=(b.dataset.tab==='p'?'Pendientes':'Hechas')+' ('+n+')';b.classList.toggle('on',b.dataset.tab===cuadTab);b.setAttribute('aria-selected',b.dataset.tab===cuadTab)});
   const lista=cuadTab==='p'?pend:hechas;
   L.innerHTML=lista.length?lista.map(c=>cuadTab==='p'?`<div class="cita${c===prox?' prox':''}">
-      ${c===prox?'<span class="badge">Próxima cita</span>':''}<p>${esc(c.t)}</p>
-      <label class="cfecha">${c.f?`📅 ${c.f<h?'Era el':'El'} ${fLarga(c.f)}`:'📅 Ponerle fecha'}<input type="date" data-f="${c.id}" value="${c.f}" aria-label="Fecha de la cita"></label>
-      <div class="cbt"><button data-hecha="${c.id}">✔ ¡La hicimos!</button>${S.telDe&&c.f?`<a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`💕 Nuestra cita: ${c.t}, el ${fLarga(c.f)}`)}">Avisar</a>`:''}<button class="x" data-borrar="${c.id}" aria-label="Borrar cita">✕</button></div></div>`
+      ${c===prox?`<span class="badge">${P().badge}</span>`:''}<p>${esc(c.t)}</p>
+      <label class="cfecha">${c.f?`📅 ${c.f<h?'Era el':'El'} ${fLarga(c.f)}`:'📅 Ponerle fecha'}<input type="date" data-f="${c.id}" value="${c.f}" aria-label="Fecha"></label>
+      <div class="cbt"><button data-hecha="${c.id}">✔ ¡La hicimos!</button>${S.telDe&&c.f?`<a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,`${P().waCita}: ${c.t}, el ${fLarga(c.f)}`)}">Avisar</a>`:''}<button class="x" data-borrar="${c.id}" aria-label="Borrar">✕</button></div></div>`
     :`<div class="cita hecha"><p>✔ ${esc(c.t)}</p><small class="lbl">${c.f?fLarga(c.f):''}</small>
       <textarea data-n="${c.id}" maxlength="300" placeholder="¿Cómo estuvo? Anoten un recuerdo…">${esc(c.n)}</textarea>
       <div class="cbt"><button class="ghost" data-volver="${c.id}">Volver a pendientes</button></div></div>`).join('')
-    :`<p class="note" style="grid-column:1/-1">${cuadTab==='p'?'No hay citas pendientes. ¡Anoten una!':'Todavía no marcan ninguna cita como hecha.'}</p>`;
+    :`<p class="note" style="grid-column:1/-1">${cuadTab==='p'?P().vacioP:P().vacioH}</p>`;
   // la rueda de citas se redibuja solo si cambió la lista de pendientes (para no borrar el resultado)
   const firma=pend.map(c=>c.id+c.t).join('|');if(firma!==firmaRueda){firmaRueda=firma;if(ruedaModo==='cita')pintarRueda()}modosRueda();
 }
@@ -1042,7 +1157,7 @@ function initCuaderno(premios){
   L.onclick=e=>{const d=e.target.dataset;
     if(d.hecha){const c=S.cuaderno.find(x=>x.id===d.hecha);cuadOp({tipo:'editar',id:d.hecha,cambios:{e:'h',f:c.f&&c.f<=hoy()?c.f:hoy()}});rain(24)}
     if(d.volver)cuadOp({tipo:'editar',id:d.volver,cambios:{e:'p'}});
-    if(d.borrar&&confirm('¿Borrar esta cita del cuaderno?'))cuadOp({tipo:'borrar',id:d.borrar})};
+    if(d.borrar&&confirm(P().borrar))cuadOp({tipo:'borrar',id:d.borrar})};
   L.onchange=e=>{const d=e.target.dataset;if(d.f!=null)cuadOp({tipo:'editar',id:d.f,cambios:{f:e.target.value}});if(d.n!=null)cuadOp({tipo:'editar',id:d.n,cambios:{n:e.target.value}})};
   ruedaModo='';firmaRueda='';pintarCuaderno();
   if(slugActual()&&online)cuadOp({tipo:'leer'});
@@ -1053,7 +1168,7 @@ function modosRueda(){
   const sec=$('#secRueda');if(!sec)return;
   const pend=S.cuaderno.filter(c=>c.e==='p'),m=[];
   if(S.ruleta.on&&vis('juegos')&&premiosR.length>1)m.push(['premios','🎁 Premios']);
-  if(vis('citas')&&pend.length>1)m.push(['cita','💘 Nuestra próxima cita']);
+  if(vis('citas')&&pend.length>1)m.push(['cita',P().icoProx+' '+P().proxima]);
   sec.style.display=m.length?'':'none';if(!m.length)return;
   if(!m.some(x=>x[0]===ruedaModo)){ruedaModo=m[0][0];pintarRueda()}
   $('#ruedaModos').innerHTML=m.length>1?m.map(([k,t])=>`<button data-modo="${k}" class="${k===ruedaModo?'on':''}">${t}</button>`).join(''):'';
@@ -1063,7 +1178,7 @@ function itemsRueda(){return ruedaModo==='cita'?S.cuaderno.filter(c=>c.e==='p'):
 function pintarRueda(){
   const it=itemsRueda();if(ruedaModo==='cita'&&it.length<2){ruedaModo='';modosRueda();return}
   $('#ruedaSvg').innerHTML=wheelSvg(it.map(x=>x.t));ruedaRot=0;$('#premio').innerHTML='';$('#btnGirar').textContent='Girar';
-  $('#ruedaTxt').textContent=ruedaModo==='cita'?'¿No se deciden? Que la rueda elija nuestra próxima cita entre las pendientes.':'Gira y gana un premio';
+  $('#ruedaTxt').textContent=ruedaModo==='cita'?`¿No se deciden? Que la rueda elija ${P().proxima.toLowerCase()} entre ${P().cita==='cita'?'las pendientes':'los pendientes'}.`:'Gira y gana un premio';
 }
 function girar(){
   const it=itemsRueda(),n=it.length;if(n<2)return;
@@ -1071,9 +1186,9 @@ function girar(){
   ruedaRot+=360*5+((360-(i+.5)*seg)-(ruedaRot%360)+360)%360;$('#wheel').style.transform=`rotate(${ruedaRot}deg)`;
   setTimeout(()=>{const x=it[i];b.disabled=false;b.textContent='Girar otra vez';rain(20);
     if(ruedaModo==='cita'){
-      $('#premio').innerHTML=`Nuestra próxima cita: <b>${esc(x.t)}</b><div class="agendar"><label for="rFecha">📅 ¿Qué día?<input type="date" id="rFecha" value="${x.f||''}"></label><button class="pri" id="rAgendar">Agendar</button></div>`;
+      $('#premio').innerHTML=`${P().proxima}: <b>${esc(x.t)}</b><div class="agendar"><label for="rFecha">📅 ¿Qué día?<input type="date" id="rFecha" value="${x.f||''}"></label><button class="pri" id="rAgendar">Agendar</button></div>`;
       $('#rAgendar').onclick=()=>{const f=$('#rFecha').value;if(!f){$('#rFecha').focus();return}cuadOp({tipo:'editar',id:x.id,cambios:{f}});
-        $('#premio').innerHTML=`📅 <b>${esc(x.t)}</b> quedó para el ${fLarga(f)}${S.telDe?` <a class="btn wa" style="margin-top:10px" target="_blank" rel="noopener" href="${wa(S.telDe,`🎡 La rueda eligió nuestra próxima cita: ${x.t}, el ${fLarga(f)} 💕`)}">Avisar por WhatsApp</a>`:''}`};
+        $('#premio').innerHTML=`📅 <b>${esc(x.t)}</b> quedó para el ${fLarga(f)}${S.telDe?` <a class="btn wa" style="margin-top:10px" target="_blank" rel="noopener" href="${wa(S.telDe,`🎡 La rueda eligió ${P().proxima.toLowerCase()}: ${x.t}, el ${fLarga(f)} 💕`)}">Avisar por WhatsApp</a>`:''}`};
     }else $('#premio').innerHTML=`Te tocó: <b>${esc(x.t)}</b>${S.telDe?` <a class="btn wa" style="margin-top:10px" target="_blank" rel="noopener" href="${wa(S.telDe,`¡Gané en la rueda! 🎡 Quiero canjear: ${x.t}`)}">Canjear por WhatsApp</a>`:''}`;
   },4300);
 }
@@ -1082,13 +1197,13 @@ function renderRegalo(){
   const fotos=S.fotos.filter(f=>!f.subiendo),rz=S.razones.filter(x=>x.t||x.url);
   const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
   const qs=S.qs.map(q=>({q:q.q,ops:q.ops.map((o,j)=>({o,ok:j===q.ok})).filter(x=>x.o.trim())})).filter(q=>q.q&&q.ops.some(x=>x.ok)&&q.ops.length>1);
-  const tl=S.tl.filter(x=>x.t),premios=S.ruleta.items.filter(x=>x.trim()),city=CIUDADES[S.cielo.ciudad]||CIUDADES.santiago;
+  const TX=P(),tl=S.tl.filter(x=>x.t),premios=S.ruleta.items.filter(x=>x.trim()),city=CIUDADES[S.cielo.ciudad]||CIUDADES.santiago;
   r.innerHTML=`
   <section class="scene s-env hero" id="hero">${heroLayers(7)}<div>
     <p class="script" style="font-size:28px;margin:0">Para ${esc(S.para)}</p>
     <button class="env" id="env" aria-label="Abrir el sobre">
       <svg viewBox="0 0 360 250"><rect x="10" y="40" width="340" height="200" rx="12" style="fill:var(--red)"/><path d="M10 236 L180 120 L350 236Z" fill="#000" opacity=".12"/><path d="M10 50 L10 236 L150 140Z M350 50 L350 236 L210 140Z" fill="#000" opacity=".07"/>
-      <rect x="40" y="20" width="280" height="150" rx="6" fill="#fff"/><text x="180" y="95" text-anchor="middle" font-family="Dancing Script,cursive" font-size="30" style="fill:var(--red)">Te amo</text>
+      <rect x="40" y="20" width="280" height="150" rx="6" fill="#fff"/><text x="180" y="95" text-anchor="middle" font-family="Dancing Script,cursive" font-size="30" style="fill:var(--red)">${esc(TX.sobre)}</text>
       <path class="flap" d="M10 50 Q10 40 22 40 L338 40 Q350 40 350 50 L180 160Z" style="fill:var(--red);filter:brightness(1.12)"/>
       <g class="seal"><circle cx="180" cy="152" r="28" fill="#7a0a1c"/><path d="M180 168c-16-11-15-24-6-24 3 0 5 2 6 5 1-3 3-5 6-5 9 0 10 13-6 24z" fill="#ffd6df"/></g></svg>
     </button>
@@ -1096,20 +1211,20 @@ function renderRegalo(){
     <p class="script" style="font-size:22px">de ${esc(S.de)}</p>
   </div></section>
   <div id="inside" class="hide">
-  ${S.wrapped&&vis('juegos')?`<section class="scene"><div class="wrapped-cta"><p class="script" style="font-size:26px;margin:0">Nuestro Wrapped</p><h2 style="margin:.3em 0 .6em">Nuestra relación en números</h2><button id="btnWrapped" class="pri">Ver nuestro Wrapped</button></div></section>`:''}
-  ${together()?`<section class="scene s-red"><div><p class="lbl">Llevamos juntos</p><div class="count"><div><b id="cD">0</b><small>días</small></div><div><b id="cH">0</b><small>horas</small></div><div><b id="cM">0</b><small>minutos</small></div><div><b id="cS">0</b><small>segundos</small></div></div><p class="lbl" style="margin-top:18px">desde el ${fecha(S.fecha)}</p></div></section>`:''}
+  ${S.wrapped&&vis('juegos')?`<section class="scene"><div class="wrapped-cta"><p class="script" style="font-size:26px;margin:0">Nuestro Wrapped</p><h2 style="margin:.3em 0 .6em">${esc(TX.wrapped)}</h2><button id="btnWrapped" class="pri">Ver nuestro Wrapped</button></div></section>`:''}
+  ${together()?`<section class="scene s-red"><div><p class="lbl">${esc(TX.contador)}</p><div class="count"><div><b id="cD">0</b><small>días</small></div><div><b id="cH">0</b><small>horas</small></div><div><b id="cM">0</b><small>minutos</small></div><div><b id="cS">0</b><small>segundos</small></div></div><p class="lbl" style="margin-top:18px">desde el ${fecha(S.fecha)}</p></div></section>`:''}
   ${(sp||yS)&&vis('cancion')?`<section class="scene"><div><h2>Nuestra canción</h2>${sp?`<iframe class="spot" src="${sp}" allow="encrypted-media" loading="lazy"></iframe>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yS}" allowfullscreen loading="lazy"></iframe>`}<p class="note"><a href="${esc(S.cancion)}">Abrir la canción</a></p></div></section>`:''}
   ${fotos.length&&vis('fotos')?`<section class="scene"><div><h2>Nuestros momentos</h2><div class="album" id="album">${fotos.map(f=>`<figure><img src="${f.url}" alt="${esc(f.cap)}" loading="lazy"><figcaption>${esc(f.cap)}</figcaption></figure>`).join('')}</div><div class="nav"><button class="ghost" id="prev" aria-label="Foto anterior">←</button><button class="ghost" id="next" aria-label="Foto siguiente">→</button></div></div></section>`:''}
-  ${rz.length&&vis('razones')?`<section class="scene"><div><h2>${rz.length} razones por las que te amo</h2><div class="deck" id="deck"></div><div class="pips" id="pips"></div><div class="nav"><button class="ghost" id="rzPrev" aria-label="Razón anterior">←</button><button id="rzNext" class="pri">Siguiente razón</button></div></div></section>`:''}
+  ${rz.length&&vis('razones')?`<section class="scene"><div><h2>${rz.length} ${esc(TX.razones)}</h2><div class="deck" id="deck"></div><div class="pips" id="pips"></div><div class="nav"><button class="ghost" id="rzPrev" aria-label="Razón anterior">←</button><button id="rzNext" class="pri">Siguiente razón</button></div></div></section>`:''}
   ${S.carta&&vis('carta')?`<section class="scene"><div><h2>Una carta para ti</h2><div class="paper">${esc(S.carta)}</div></div></section>`:''}
   ${S.cielo.on&&vis('cielo')&&(S.cielo.f||S.fecha)?`<section class="scene s-sky"><div><p class="lbl">Así estaba el cielo</p><h2>${esc(city[0])}, ${fecha(S.cielo.f||S.fecha)}</h2>${skySvg(S.cielo,true)}<p class="lbl" style="font-size:14px">a las ${esc(S.cielo.h||'22:00')} · las estrellas más brillantes sobre nosotros</p></div></section>`:''}
   ${tl.length&&vis('historia')?`<section class="scene"><div><h2>Nuestra historia</h2><ul class="tl">${tl.sort((a,b)=>a.f<b.f?-1:1).map(x=>`<li><time>${x.f?fecha(x.f):''}</time>${esc(x.t)}</li>`).join('')}</ul></div></section>`:''}
   ${S.voz&&vis('voz')?`<section class="scene"><div><h2>Escúchame</h2><p style="color:var(--mute)">Te dejé un mensaje con mi voz</p><audio controls src="${S.voz.url}" style="width:100%"></audio></div></section>`:''}
   ${(S.video||yV)&&vis('video')?`<section class="scene"><div><h2>Un video para ti</h2>${S.video?`<video class="media" controls playsinline src="${S.video.url}"></video>`:`<iframe class="embed" src="https://www.youtube.com/embed/${yV}" allowfullscreen loading="lazy"></iframe><p class="note"><a href="${esc(S.yt)}">Abrir en YouTube</a></p>`}</div></section>`:''}
-  <section class="scene${vis('citas')?'':' hide'}" id="secCuad"><div><p class="script" style="font-size:26px;margin:0">Nuestro</p><h2 style="margin-top:0">Cuaderno de citas</h2>
+  <section class="scene${vis('citas')?'':' hide'}" id="secCuad"><div><p class="script" style="font-size:26px;margin:0">Nuestro</p><h2 style="margin-top:0">${esc(TX.cuaderno)}</h2>
     <div class="seg" role="tablist"><button role="tab" data-tab="p">Pendientes</button><button role="tab" data-tab="h">Hechas</button></div>
     <div id="cuadLista" class="citas cuad"></div>
-    <form class="cuad-add" id="cuadForm"><input type="text" id="cuadNueva" maxlength="80" placeholder="Anotar una cita pendiente…" aria-label="Nueva cita"><button class="pri">Anotar</button></form>
+    <form class="cuad-add" id="cuadForm"><input type="text" id="cuadNueva" maxlength="80" placeholder="${esc(TX.anotar)}" aria-label="Anotar"><button class="pri">Anotar</button></form>
     <p class="note" id="cuadMsg" aria-live="polite"></p></div></section>
   <section class="scene" id="secRueda"><div><h2>Rueda de la fortuna</h2><div class="seg" id="ruedaModos"></div><p style="color:var(--mute)" id="ruedaTxt"></p><div class="wheel-wrap"><div class="pointer"></div><div id="ruedaSvg"></div></div><button id="btnGirar" class="pri">Girar</button><div class="premio" id="premio" aria-live="polite"></div></div></section>
   <section class="scene s-env${vis('sorpresa')?'':' hide'}"><div id="quiz"></div></section>
@@ -1137,7 +1252,7 @@ function renderRegalo(){
     ${S.final?`<div class="paper" style="text-align:center;white-space:pre-wrap;margin-bottom:18px">${esc(S.final)}</div>`:''}
     <div class="juegos${nuevo?' unlock':''}">
       <a class="juego" href="mascota/${slug?'?r='+encodeURIComponent(slug):''}"><span class="ico">🥚</span><b>Virtual Monster</b><small>Una mascota virtual que cuidamos entre los dos: comida, entrenamientos, batallas y evoluciones.</small><span class="btn pri">Hacerlo nacer</span></a>
-      <div class="juego pronto"><span class="ico">🗝️</span><b>Escape room de parejas</b><small>Acertijos para resolver juntos y competir con otras parejas.</small><span class="tag">Próximamente</span></div>
+      <div class="juego pronto"><span class="ico">🗝️</span><b>${esc(P().escape)}</b><small>${esc(P().escapeTxt)}</small><span class="tag">Próximamente</span></div>
     </div>`;if(nuevo)rain(60)};
   const showQ=()=>{
     if(qi>=qs.length){showFinal(true);return}
@@ -1151,17 +1266,21 @@ function renderRegalo(){
 }
 
 /* ---------- tarjeta sin registrar: registro de quien regala ---------- */
-const INICIO={tema:'pasion',wrapped:true,citas:['Picnic al atardecer','Ver las estrellas lejos de la ciudad','Cocinar juntos una receta nueva'],
-  ruleta:{on:true,items:['Un masaje de 15 minutos','Desayuno en la cama','Tú eliges la película','Cena que tú elijas','Un día sin lavar la loza','Salida sorpresa']}};
+/* Con qué parte el regalo según el tipo elegido al registrar */
+const inicio=tipo=>({tema:tipo==='amor'?'pasion':'pastel',wrapped:true,
+  citas:tipo==='amor'?['Picnic al atardecer','Ver las estrellas lejos de la ciudad','Cocinar juntos una receta nueva']:PANORAMAS[tipo].slice(0,3),
+  ruleta:{on:true,items:PREMIOS[tipo]}});
 function vistaRegistro(codigo){
   document.body.dataset.tema='pasion';
   $('#regalo').innerHTML=`<main class="wrap reg"><div class="lead"><p class="script" style="font-size:30px;margin:0">¡Hola!</p><h1 style="margin:.1em 0">Esta tarjeta todavía no tiene regalo</h1><p class="hint">Si tú la vas a regalar, regístrala y arma tu regalo. Quien la reciba verá el regalo al acercar su celular.</p><p class="note">Tarjeta <b>${esc(codigo)}</b></p></div>
   <form id="regForm">
-  <section class="sec"><h2>Tus datos (quien regala)</h2>
+  <section class="sec"><h2>¿Qué tipo de regalo es?</h2><p class="hint">Según la relación, el regalo trae sus propios textos, ideas de carta, panoramas y premios.</p>
+    ${tipoHtml('r')}<p class="note" id="rTipoMsg"></p></section>
+  <section class="sec"><h2 id="rHDe">Tus datos (quien regala)</h2>
     <label for="rDe">Tu nombre</label><input id="rDe" type="text" required maxlength="40" autocomplete="given-name">
     <div class="row"><div><label for="rEmail">Tu correo</label><input id="rEmail" type="email" required autocomplete="email"></div>
     <div><label for="rTelDe">Tu WhatsApp (opcional)</label><input id="rTelDe" type="tel" inputmode="tel" placeholder="9 1234 5678"></div></div></section>
-  <section class="sec"><h2>Quien recibe</h2>
+  <section class="sec"><h2 id="rHPara">Quien recibe</h2>
     <div class="row"><div><label for="rPara">Su nombre</label><input id="rPara" type="text" required maxlength="40"></div>
     <div><label for="rTelPara">Su WhatsApp (opcional)</label><input id="rTelPara" type="tel" inputmode="tel" placeholder="9 1234 5678"></div></div></section>
   <section class="sec"><h2>Contraseña para editar</h2><p class="hint">Con ella entras a editar tu regalo desde la pestaña <b>👤 Quien regala</b>. Quien recibe no la necesita.</p>
@@ -1169,10 +1288,17 @@ function vistaRegistro(codigo){
     <div><label for="rPass2">Repítela</label><input id="rPass2" type="password" required minlength="6" autocomplete="new-password"></div></div>
     <button class="pri" style="margin-top:16px;width:100%">Registrar tarjeta y armar mi regalo</button><p class="note" id="regMsg" aria-live="polite"></p></section>
   </form></main>`;
+  const RT={tipo:'',rolDe:'',rolPara:''};
+  const regTxt=()=>{const tm={amor:'tu pareja',amistad:'tu amigo o amiga'}[RT.tipo]||(RT.rolPara?'tu '+TRATO[RT.rolPara]:'');
+    $('#rHDe').textContent='Tus datos (quien regala'+(RT.tipo==='familia'&&RT.rolDe?' · '+ROLES[RT.rolDe]:'')+')';
+    $('#rHPara').textContent='Quien recibe'+(tm?' · '+tm:'');document.body.dataset.tema=RT.tipo&&RT.tipo!=='amor'?'pastel':'pasion';$('#marca').textContent=RT.tipo&&RT.tipo!=='amor'?'Con cariño':'Con amor';$('#rTipoMsg').textContent=''};
+  tipoWire('r',RT,regTxt);
   $('#regForm').onsubmit=async e=>{e.preventDefault();const m=$('#regMsg'),v=id=>$('#'+id).value.trim();
+    if(!RT.tipo){$('#rTipoMsg').textContent='Elige el tipo de regalo.';$('#rTipos').scrollIntoView({behavior:'smooth',block:'center'});return}
+    if(RT.tipo==='familia'&&!rolesOk(RT.rolDe,RT.rolPara)){$('#rTipoMsg').textContent='Elige a quién se lo regalas y quién eres tú.';$('#rFam').scrollIntoView({behavior:'smooth',block:'center'});return}
     if($('#rPass').value!==$('#rPass2').value){m.textContent='Las contraseñas no coinciden.';return}
     m.textContent='Registrando…';
-    try{const j=await api({accion:'registrar',r:codigo,pass:$('#rPass').value,de:{nombre:v('rDe'),email:v('rEmail'),tel:v('rTelDe')},para:{nombre:v('rPara'),tel:v('rTelPara')},datos:INICIO});
+    try{const j=await api({accion:'registrar',r:codigo,tipo:RT.tipo,rolDe:RT.tipo==='familia'?RT.rolDe:'',rolPara:RT.tipo==='familia'?RT.rolPara:'',pass:$('#rPass').value,de:{nombre:v('rDe'),email:v('rEmail'),tel:v('rTelDe')},para:{nombre:v('rPara'),tel:v('rTelPara')},datos:inicio(RT.tipo)});
       store.set({id:j.id,token:j.token,slug:j.slug});sessionStorage.setItem('amor_bienvenida','1');location.href=location.pathname}
     catch(e){m.textContent=e.message}};
 }
@@ -1200,12 +1326,12 @@ function route(){
   $('#crear').style.display=g?'none':'';$('#regalo').style.display=g?'block':'none';$('#quotaTop').style.display=g?'none':'';
   $('.tabs').style.display=RECIP?'none':'';
   $('#tCrear').classList.toggle('on',!g);$('#tRegalo').classList.toggle('on',g);
-  document.body.dataset.tema=S.tema||'pasion';
+  document.body.dataset.tema=S.tema||'pasion';document.title=P().titulo;$('#marca').textContent=P().marca;
   if(g)renderRegalo();else{clearInterval(tick);parallax($('#heroEd'))}
   scrollTo(0,0);
 }
 function edHero(){const t=document.createElement('div');t.innerHTML=heroLayers(3);const h=$('#heroEd');h.querySelectorAll(':scope>.layer').forEach(l=>l.remove());h.prepend(...t.children)}
-function renderAll(){pintarPerfil();pintarSwitches();edHero();fill();renderFotos();renderRz();renderTL();renderQ();renderRuleta();renderCitas();renderCartas();songInfo();showVideo();showVoz();skyPrev();showSaved();route()}
+function renderAll(){initTipoEditor();pintarPerfil();pintarSwitches();edHero();fill();renderFotos();renderRz();renderTL();renderQ();renderRuleta();renderCitas();renderCartas();songInfo();showVideo();showVoz();skyPrev();showSaved();route()}
 addEventListener('hashchange',()=>{if(!RECIP)route()});
 async function init(){
   const p=new URLSearchParams(location.search),aviso=$('#aviso');
