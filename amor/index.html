@@ -125,6 +125,9 @@ details.pass{margin-top:12px}details.pass summary{cursor:pointer;min-height:44px
 #regalo{background:none;color:var(--ink)}
 .temas{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
 .temas input{flex:none}
+
+.temas .fico{font-size:19px;line-height:1;width:22px;text-align:center;flex:none}
+#fondos,#temas{grid-template-columns:repeat(auto-fill,minmax(142px,1fr))}
 .temas label{margin:0;display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer;min-height:52px}
 .temas input{accent-color:var(--red);width:18px;height:18px}
 .temas label:has(input:checked){border-color:var(--red);background:var(--soft)}
@@ -321,6 +324,8 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 .tipos small,.tipos b{text-align:center;hyphens:manual;-webkit-hyphens:manual}
 .tipos label:has(input:focus-visible){outline:2px solid var(--red);outline-offset:2px}
 .perfiles{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0}.perfiles span{background:var(--soft);border-radius:99px;padding:5px 12px;font-size:14px}
+#temas label,#fondos label{white-space:nowrap;gap:7px;padding:6px 10px;font-size:15px;min-width:0;min-height:44px}
+.temas input[type=radio]{margin:0}
 </style>
 </head>
 <body>
@@ -633,11 +638,11 @@ const circ=(x,y,r)=>`M${x-r} ${y}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*
 const FLOR=[0,1,2,3,4].map(k=>{const a=(k*72-90)*Math.PI/180;return circ(+(4.6*Math.cos(a)).toFixed(2),+(4.6*Math.sin(a)).toFixed(2),3.4)}).join('')+circ(0,0,2.4);
 const FONDOS={
   corazones:{n:'Corazones',ico:'❤️',sym:'',paths:['M0 8C-9 1-9-6-4-7c2 0 3 1 4 3 1-2 2-3 4-3 5 1 5 8-4 15z']},
-  coronas:{n:'Coronas (rey y reina)',ico:'👑',sym:'👑',paths:[
+  coronas:{n:'Coronas',t:'Coronas de rey y de reina',ico:'👑',sym:'👑',paths:[
     'M-8 6V-4l4 4 4-7 4 7 4-4V6zM-8 7.2h16v1.8h-16z',                                   // rey: puntas
     'M-8 6l-1-9 5 4 4-6 4 6 5-4-1 9z'+circ(-9,-3,1.7)+circ(0,-6,1.7)+circ(9,-3,1.7)+'M-8 7.2h16v1.8h-16z']}, // reina: puntas con perlas
   flores:{n:'Flores',ico:'🌸',sym:'🌸',paths:[FLOR]},
-  copas:{n:'Copas de primer lugar',ico:'🏆',sym:'🏆',paths:['M-6-7h12v4c0 4.5-2.7 7-5 7.5V6h3.5v2.5h-9V6H-1V4.5C-3.3 4-6 1.5-6-3zM-6-6h-3.5c0 4.2 2 6.2 4.2 6.3l-.4-1.8C-7.2-1.8-7.8-3.2-7.9-4.5H-6zM6-6h3.5c0 4.2-2 6.2-4.2 6.3l.4-1.8C7.2-1.8 7.8-3.2 7.9-4.5H6z']},
+  copas:{n:'Copas',t:'Copas de primer lugar',ico:'🏆',sym:'🏆',paths:['M-6-7h12v4c0 4.5-2.7 7-5 7.5V6h3.5v2.5h-9V6H-1V4.5C-3.3 4-6 1.5-6-3zM-6-6h-3.5c0 4.2 2 6.2 4.2 6.3l-.4-1.8C-7.2-1.8-7.8-3.2-7.9-4.5H-6zM6-6h3.5c0 4.2-2 6.2-4.2 6.3l.4-1.8C7.2-1.8 7.8-3.2 7.9-4.5H6z']},
   likes:{n:'Me gusta',ico:'👍',sym:'👍',paths:['M-8-1h3v9h-3zM-4-1L0-8c2.2 0 2.6 1.8 2 3.6L1.2-2H6c1.8 0 2.6 1.4 2.1 2.8L6.3 6.6C6 7.5 5.2 8 4.3 8H-4z']}};
 const fondo=()=>FONDOS[S.fondo]||FONDOS.corazones;
 const figura=i=>{const p=fondo().paths;return p[i%p.length]};
@@ -873,7 +878,7 @@ $('#btnIdea').onclick=()=>{const t=P(),L=t.ideas;S.carta=L[idea++%L.length](S.de
 
 /* ---------- temas ---------- */
 $('#temas').innerHTML=TEMAS.map(([k,n,c])=>`<label><input type="radio" name="tema" value="${k}"><span class="mini" style="background:${miniMesh(c)}"></span>${n}</label>`).join('');
-$('#fondos').innerHTML=Object.entries(FONDOS).map(([k,f])=>`<label><input type="radio" name="fondo" value="${k}"><span aria-hidden="true">${f.ico}</span>${f.n}</label>`).join('');
+$('#fondos').innerHTML=Object.entries(FONDOS).map(([k,f])=>`<label title="${f.t||f.n}"><input type="radio" name="fondo" value="${k}"><span class="fico" aria-hidden="true">${f.ico}</span>${f.n}</label>`).join('');
 $('#fondos').addEventListener('change',e=>{S.fondo=e.target.value;pintarFondo();edHero();parallax($('#heroEd'));scheduleSave()});
 $('#temas').addEventListener('change',e=>{S.tema=e.target.value;document.body.dataset.tema=S.tema;scheduleSave()});
 
