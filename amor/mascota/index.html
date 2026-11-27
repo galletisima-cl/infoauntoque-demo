@@ -99,7 +99,19 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .evo-btn{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:9;display:none;flex-direction:column;align-items:center;font-weight:700;font-size:15px;padding:8px 16px;border-radius:16px;background:linear-gradient(135deg,#ffd34d,var(--red));color:#2a0a12;border:0;animation:llama 1.4s ease-in-out infinite}
 .evo-btn small{font-weight:500;font-size:11px}
 .evo-btn.on{display:flex}
-.pet-wrap.evo svg{animation:evoBrillo .38s ease-in-out infinite alternate}
+.pet-wrap.evo svg,.pet-wrap.evo .vm{animation:evoBrillo .38s ease-in-out infinite alternate}
+/* Virtual Monster en video (animado con Grok): el canvas compone color + máscara para quitar el fondo blanco */
+.vm{position:relative;width:100%;height:100%}
+.vm::after{content:"";position:absolute;left:24%;right:24%;bottom:-4px;height:10px;border-radius:50%;background:rgba(0,0,0,.22);z-index:-1}
+.vm .pet{position:absolute;left:-30%;right:-30%;bottom:0;height:var(--alto,110%);transform-origin:50% 100%}
+/* cada etapa se ve más grande que la anterior */
+.vm[data-etapa=bebe1]{--alto:66%}.vm[data-etapa=bebe2]{--alto:78%}.vm[data-etapa=novato]{--alto:104%}
+.vm[data-etapa=rebelde]{--alto:112%}.vm[data-etapa=campeon]{--alto:120%}.vm[data-etapa=definitivo]{--alto:130%}
+.vm canvas{width:100%;height:100%;object-fit:contain;object-position:50% 100%;display:block}
+.vm[data-mood=triste] canvas{filter:saturate(.65) brightness(.95)}
+.vm[data-mood=mal] canvas{filter:saturate(.45) hue-rotate(40deg) brightness(.95)}
+.vm[data-mood=duerme] canvas{filter:brightness(.72) saturate(.8)}
+.vm[data-mood=asco] canvas{filter:hue-rotate(35deg) saturate(.8)}
 @keyframes evoBrillo{from{filter:brightness(1)}to{filter:brightness(0) invert(1) drop-shadow(0 0 18px #ffe14d)}}
 .aura{transform-origin:100px 110px;animation:aura 2.4s ease-in-out infinite}
 @keyframes aura{50%{transform:scale(1.08);opacity:.7}}
@@ -578,7 +590,30 @@ const ETAPA={
   ${CORAZON(100,136,1.7,'var(--red)')}
   <ellipse cx="100" cy="74" rx="42" ry="38" fill="${g}"/>`,
   frente:`<path d="M70 34l6-22 12 14 12-20 12 20 12-14 6 22z" fill="#ffd34d" stroke="#c9961a" stroke-width="2" stroke-linejoin="round"/><circle cx="100" cy="22" r="4" fill="var(--red)"/>`})};
-const petSVG=(id='pet',fase=S.fase)=>{const g=`url(#${id}g)`,e=(ETAPA[fase]||ETAPA.bebe1)(g);
+/* Videos de cada etapa: arriba el color y abajo la máscara (blanco = monster). Hechos con Grok Imagine. */
+const VM_VID={bebe1:'1-bebe-i',bebe2:'2-bebe-ii',novato:'3-novato',rebelde:'4-novato-rebelde',campeon:'5-campeon',definitivo:'6-definitivo'};
+const VM_CACHE={};
+function vmVideo(n){
+  if(VM_CACHE[n])return VM_CACHE[n];
+  const v=document.createElement('video');v.src='videos/vm-'+n+'-alfa.mp4';v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;v.preload='auto';
+  v.setAttribute('playsinline','');v.setAttribute('muted','');v.style.cssText='position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9px;top:-9px';
+  document.body.appendChild(v);v.play().catch(()=>{});
+  const tmp=document.createElement('canvas');VM_CACHE[n]={v,tmp,ctx:tmp.getContext('2d',{willReadFrequently:true}),t:-1,img:null};return VM_CACHE[n];
+}
+// Une color y máscara en cada cuadro nuevo (alpha compositing) y lo pinta en todos los canvas de esa etapa
+function vmLoop(){
+  const cs=document.querySelectorAll('canvas[data-vm]');
+  cs.forEach(c=>{const o=vmVideo(c.dataset.vm),v=o.v;if(v.paused)v.play().catch(()=>{});
+    if(v.readyState<2||!v.videoWidth)return;
+    const w=v.videoWidth,h=v.videoHeight/2;
+    if(o.t!==v.currentTime){o.t=v.currentTime;o.tmp.width=w;o.tmp.height=h*2;o.ctx.drawImage(v,0,0);
+      const top=o.ctx.getImageData(0,0,w,h),bot=o.ctx.getImageData(0,h,w,h).data,d=top.data;
+      for(let i=3;i<d.length;i+=4)d[i]=bot[i-1];o.img=top}
+    if(o.img){if(c.width!==w){c.width=w;c.height=h}c.getContext('2d').putImageData(o.img,0,0)}});
+  requestAnimationFrame(vmLoop)}
+requestAnimationFrame(vmLoop);
+const petSVG=(id='pet',fase=S.fase)=>{
+ if(VM_VID[fase])return`<div class="vm" id="${id}" data-mood="normal" data-etapa="${fase}" role="img" aria-label="Mascota"><div class="pet"><canvas data-vm="${VM_VID[fase]}"></canvas></div></div>`;const g=`url(#${id}g)`,e=(ETAPA[fase]||ETAPA.bebe1)(g);
  return`<svg viewBox="0 0 200 200" id="${id}" data-mood="normal" data-etapa="${fase}" aria-label="Mascota">
 <defs><radialGradient id="${id}g" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".25" stop-color="var(--pet1)"/><stop offset="1" stop-color="var(--pet2)"/></radialGradient>
 <radialGradient id="${id}a"><stop offset=".4" stop-color="#ffd34d" stop-opacity=".55"/><stop offset="1" stop-color="#ffd34d" stop-opacity="0"/></radialGradient></defs>
