@@ -58,75 +58,6 @@ button:disabled{opacity:.4}
 .stage .cielo{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0) 60%);transition:background 1s}
 .stage .piso{position:absolute;left:0;right:0;bottom:0;height:26%;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border-top:1px solid var(--glass-b)}
 .stage.noche .cielo{background:linear-gradient(180deg,#0b0d2b,#1b1446 70%)}
-.fondo{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;transition:filter 1s}
-.fondo:empty{display:none}
-.fondo>svg{position:absolute;inset:0;width:100%;height:100%}
-.stage.con-fondo .cielo,.stage.con-fondo .piso{opacity:0}
-.stage.noche .fondo:not(.f-noche){filter:brightness(.42) saturate(.75) hue-rotate(10deg)}
-.fx-img{position:absolute;inset:0;background-size:cover;background-position:50% 72%}
-.fx-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 72%;pointer-events:none}
-/* Ken Burns: acercamiento y paneo muy lento para que la foto "respire" */
-.fx-kb{animation:fxKB 28s ease-in-out infinite alternate}
-@keyframes fxKB{from{transform:scale(1)}to{transform:scale(1.08) translate(-1.5%,-1%)}}
-/* neón: línea de escaneo y estelas de luz que cruzan el piso */
-.fx-scan{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0,rgba(60,240,255,.16) 50%,transparent 52%);background-size:100% 220%;animation:fxScan 5s linear infinite;mix-blend-mode:screen}
-@keyframes fxScan{from{background-position:0 120%}to{background-position:0 -120%}}
-.fx-estela{position:absolute;left:-40%;width:40%;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--c));box-shadow:0 0 12px var(--c);animation:fxEstela 4.6s cubic-bezier(.5,0,.5,1) infinite}
-@keyframes fxEstela{to{left:110%}}
-/* volcán: brillo del cráter que late */
-.fx-crater2{position:absolute;left:50%;top:22%;width:46%;height:30%;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,150,40,.55),transparent);mix-blend-mode:screen;animation:fxLatido2 1.8s ease-in-out infinite alternate}
-@keyframes fxLatido2{from{opacity:.35}to{opacity:1}}
-/* pradera: rayos de sol y pétalos que vuelan con el viento */
-.fx-rayos{position:absolute;inset:-20%;background:repeating-conic-gradient(from 200deg at 85% 0%,rgba(255,250,210,.16) 0 4deg,transparent 4deg 12deg);mix-blend-mode:screen;animation:fxRayos 9s ease-in-out infinite alternate}
-@keyframes fxRayos{from{opacity:.4}to{opacity:1}}
-.fx-petalo{position:absolute;width:7px;height:5px;border-radius:60% 0;background:#ffc2dc;opacity:.9;animation:fxPetalo 8s linear infinite}
-@keyframes fxPetalo{from{transform:translate(-40px,-30px) rotate(0)}to{transform:translate(160px,90px) rotate(540deg);opacity:0}}
-/* navidad: nieve que cae y lucecitas del árbol que titilan */
-.fx-nieve{position:absolute;top:-5%!important;width:5px;height:5px;border-radius:50%;background:#fff;opacity:.9;box-shadow:0 0 4px #fff;animation:fxNieve 8s linear infinite}
-@keyframes fxNieve{from{transform:translate(0,0)}to{transform:translate(30px,380px)}}
-.fx-brillo{position:absolute;width:6px;height:6px;border-radius:50%;background:#fff6b0;box-shadow:0 0 10px 3px #ffd24a;animation:fxTitila 1.2s ease-in-out infinite alternate}
-@keyframes fxTitila{from{opacity:.2;transform:scale(.6)}to{opacity:1;transform:scale(1.2)}}
-/* ciudad: luces desenfocadas (bokeh) que flotan */
-.fx-bokeh{position:absolute;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle,rgba(255,220,150,.75),rgba(255,180,90,0) 70%);mix-blend-mode:screen;animation:fxBokeh 9s ease-in-out infinite alternate}
-@keyframes fxBokeh{from{transform:translate(0,0) scale(.7);opacity:.3}to{transform:translate(20px,-24px) scale(1.3);opacity:.9}}
-/* tira cómica: pajaritos que cruzan */
-.fx-pajarito{position:absolute;left:-10%;font-style:normal;font-size:16px;color:#333;animation:fxPajarito 14s linear infinite}
-@keyframes fxPajarito{to{left:110%}}
-.fx-nube,.fx-sol,.fx-pajaro,.fx-hierba path,.fx-brizna,.fx-sol2,.fx-alas ellipse,.fx-lava,.fx-crater{transform-box:fill-box}
-/* nubes que cruzan el cielo (parallax lento) */
-.fx-nube{animation:fxNube 60s linear infinite}
-@keyframes fxNube{from{transform:translateX(-140px)}to{transform:translateX(460px)}}
-.fx-sol{transform-origin:center;animation:fxGira 24s linear infinite}
-@keyframes fxGira{to{transform:rotate(360deg)}}
-.fx-pajaro{animation:fxAleteo .7s ease-in-out infinite alternate}
-@keyframes fxAleteo{to{transform:scaleY(.4) translateY(2px)}}
-.fx-hierba path{transform-origin:50% 100%;animation:fxBrisa 2.6s ease-in-out infinite alternate}
-@keyframes fxBrisa{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
-/* volcán: lava que pulsa, humo que sube y brasas que saltan */
-.fx-lava{animation:fxLava 1.6s ease-in-out infinite alternate}
-@keyframes fxLava{from{filter:brightness(1)}to{filter:brightness(1.45) drop-shadow(0 0 6px #ff9a1a)}}
-.fx-crater{animation:fxLava .9s ease-in-out infinite alternate}
-.fx-humo{position:absolute;left:50%;top:22%;width:0;height:0}
-.fx-humo i{position:absolute;left:-24px;top:0;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,rgba(90,70,70,.75),rgba(60,40,40,0) 70%);animation:fxHumo 6.4s ease-out infinite}
-@keyframes fxHumo{from{transform:translate(0,0) scale(.5);opacity:0}15%{opacity:1}to{transform:translate(40px,-160px) scale(3);opacity:0}}
-.fx-brasas{position:absolute;left:30%;right:30%;top:28%;height:0}
-.fx-brasas span{position:absolute;top:0;width:5px;height:5px;border-radius:50%;background:#ffd24a;box-shadow:0 0 8px #ff7a1a;animation:fxBrasa 3s cubic-bezier(.2,.6,.4,1) infinite}
-@keyframes fxBrasa{0%{transform:translate(0,0);opacity:0}10%{opacity:1}55%{transform:translate(calc(var(--dx)*.6),-90px)}100%{transform:translate(var(--dx),40px);opacity:0}}
-/* pradera: pasto que se mece y mariposas en una ruta (offset-path) */
-.fx-brizna{transform-origin:50% 100%;animation:fxBrisa 2.2s ease-in-out infinite alternate}
-.fx-sol2{animation:fxLatido 4s ease-in-out infinite alternate;transform-origin:center}
-@keyframes fxLatido{to{transform:scale(1.08);filter:drop-shadow(0 0 10px #fff4a8)}}
-.fx-mariposa{animation:fxRuta 12s linear infinite alternate;offset-rotate:0deg}
-@keyframes fxRuta{from{offset-distance:0%}to{offset-distance:100%}}
-.fx-alas ellipse{animation:fxAleteo .25s ease-in-out infinite alternate;transform-origin:center}
-.fondos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fondos button{position:relative;height:96px;border-radius:16px;overflow:hidden;padding:0;border:2px solid transparent;background:#222;color:#fff;font-weight:700}
-.fondos button.on{border-color:#fff;box-shadow:0 0 0 3px var(--red,#ff4f7a)}
-.fondos button .mini{position:absolute;inset:0;pointer-events:none}
-.fondos button .mini>img{width:100%;height:100%;object-fit:cover;display:block}
-.fondos button b{position:absolute;left:0;right:0;bottom:0;padding:6px;background:linear-gradient(transparent,rgba(0,0,0,.6));font-size:14px}
-#btnReset.seguro{background:#e5484d;color:#fff}
-@media (prefers-reduced-motion:reduce){.fondo *{animation:none!important}}
 .estrellas{position:absolute;inset:0 0 30% 0;opacity:0;transition:opacity 1s;pointer-events:none}
 .stage.noche .estrellas{opacity:1}
 .estrellas i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:titila 2.4s ease-in-out infinite}
@@ -168,19 +99,7 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .evo-btn{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:9;display:none;flex-direction:column;align-items:center;font-weight:700;font-size:15px;padding:8px 16px;border-radius:16px;background:linear-gradient(135deg,#ffd34d,var(--red));color:#2a0a12;border:0;animation:llama 1.4s ease-in-out infinite}
 .evo-btn small{font-weight:500;font-size:11px}
 .evo-btn.on{display:flex}
-.pet-wrap.evo svg,.pet-wrap.evo .vm{animation:evoBrillo .38s ease-in-out infinite alternate}
-/* Virtual Monster en video (animado con Grok): el canvas compone color + máscara para quitar el fondo blanco */
-.vm{position:relative;width:100%;height:100%}
-.vm::after{content:"";position:absolute;left:24%;right:24%;bottom:-4px;height:10px;border-radius:50%;background:rgba(0,0,0,.22);z-index:-1}
-.vm .pet{position:absolute;left:-30%;right:-30%;bottom:0;height:var(--alto,110%);transform-origin:50% 100%}
-/* cada etapa se ve más grande que la anterior */
-.vm[data-etapa=bebe1]{--alto:66%}.vm[data-etapa=bebe2]{--alto:78%}.vm[data-etapa=novato]{--alto:104%}
-.vm[data-etapa=rebelde]{--alto:112%}.vm[data-etapa=campeon]{--alto:122%}.vm[data-etapa=definitivo]{--alto:138%}
-.vm canvas{width:100%;height:100%;object-fit:contain;object-position:50% 100%;display:block}
-.vm[data-mood=triste] canvas{filter:saturate(.65) brightness(.95)}
-.vm[data-mood=mal] canvas{filter:saturate(.45) hue-rotate(40deg) brightness(.95)}
-.vm[data-mood=duerme] canvas{filter:brightness(.72) saturate(.8)}
-.vm[data-mood=asco] canvas{filter:hue-rotate(35deg) saturate(.8)}
+.pet-wrap.evo svg{animation:evoBrillo .38s ease-in-out infinite alternate}
 @keyframes evoBrillo{from{filter:brightness(1)}to{filter:brightness(0) invert(1) drop-shadow(0 0 18px #ffe14d)}}
 .aura{transform-origin:100px 110px;animation:aura 2.4s ease-in-out infinite}
 @keyframes aura{50%{transform:scale(1.08);opacity:.7}}
@@ -361,7 +280,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <section class="stats glass" id="stats" aria-label="Indicadores"></section>
 
   <section class="stage glass" id="stage">
-    <div class="cielo"></div><div class="fondo" id="fondo"></div><div class="estrellas" id="estrellas"></div><div class="piso"></div>
+    <div class="cielo"></div><div class="estrellas" id="estrellas"></div><div class="piso"></div>
     <div class="reloj" id="reloj"></div>
     <div class="aviso" id="aviso" aria-live="polite"></div>
     <div class="calavera" aria-label="Enfermo">💀</div>
@@ -383,7 +302,6 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <button data-a="luz"><span class="i" id="iLuz">💡</span><span id="tLuz">Luz</span></button>
     <button data-a="mensaje"><span class="i">💌</span>Mensaje</button>
     <button data-a="diario"><span class="i">📖</span>Diario</button>
-    <button data-a="fondo"><span class="i">🖼️</span>Fondo</button>
   </nav>
 
   <section class="prueba glass">
@@ -445,7 +363,6 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 </div></div>
 
 <!-- Diario y reglas -->
-<div class="sheet" id="shFondo"><div><h3>Fondo</h3><div class="fondos" id="fondosLista"></div><button class="cerrar" style="width:100%;margin-top:12px">Cerrar</button></div></div>
 <div class="sheet" id="shDiario"><div><h3>Diario</h3><ul class="log" id="log"></ul><button class="cerrar" style="width:100%;margin-top:12px">Cerrar</button></div></div>
 <div class="sheet" id="shReglas"><div class="reglas"><h3>Cómo funciona</h3>
   <p><b>Nace</b> después de 10 toques al huevo.</p>
@@ -661,30 +578,7 @@ const ETAPA={
   ${CORAZON(100,136,1.7,'var(--red)')}
   <ellipse cx="100" cy="74" rx="42" ry="38" fill="${g}"/>`,
   frente:`<path d="M70 34l6-22 12 14 12-20 12 20 12-14 6 22z" fill="#ffd34d" stroke="#c9961a" stroke-width="2" stroke-linejoin="round"/><circle cx="100" cy="22" r="4" fill="var(--red)"/>`})};
-/* Videos de cada etapa: arriba el color y abajo la máscara (blanco = monster). Hechos con Grok Imagine. */
-const VM_VID={bebe1:'1-bebe-i',bebe2:'2-bebe-ii',novato:'3-novato',rebelde:'4-novato-rebelde',campeon:'5-campeon',definitivo:'6-definitivo'};
-const VM_CACHE={};
-function vmVideo(n){
-  if(VM_CACHE[n])return VM_CACHE[n];
-  const v=document.createElement('video');v.src='videos/vm-'+n+'-alfa.mp4';v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;v.preload='auto';
-  v.setAttribute('playsinline','');v.setAttribute('muted','');v.style.cssText='position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9px;top:-9px';
-  document.body.appendChild(v);v.play().catch(()=>{});
-  const tmp=document.createElement('canvas');VM_CACHE[n]={v,tmp,ctx:tmp.getContext('2d',{willReadFrequently:true}),t:-1,img:null};return VM_CACHE[n];
-}
-// Une color y máscara en cada cuadro nuevo (alpha compositing) y lo pinta en todos los canvas de esa etapa
-function vmLoop(){
-  const cs=document.querySelectorAll('canvas[data-vm]');
-  cs.forEach(c=>{const o=vmVideo(c.dataset.vm),v=o.v;if(v.paused)v.play().catch(()=>{});
-    if(v.readyState<2||!v.videoWidth)return;
-    const w=v.videoWidth,h=v.videoHeight/2;
-    if(o.t!==v.currentTime){o.t=v.currentTime;o.tmp.width=w;o.tmp.height=h*2;o.ctx.drawImage(v,0,0);
-      const top=o.ctx.getImageData(0,0,w,h),bot=o.ctx.getImageData(0,h,w,h).data,d=top.data;
-      for(let i=3;i<d.length;i+=4)d[i]=bot[i-1];o.img=top}
-    if(o.img){if(c.width!==w){c.width=w;c.height=h}c.getContext('2d').putImageData(o.img,0,0)}});
-  requestAnimationFrame(vmLoop)}
-requestAnimationFrame(vmLoop);
-const petSVG=(id='pet',fase=S.fase)=>{
- if(VM_VID[fase])return`<div class="vm" id="${id}" data-mood="normal" data-etapa="${fase}" role="img" aria-label="Mascota"><div class="pet"><canvas data-vm="${VM_VID[fase]}"></canvas></div></div>`;const g=`url(#${id}g)`,e=(ETAPA[fase]||ETAPA.bebe1)(g);
+const petSVG=(id='pet',fase=S.fase)=>{const g=`url(#${id}g)`,e=(ETAPA[fase]||ETAPA.bebe1)(g);
  return`<svg viewBox="0 0 200 200" id="${id}" data-mood="normal" data-etapa="${fase}" aria-label="Mascota">
 <defs><radialGradient id="${id}g" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".25" stop-color="var(--pet1)"/><stop offset="1" stop-color="var(--pet2)"/></radialGradient>
 <radialGradient id="${id}a"><stop offset=".4" stop-color="#ffd34d" stop-opacity=".55"/><stop offset="1" stop-color="#ffd34d" stop-opacity="0"/></radialGradient></defs>
@@ -729,7 +623,7 @@ function dibujarFase(){
   else petWrap.innerHTML=petSVG();
   faseDibujada=S.fase;
 }
-function render(){pintarFondo();
+function render(){
   simular(ahora());
   if(S.fase==='abuelos'){despedida();guardar();return}
   if(faseDibujada!==S.fase)dibujarFase();
@@ -844,17 +738,6 @@ document.addEventListener('gesturestart',e=>e.preventDefault());
 
 /* ===== Hojas ===== */
 function abrir(id){$(id).classList.add('on')}
-/* ---------- Fondos animados ---------- */
-/* Fondos: videos en loop hechos con Grok Imagine (imagen + animación), con la foto como póster mientras carga */
-const FONDO_ARCH={"": "tron", "volcan": "volcan", "pradera": "pradera", "navidad": "navidad", "ciudad": "ciudad", "comic": "comic"};
-const FONDOS={"": "<video class=\"fx-vid\" src=\"fondos/fondo-tron.mp4\" poster=\"fondos/tron.webp\" autoplay muted loop playsinline preload=\"auto\"></video>", "volcan": "<video class=\"fx-vid\" src=\"fondos/fondo-volcan.mp4\" poster=\"fondos/volcan.webp\" autoplay muted loop playsinline preload=\"auto\"></video>", "pradera": "<video class=\"fx-vid\" src=\"fondos/fondo-pradera.mp4\" poster=\"fondos/pradera.webp\" autoplay muted loop playsinline preload=\"auto\"></video>", "navidad": "<video class=\"fx-vid\" src=\"fondos/fondo-navidad.mp4\" poster=\"fondos/navidad.webp\" autoplay muted loop playsinline preload=\"auto\"></video>", "ciudad": "<video class=\"fx-vid\" src=\"fondos/fondo-ciudad.mp4\" poster=\"fondos/ciudad.webp\" autoplay muted loop playsinline preload=\"auto\"></video>", "comic": "<video class=\"fx-vid\" src=\"fondos/fondo-comic.mp4\" poster=\"fondos/comic.webp\" autoplay muted loop playsinline preload=\"auto\"></video>"};
-const NOMBRES_FONDO={'':'Normal (neón)',comic:'Tira cómica',volcan:'Volcán',pradera:'Pradera',navidad:'Navidad',ciudad:'Ciudad'};
-function pintarFondo(){const f=FONDOS[S.fondo]?S.fondo:'',el=$('#fondo');if(el.dataset.f===f&&el.innerHTML)return;el.dataset.f=f;el.innerHTML=FONDOS[f];const v=el.querySelector('video');if(v){v.muted=true;v.play().catch(()=>{})}el.classList.toggle('f-noche',f===''||f==='navidad');$('#stage').classList.add('con-fondo')}
-function abrirFondos(){
-  $('#fondosLista').innerHTML=Object.entries(NOMBRES_FONDO).map(([k,n])=>`<button data-f="${k}" class="${(S.fondo||'')===k?'on':''}"><div class="mini"><img src="fondos/${FONDO_ARCH[k]}.webp" alt="" loading="lazy"></div><b>${n}</b></button>`).join('');
-  $$('#fondosLista button').forEach(b=>b.onclick=()=>{S.fondo=b.dataset.f;guardar();pintarFondo();$$('#fondosLista button').forEach(x=>x.classList.toggle('on',x===b))});
-  $$('#fondosLista button').forEach(b=>b.classList.toggle('on',(FONDOS[S.fondo]?S.fondo:'')===b.dataset.f));
-  abrir('#shFondo')}
 function cerrarHojas(){$$('.sheet').forEach(s=>s.classList.remove('on'))}
 $$('.sheet').forEach(s=>s.addEventListener('click',e=>{if(e.target===s||e.target.classList.contains('cerrar'))cerrarHojas()}));
 $$('[data-f]').forEach(b=>b.onclick=()=>comer(b.dataset.f));
@@ -894,7 +777,6 @@ async function entregar(m){ocupado=true;const tpl=MENSAJES.find(x=>x.id===m.id)|
   await espera(2600);g.classList.add('sale');petWrap.classList.remove(tpl.anim);await espera(300);g.remove();
   m.visto=true;anota(S.nombre+' le dijo a '+nom(m.para)+': '+tpl.t+' '+tpl.e);if(svg)delete svg.dataset.fijo;ocupado=false;guardar();render()}
 const ACC={mensaje:abrirMensajes,comer:()=>{if(!puede('comer'))return;const n=MAX_COMIDAS-comidasHora(quien).length,o=MAX_COMIDAS-comidasHora(otro(quien)).length;$('#cupo').innerHTML=`${nom(quien)}: te quedan <b>${n}</b> de ${MAX_COMIDAS} comidas esta hora · ${nom(otro(quien))}: ${o}`;abrir('#shComer')},entrenar:abrirEntreno,batalla:()=>batalla(),limpiar,medicina,botiquin,luz,diario};
-ACC.fondo=abrirFondos;
 $$('#acciones button').forEach(b=>b.onclick=()=>{audioCtx=audioCtx||(window.AudioContext?new AudioContext():null);ACC[b.dataset.a]()});
 
 /* ===== Entrenamiento Bebé I: Cortafrutas (tipo Fruit Ninja) ===== */
@@ -1518,12 +1400,7 @@ function despedida(){if($('#despedida').classList.contains('on'))return;
 $$('[data-skip]').forEach(b=>b.onclick=()=>{if(ocupado)return;S.offset=(S.offset||0)+(+b.dataset.skip)*H;toast('⏩ Adelantaste '+b.textContent.replace('+',''));render()});
 $$('[data-q]').forEach(b=>b.onclick=()=>{quien=b.dataset.q;$$('[data-q]').forEach(x=>x.classList.toggle('on',x===b));localStorage.setItem(CLAVE+'-quien',quien);render()});
 for(const [id,q] of [['#nomEl','Él'],['#nomElla','Ella']])$(id).oninput=e=>{S.nombres[q]=e.target.value.trim().slice(0,14)||(q==='Él'?'Matías':'Sofía');render()};
-let resetT=0;
-$('#btnReset').onclick=()=>{const b=$('#btnReset');
-  // iPhone a veces bloquea los diálogos nativos: se confirma con un segundo toque
-  if(!b.classList.contains('seguro')){b.classList.add('seguro');b.textContent='¿Seguro? Toca de nuevo';clearTimeout(resetT);resetT=setTimeout(()=>{b.classList.remove('seguro');b.textContent='Reiniciar'},3500);return}
-  clearTimeout(resetT);b.classList.remove('seguro');b.textContent='Reiniciar';
-  const f=S.fondo;S=nuevo(1,0,S.tema);S.fondo=f;faseDibujada='';ocupado=false;guardar();cerrarHojas();render();toast('Listo: llegó un huevo nuevo 🥚')};
+$('#btnReset').onclick=()=>{if(!confirm('¿Reiniciar la mascota desde el huevo?'))return;S=nuevo(1,0,S.tema);faseDibujada='';guardar();render()};
 $('#btnReglas').onclick=()=>abrir('#shReglas');
 $('#selTema').onchange=e=>{S.tema=e.target.value;render()};
 
