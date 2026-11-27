@@ -84,7 +84,7 @@ button:disabled{opacity:.5;cursor:default}
 .paper{background:var(--card);text-align:left;padding:clamp(22px,5vw,44px);border-radius:6px;box-shadow:0 20px 40px -26px rgba(120,0,30,.5);white-space:pre-wrap;font-size:17px;background-image:repeating-linear-gradient(transparent 0 31px,var(--line) 31px 32px);line-height:32px}
 .tl{text-align:left;list-style:none;padding:0;margin:0;border-inline-start:2px solid var(--red);margin-inline-start:12px}
 .tl li{position:relative;padding:0 0 22px 24px}
-.tl li::before{content:"♥";position:absolute;left:-10px;top:-2px;color:var(--red);background:var(--bg);line-height:1.2;font-size:18px}
+.tl li::before{content:var(--sym,"♥");position:absolute;left:-10px;top:-2px;color:var(--red);background:var(--bg);line-height:1.2;font-size:18px}
 .tl time{display:block;font-size:13px;color:var(--mute);white-space:nowrap}
 .media{width:100%;border-radius:16px;border:0;background:#000}
 .embed{aspect-ratio:16/9;width:100%;border:0;border-radius:16px}
@@ -124,6 +124,7 @@ details.pass{margin-top:12px}details.pass summary{cursor:pointer;min-height:44px
 /* ---- Temas del regalo ---- */
 #regalo{background:none;color:var(--ink)}
 .temas{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.temas input{flex:none}
 .temas label{margin:0;display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer;min-height:52px}
 .temas input{accent-color:var(--red);width:18px;height:18px}
 .temas label:has(input:checked){border-color:var(--red);background:var(--soft)}
@@ -385,6 +386,8 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <section class="sec">
     <h2>Tema visual</h2>
     <div class="temas" id="temas"></div>
+    <label style="margin-top:18px">Figuras que flotan en el fondo</label>
+    <div class="temas" id="fondos"></div>
   </section>
 
   <section class="sec" data-sec="fotos">
@@ -624,12 +627,26 @@ function tipoWire(pre,v,cb){
   g('RolDe').onchange=e=>{v.rolDe=e.target.value;cb(v)};
   pintar();return pintar;
 }
+/* ---------- figuras del fondo (Tema visual): flotan detrás, en el hero, en la lluvia y en el sello ----------
+   Cada figura es un trazo SVG dibujado en una caja de unos 18×16 centrada en 0,0. */
+const circ=(x,y,r)=>`M${x-r} ${y}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0`;
+const FLOR=[0,1,2,3,4].map(k=>{const a=(k*72-90)*Math.PI/180;return circ(+(4.6*Math.cos(a)).toFixed(2),+(4.6*Math.sin(a)).toFixed(2),3.4)}).join('')+circ(0,0,2.4);
+const FONDOS={
+  corazones:{n:'Corazones',ico:'❤️',sym:'',paths:['M0 8C-9 1-9-6-4-7c2 0 3 1 4 3 1-2 2-3 4-3 5 1 5 8-4 15z']},
+  coronas:{n:'Coronas (rey y reina)',ico:'👑',sym:'👑',paths:[
+    'M-8 6V-4l4 4 4-7 4 7 4-4V6zM-8 7.2h16v1.8h-16z',                                   // rey: puntas
+    'M-8 6l-1-9 5 4 4-6 4 6 5-4-1 9z'+circ(-9,-3,1.7)+circ(0,-6,1.7)+circ(9,-3,1.7)+'M-8 7.2h16v1.8h-16z']}, // reina: puntas con perlas
+  flores:{n:'Flores',ico:'🌸',sym:'🌸',paths:[FLOR]},
+  copas:{n:'Copas de primer lugar',ico:'🏆',sym:'🏆',paths:['M-6-7h12v4c0 4.5-2.7 7-5 7.5V6h3.5v2.5h-9V6H-1V4.5C-3.3 4-6 1.5-6-3zM-6-6h-3.5c0 4.2 2 6.2 4.2 6.3l-.4-1.8C-7.2-1.8-7.8-3.2-7.9-4.5H-6zM6-6h3.5c0 4.2-2 6.2-4.2 6.3l.4-1.8C7.2-1.8 7.8-3.2 7.9-4.5H6z']},
+  likes:{n:'Me gusta',ico:'👍',sym:'👍',paths:['M-8-1h3v9h-3zM-4-1L0-8c2.2 0 2.6 1.8 2 3.6L1.2-2H6c1.8 0 2.6 1.4 2.1 2.8L6.3 6.6C6 7.5 5.2 8 4.3 8H-4z']}};
+const fondo=()=>FONDOS[S.fondo]||FONDOS.corazones;
+const figura=i=>{const p=fondo().paths;return p[i%p.length]};
 /* Estrellas brillantes: nombre, AR (horas), Dec (grados), magnitud */
 const STARS=[['Sirio',6.752,-16.72,-1.46],['Canopus',6.399,-52.70,-.74],['Alfa Centauri',14.660,-60.83,-.27],['Arturo',14.261,19.18,-.05],['Vega',18.616,38.78,.03],['Capella',5.278,46.00,.08],['Rigel',5.242,-8.20,.13],['Proción',7.655,5.22,.34],['Achernar',1.629,-57.24,.46],['Betelgeuse',5.919,7.41,.5],['Hadar',14.064,-60.37,.61],['Altair',19.846,8.87,.76],['Acrux',12.443,-63.10,.77],['Aldebarán',4.599,16.51,.86],['Antares',16.490,-26.43,.96],['Espiga',13.420,-11.16,.97],['Pólux',7.755,28.03,1.14],['Fomalhaut',22.961,-29.62,1.16],['Deneb',20.690,45.28,1.25],['Mimosa',12.795,-59.69,1.25],['Régulo',10.140,11.97,1.35],['Adhara',6.977,-28.97,1.5],['Cástor',7.577,31.89,1.58],['Gacrux',12.519,-57.11,1.59],['Shaula',17.560,-37.10,1.62],['Bellatrix',5.419,6.35,1.64],['Elnath',5.438,28.61,1.65],['Miaplacidus',9.220,-69.72,1.68],['Alnilam',5.604,-1.20,1.69],['Alnair',22.137,-46.96,1.74],['Alnitak',5.679,-1.94,1.77],['Alioth',12.900,55.96,1.77],['Dubhe',11.062,61.75,1.79],['Mirfak',3.405,49.86,1.79],['Wezen',7.140,-26.39,1.83],['Kaus Australis',18.403,-34.38,1.85],['Sargas',17.622,-43.00,1.86],['Avior',8.375,-59.51,1.86],['Alkaid',13.792,49.31,1.86],['Menkalinan',5.992,44.95,1.9],['Atria',16.811,-69.03,1.91],['Alhena',6.629,16.40,1.93],['Peacock',20.427,-56.74,1.94],['Polaris',2.530,89.26,1.98],['Mirzam',6.378,-17.96,1.98],['Alphard',9.460,-8.66,1.98],['Hamal',2.120,23.46,2.0],['Diphda',.727,-17.99,2.04],['Nunki',18.921,-26.30,2.05],['Menkent',14.111,-36.37,2.06],['Saiph',5.796,-9.67,2.06],['Suhail',9.133,-43.43,2.21],['Mintaka',5.533,-.30,2.23],['Dschubba',16.006,-22.62,2.3],['Épsilon Escorpión',16.836,-34.29,2.3],['Lesath',17.513,-37.30,2.7],['Delta Cruz',12.252,-58.75,2.8]];
 const LINES=[['Acrux','Gacrux'],['Mimosa','Delta Cruz'],['Alfa Centauri','Hadar'],['Betelgeuse','Bellatrix'],['Bellatrix','Mintaka'],['Mintaka','Alnilam'],['Alnilam','Alnitak'],['Alnitak','Saiph'],['Saiph','Rigel'],['Rigel','Mintaka'],['Betelgeuse','Alnitak'],['Dschubba','Antares'],['Antares','Épsilon Escorpión'],['Épsilon Escorpión','Sargas'],['Sargas','Shaula'],['Shaula','Lesath']];
 
 const S={
-  tipo:'amor',rolDe:'',rolPara:'',de:'Matías',para:'Sofía',fecha:'2021-02-14',cancion:'',yt:'',telDe:'',telPara:'',tema:'pasion',
+  tipo:'amor',rolDe:'',rolPara:'',fondo:'corazones',de:'Matías',para:'Sofía',fecha:'2021-02-14',cancion:'',yt:'',telDe:'',telPara:'',tema:'pasion',
   fotos:[],video:null,voz:null,razones:[
     {t:'Porque me haces reír incluso en los días malos.'},{t:'Porque siempre me esperas con un café.'},{t:'Porque contigo cualquier martes es especial.'}],
   carta:'Sofía:\n\nHay días en que todavía no creo la suerte que tengo. Gracias por reírte de mis chistes malos, por esperarme siempre con un café y por hacer de cualquier martes algo especial.\n\nTe elegiría otra vez, todas las veces.\n\nTuyo,\nMatías',
@@ -661,14 +678,14 @@ async function api(body){
   return j;
 }
 const med=x=>x?.ruta?{ruta:x.ruta,peso:x.size,orig:x.orig}:null;
-const pack=()=>({tipo:S.tipo,rolDe:S.rolDe,rolPara:S.rolPara,de:S.de,para:S.para,fecha:S.fecha,cancion:S.cancion,yt:S.yt,carta:S.carta,final:S.final,tl:S.tl,qs:S.qs,
+const pack=()=>({fondo:S.fondo,tipo:S.tipo,rolDe:S.rolDe,rolPara:S.rolPara,de:S.de,para:S.para,fecha:S.fecha,cancion:S.cancion,yt:S.yt,carta:S.carta,final:S.final,tl:S.tl,qs:S.qs,
   telDe:S.telDe,telPara:S.telPara,tema:S.tema,cielo:S.cielo,wrapped:S.wrapped,ruleta:S.ruleta,citas:S.citas,cartas:S.cartas,ocultas:S.ocultas||[],
   razones:S.razones.map(r=>({t:r.t,ruta:r.ruta||null,peso:r.size||0,orig:r.orig||0})),
   fotos:S.fotos.filter(f=>f.ruta&&f.mini).map(f=>({ruta:f.ruta,mini:f.mini,cap:f.cap,peso:f.size,orig:f.orig})),
   video:med(S.video),voz:med(S.voz)});
 function unpack(d,base){
   for(const k of['de','para','fecha','cancion','yt','carta','final','telDe','telPara'])S[k]=d[k]||'';
-  S.tema=d.tema||'pasion';S.tl=d.tl||[];S.tipo=d.tipo||'amor';S.rolDe=d.rolDe||'';S.rolPara=d.rolPara||'';
+  S.tema=d.tema||'pasion';S.tl=d.tl||[];S.tipo=d.tipo||'amor';S.fondo=FONDOS[d.fondo]?d.fondo:'corazones';S.rolDe=d.rolDe||'';S.rolPara=d.rolPara||'';
   S.qs=(d.qs||[]).map(q=>q.ops?q:{q:q.q,ops:[q.ok,...String(q.no||'').split('|')].map(s=>s.trim()).concat(['','','']).slice(0,4),ok:0});
   S.cielo=Object.assign({on:false,ciudad:'santiago',f:d.fecha||'',h:'22:00'},d.cielo||{});
   S.wrapped=!!d.wrapped;S.ruleta=Object.assign({on:false,items:[]},d.ruleta||{});
@@ -856,6 +873,8 @@ $('#btnIdea').onclick=()=>{const t=P(),L=t.ideas;S.carta=L[idea++%L.length](S.de
 
 /* ---------- temas ---------- */
 $('#temas').innerHTML=TEMAS.map(([k,n,c])=>`<label><input type="radio" name="tema" value="${k}"><span class="mini" style="background:${miniMesh(c)}"></span>${n}</label>`).join('');
+$('#fondos').innerHTML=Object.entries(FONDOS).map(([k,f])=>`<label><input type="radio" name="fondo" value="${k}"><span aria-hidden="true">${f.ico}</span>${f.n}</label>`).join('');
+$('#fondos').addEventListener('change',e=>{S.fondo=e.target.value;pintarFondo();edHero();parallax($('#heroEd'));scheduleSave()});
 $('#temas').addEventListener('change',e=>{S.tema=e.target.value;document.body.dataset.tema=S.tema;scheduleSave()});
 
 /* ---------- mapa de estrellas ---------- */
@@ -975,6 +994,7 @@ for(const[id,k]of Object.entries(F))$(id).addEventListener('input',e=>{S[k]=e.ta
 function fill(){
   for(const[id,k]of Object.entries(F))$(id).value=S[k]||'';
   const t=document.querySelector(`#temas input[value="${S.tema}"]`)||document.querySelector('#temas input');t.checked=true;
+  const fo=document.querySelector(`#fondos input[value="${S.fondo||'corazones'}"]`);if(fo)fo.checked=true;pintarFondo();
   $('#fCieloOn').checked=!!S.cielo.on;$('#fCiudad').value=S.cielo.ciudad;$('#fCieloF').value=S.cielo.f||'';$('#fCieloH').value=S.cielo.h||'22:00';
   $('#fWrapped').checked=!!S.wrapped;$('#fRuletaOn').checked=!!S.ruleta.on;
 }
@@ -1040,7 +1060,7 @@ function together(){
 }
 function rain(n){
   const h=$('#hearts');
-  for(let i=0;i<n;i++){const s=document.createElement('span');s.textContent=P().sym;s.style.left=Math.random()*100+'vw';s.style.fontSize=12+Math.random()*26+'px';s.style.animationDuration=3+Math.random()*3+'s';s.style.animationDelay=Math.random()*1.5+'s';h.appendChild(s);setTimeout(()=>s.remove(),7000)}
+  for(let i=0;i<n;i++){const s=document.createElement('span');s.textContent=fondo().sym||P().sym;s.style.left=Math.random()*100+'vw';s.style.fontSize=12+Math.random()*26+'px';s.style.animationDuration=3+Math.random()*3+'s';s.style.animationDelay=Math.random()*1.5+'s';h.appendChild(s);setTimeout(()=>s.remove(),7000)}
 }
 const fecha=f=>new Date(f+'T00:00:00').toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
 const num=n=>Math.round(n).toLocaleString('es-CL');
@@ -1058,7 +1078,7 @@ function slides(){
   if(S.cancion)out.push({k:'♫',t:'Nuestra canción sonó más que cualquier otra',s:'dale play cuando llegues a ella'});
   if(rz.length)out.push({k:rz.length,t:T.razones,s:'te las muestro más abajo'});
   const na=nextAnniv();if(na!=null)out.push({k:na===0?'¡Hoy!':na,t:na===0?'es '+T.aniv:T.anivDias});
-  out.push({k:'♥',t:'Y esto recién empieza',s:`${S.de} + ${S.para}`});
+  out.push({k:fondo().sym||'♥',t:'Y esto recién empieza',s:`${S.de} + ${S.para}`});
   return out.map((x,i)=>({...x,bg:bg[i%bg.length]}));
 }
 function openWrapped(){
@@ -1092,18 +1112,19 @@ function wheelSvg(items){
 function heroLayers(seed){
   let x=seed*9301+49297;const rnd=()=>(x=(x*9301+49297)%233280)/233280;
   const blobs=[['--b1',8,10,46],['--b2',62,4,40],['--b3',58,58,44],['--b4',4,60,36]].map(([v,l,t,w])=>`<i class="blob" style="background:var(${v});left:${l}%;top:${t}%;width:${w}%;aspect-ratio:1"></i>`).join('');
-  let hearts='';for(let i=0;i<14;i++){const cx=rnd()*100,cy=rnd()*100,s=.5+rnd()*1.6,o=(.18+rnd()*.35).toFixed(2);hearts+=`<path transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) scale(${(s*.12).toFixed(3)})" d="M0 8C-9 1-9-6-4-7c2 0 3 1 4 3 1-2 2-3 4-3 5 1 5 8-4 15z" style="fill:var(--red)" opacity="${o}"/>`}
+  let hearts='';for(let i=0;i<14;i++){const cx=rnd()*100,cy=rnd()*100,s=.5+rnd()*1.6,o=(.18+rnd()*.35).toFixed(2);hearts+=`<path transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) scale(${(s*.12).toFixed(3)})" d="${figura(i)}" style="fill:var(--red)" opacity="${o}"/>`}
   let dots='';for(let i=0;i<40;i++){dots+=`<circle cx="${(rnd()*100).toFixed(1)}" cy="${(rnd()*100).toFixed(1)}" r="${(.12+rnd()*.32).toFixed(2)}" style="fill:var(--ink)" opacity="${(.25+rnd()*.5).toFixed(2)}"/>`}
   return `<div class="layer" data-k=".12" aria-hidden="true">${blobs}</div><div class="layer" data-k=".3" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">${hearts}</svg></div><div class="layer" data-k=".55" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">${dots}</svg></div>`;
 }
 function heartTile(seed,w,h,n,s0,s1){
   let x=seed*7919+13;const rnd=()=>(x=(x*9301+49297)%233280)/233280;let g='';
   for(let i=0;i<n;i++){const cx=rnd()*w,cy=rnd()*h,sc=s0+rnd()*(s1-s0),r=Math.round(rnd()*50-25);
-    g+=`<path transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) rotate(${r}) scale(${sc.toFixed(2)})" d="M0 8C-9 1-9-6-4-7c2 0 3 1 4 3 1-2 2-3 4-3 5 1 5 8-4 15z"/>`}
+    g+=`<path transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) rotate(${r}) scale(${sc.toFixed(2)})" d="${figura(i)}"/>`}
   return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'>${g}</svg>`)}")`;
 }
 const HBG=[...document.querySelectorAll('.hbg i')];
-[[1,200,300,7,.6,1.1],[2,300,440,5,1.3,2.2],[3,420,620,3,2.6,4]].forEach((t,i)=>{const u=heartTile(...t),el=HBG[i];el.style.webkitMaskImage=u;el.style.maskImage=u;el.style.webkitMaskSize=el.style.maskSize=`${t[1]}px ${t[2]}px`});
+function pintarFondo(){document.body.style.setProperty('--sym',JSON.stringify(fondo().sym||'♥'));[[1,200,300,7,.6,1.1],[2,300,440,5,1.3,2.2],[3,420,620,3,2.6,4]].forEach((t,i)=>{const u=heartTile(...t),el=HBG[i];el.style.webkitMaskImage=u;el.style.maskImage=u;el.style.webkitMaskSize=el.style.maskSize=`${t[1]}px ${t[2]}px`});}
+pintarFondo();
 const hbgApply=()=>{for(const el of HBG){const k=+el.dataset.k,pos=`${(mx*k*50).toFixed(1)}px ${(-scrollY*k+my*k*40).toFixed(1)}px`;el.style.webkitMaskPosition=pos;el.style.maskPosition=pos}};
 let PX=[],pxRaf=0,mx=0,my=0;
 const pxApply=()=>{pxRaf=0;hbgApply();for(const h of PX){if(!h.isConnected)continue;const top=h.getBoundingClientRect().top;if(top>innerHeight||top<-h.offsetHeight-200)continue;for(const l of h.querySelectorAll(':scope>.layer')){const k=+l.dataset.k;l.style.transform=`translate3d(${(mx*k*60).toFixed(1)}px,${(scrollY*k+my*k*60).toFixed(1)}px,0)`}}};
@@ -1205,7 +1226,7 @@ function renderRegalo(){
       <svg viewBox="0 0 360 250"><rect x="10" y="40" width="340" height="200" rx="12" style="fill:var(--red)"/><path d="M10 236 L180 120 L350 236Z" fill="#000" opacity=".12"/><path d="M10 50 L10 236 L150 140Z M350 50 L350 236 L210 140Z" fill="#000" opacity=".07"/>
       <rect x="40" y="20" width="280" height="150" rx="6" fill="#fff"/><text x="180" y="95" text-anchor="middle" font-family="Arima,serif" font-weight="600" font-size="30" style="fill:var(--red)">${esc(TX.sobre)}</text>
       <path class="flap" d="M10 50 Q10 40 22 40 L338 40 Q350 40 350 50 L180 160Z" style="fill:var(--red);filter:brightness(1.12)"/>
-      <g class="seal"><circle cx="180" cy="152" r="28" fill="#7a0a1c"/><path d="M180 168c-16-11-15-24-6-24 3 0 5 2 6 5 1-3 3-5 6-5 9 0 10 13-6 24z" fill="#ffd6df"/></g></svg>
+      <g class="seal"><circle cx="180" cy="152" r="28" fill="#7a0a1c"/><path transform="translate(180 152) scale(1.3)" d="${figura(0)}" fill="#ffd6df"/></g></svg>
     </button>
     <p style="color:var(--mute)" id="envTxt">Toca el sello para abrir tu regalo</p>
     <p class="script" style="font-size:22px">de ${esc(S.de)}</p>

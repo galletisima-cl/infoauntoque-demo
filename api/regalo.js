@@ -51,6 +51,7 @@ const rand = n => crypto.randomBytes(n).toString("hex");
 const esId = s => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(String(s || ""));
 const RUTA = /^[0-9a-f-]{36}\/[a-z]+-[0-9a-f]+\.[a-z0-9]+$/;
 const TEMAS = ["pasion", "pastel", "noche", "vintage"];
+const FONDOS = ["corazones", "coronas", "flores", "copas", "likes"]; // figuras que flotan en el fondo
 const CIUDADES = ["arica", "antofagasta", "laserena", "valparaiso", "santiago", "concepcion", "temuco", "puertomontt", "puntaarenas"];
 // Tipo de regalo y perfiles. En familia, uno es hijo/hija y el otro padre/madre.
 const TIPOS_REGALO = ["amor", "familia", "amistad"];
@@ -122,6 +123,7 @@ function limpiar(d, id) {
     }),
     telDe: tel(d.telDe), telPara: tel(d.telPara),
     tema: TEMAS.includes(d.tema) ? d.tema : "pasion",
+    fondo: FONDOS.includes(d.fondo) ? d.fondo : "corazones",
     cielo: {
       on: !!(d.cielo && d.cielo.on),
       ciudad: d.cielo && CIUDADES.includes(d.cielo.ciudad) ? d.cielo.ciudad : "santiago",
