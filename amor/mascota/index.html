@@ -138,8 +138,12 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .flt{position:absolute;z-index:12;font-weight:700;font-size:15px;pointer-events:none;white-space:nowrap;text-shadow:0 2px 8px rgba(0,0,0,.5);color:#fff;animation:sube 1.4s ease-out forwards}
 @keyframes sube{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-60px);opacity:0}}
 /* Acciones */
-.acciones{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.acciones button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px;font-size:11px;position:relative}
+.acciones{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.acciones button.msj{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;padding:13px 10px;font-size:17px;font-weight:700;background:linear-gradient(135deg,var(--red),var(--acc2));color:var(--pri-ink);border-color:transparent;animation:latido 2.4s ease-in-out infinite}
+.acciones button.msj .i{font-size:28px}
+@keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+@media (prefers-reduced-motion:reduce){.acciones button.msj{animation:none}}
+.acciones button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 2px;font-size:12px;position:relative}
 .acciones button .i{font-size:24px;line-height:1}
 .acciones button.alerta::after{content:"!";position:absolute;top:-6px;right:-4px;width:20px;height:20px;border-radius:50%;background:#ff3b3b;color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
 .toast{pointer-events:none;position:fixed;left:50%;bottom:24px;transform:translate(-50%,40px);opacity:0;transition:.3s;z-index:90;background:rgba(20,10,20,.92);color:#fff;padding:10px 16px;border-radius:14px;max-width:90vw;text-align:center;font-size:14px}
@@ -525,15 +529,13 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <button data-a="comer"><span class="i">🍽️</span>Comer</button>
     <button data-a="entrenar"><span class="i">🏋️</span>Entrenar</button>
     <button data-a="batalla"><span class="i">⚔️</span>Batalla</button>
-    <button data-a="limpiar"><span class="i">🧽</span>Limpiar</button>
-    <button data-a="medicina"><span class="i">💊</span>Medicina</button>
-    <button data-a="botiquin"><span class="i">🩹</span>Botiquín</button>
-    <button data-a="luz"><span class="i" id="iLuz">💡</span><span id="tLuz">Luz</span></button>
-    <button data-a="mensaje"><span class="i">💌</span>Mensaje</button>
-    <button data-a="diario"><span class="i">📖</span>Diario</button>
     <button data-a="ataques"><span class="i">🗡️</span>Ataques</button>
-    <button data-a="disfraz"><span class="i">🎭</span>Disfraz</button>
     <button data-a="estilo"><span class="i">🎨</span>Estilo</button>
+    <button data-a="disfraz"><span class="i">🎭</span>Disfraz</button>
+    <button data-a="cuidados"><span class="i">🩺</span>Cuidados</button>
+    <button data-a="luz"><span class="i" id="iLuz">💡</span><span id="tLuz">Luz</span></button>
+    <button data-a="diario"><span class="i">📖</span>Diario</button>
+    <button data-a="mensaje" class="msj"><span class="i">💌</span>Mensaje</button>
   </nav>
 
   <section class="prueba glass">
@@ -550,6 +552,15 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 </main>
 
 <!-- Comida -->
+<!-- Cuidados: Limpiar, Medicina y Botiquín -->
+<div class="sheet" id="shCuidados"><div>
+  <h3>🩺 Cuidados</h3>
+  <p id="cuidTxt" style="margin:-4px 0 8px;font-size:13px;color:var(--mute)"></p>
+  <div class="cat"><div class="fila acciones">
+    <button data-c="limpiar"><span>🧽</span>Limpiar</button><button data-c="medicina"><span>💊</span>Medicina</button><button data-c="botiquin"><span>🩹</span>Botiquín</button></div></div>
+  <button class="cerrar" style="width:100%">Cerrar</button>
+</div></div>
+
 <div class="sheet" id="shComer"><div>
   <h3>¿Qué le damos?</h3>
   <p id="cupo" style="margin:-4px 0 8px;font-size:13px;color:var(--mute)"></p>
@@ -1050,7 +1061,8 @@ function render(){
   const cc=$('#cacas');if(cc.children.length!==S.caca)cc.innerHTML='<span style="position:relative">💩</span>'.repeat(S.caca);
   $('#iLuz').textContent=S.luz?'💡':'🌙';$('#tLuz').textContent=S.luz?'Apagar luz':'Prender luz';
   const nec=necesidades(),av=$('#aviso');
-  $$('#acciones button').forEach(b=>b.classList.toggle('alerta',nec.some(n=>n.a===b.dataset.a)));
+  const CUID=['limpiar','medicina','botiquin'],tiene=a=>a==='cuidados'?nec.some(n=>CUID.includes(n.a)):nec.some(n=>n.a===a);
+  $$('#acciones button,#shCuidados [data-c]').forEach(b=>b.classList.toggle('alerta',tiene(b.dataset.a||b.dataset.c)));
   if(nec.length){av.textContent=nec[0].i+' !';av.title=nec[0].m;av.classList.add('on')}else av.classList.remove('on');
   const clave=nec.map(n=>n.a).join();
   if(clave&&clave!==avisoPrev&&nec.some(n=>!avisoPrev.includes(n.a))){beep();toast(nec[0].m)}
@@ -1178,7 +1190,10 @@ async function entregar(m){ocupado=true;const tpl=MENSAJES.find(x=>x.id===m.id)|
   const txt=tpl.dice(nom(m.de),nom(m.para)),sp=g.querySelector('span');for(const ch of txt){sp.textContent+=ch;await espera(28)}
   await espera(2600);g.classList.add('sale');petWrap.classList.remove(tpl.anim);await espera(300);g.remove();
   m.visto=true;anota(S.nombre+' le dijo a '+nom(m.para)+': '+tpl.t+' '+tpl.e);if(svg)delete svg.dataset.fijo;ocupado=false;guardar();render()}
-const ACC={estilo:()=>abrirEstilos(),ataques:()=>{if(S.fase==='huevo')return toast('Los ataques se aprenden desde Bebé I');elegirEquipo(true)},disfraz:abrirDisfraces,mensaje:abrirMensajes,comer:()=>{if(!puede('comer'))return;const n=MAX_COMIDAS-comidasHora(quien).length,o=MAX_COMIDAS-comidasHora(otro(quien)).length;$('#cupo').innerHTML=`${nom(quien)}: te quedan <b>${n}</b> de ${MAX_COMIDAS} comidas esta hora · ${nom(otro(quien))}: ${o}`;abrir('#shComer')},entrenar:abrirEntreno,batalla:()=>batalla(),limpiar,medicina,botiquin,luz,diario};
+const ACC={cuidados:abrirCuidados,estilo:()=>abrirEstilos(),ataques:()=>{if(S.fase==='huevo')return toast('Los ataques se aprenden desde Bebé I');elegirEquipo(true)},disfraz:abrirDisfraces,mensaje:abrirMensajes,comer:()=>{if(!puede('comer'))return;const n=MAX_COMIDAS-comidasHora(quien).length,o=MAX_COMIDAS-comidasHora(otro(quien)).length;$('#cupo').innerHTML=`${nom(quien)}: te quedan <b>${n}</b> de ${MAX_COMIDAS} comidas esta hora · ${nom(otro(quien))}: ${o}`;abrir('#shComer')},entrenar:abrirEntreno,batalla:()=>batalla(),limpiar,medicina,botiquin,luz,diario};
+function abrirCuidados(){const m=[S.caca&&'💩 hay que limpiar',S.enfermo&&'🤒 está enfermo',S.herido&&'🤕 tiene una herida'].filter(Boolean);
+  $('#cuidTxt').textContent=S.fase==='huevo'?'Todavía es un huevo':m.length?'Ahora mismo: '+m.join(' · '):'Está sano y limpio ✨';abrir('#shCuidados')}
+$$('#shCuidados [data-c]').forEach(b=>b.onclick=()=>{audioCtx=audioCtx||(window.AudioContext?new AudioContext():null);cerrarHojas();ACC[b.dataset.c]()});
 $$('#acciones button').forEach(b=>b.onclick=()=>{audioCtx=audioCtx||(window.AudioContext?new AudioContext():null);ACC[b.dataset.a]()});
 
 /* ===== Entrenamiento Bebé I: Cortafrutas (tipo Fruit Ninja) ===== */
