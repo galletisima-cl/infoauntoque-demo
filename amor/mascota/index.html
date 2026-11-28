@@ -201,7 +201,8 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .full{position:fixed;inset:0;z-index:60;display:none}
 .full.on{display:block}
 #ninja{background:radial-gradient(circle at 50% 30%,#3b1c3f,#12061a)}
-#ninja canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#ninja canvas,#dash canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#dash{background:#1a0f33}#dash .hud{font-size:16px}
 .hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;color:#fff;font-weight:700;font-size:20px;z-index:2;pointer-events:none}
 .centro{position:absolute;inset:0;display:grid;place-items:center;z-index:3;padding:20px}
 .centro:empty{display:none}
@@ -389,7 +390,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <p><b>Noche (22:00 a 8:00, hora de Chile):</b> se duerme solo. Con la luz apagada recupera energía +15/h. Con la luz prendida duerme mal: +6/h de energía y felicidad −5/h.</p>
   <p><b>Caca:</b> 3 horas después de comer. Si pasan 2 horas sin limpiar, se enferma.</p>
   <p><b>Enfermedad 💀:</b> también si la pancita queda en 0 más de 6 horas o una herida no se cura en 6 horas. Necesita de 1 a 3 dosis, con 1 hora entre cada una.</p>
-  <p><b>Entrenar:</b> los entrenamientos de niveles anteriores siguen disponibles al evolucionar. <b>Cortafrutas (Bebé I):</b> pancita −10, fuerza +5, energía −10, felicidad +5, peso −1. Necesita energía y pancita de al menos 10.</p>
+  <p><b>Entrenar:</b> los entrenamientos de niveles anteriores siguen disponibles al evolucionar. <b>Cortafrutas (Bebé I):</b> pancita −10, fuerza +5, energía −10, felicidad +5, peso −1. <b>Cubo Saltarín (Bebé II):</b> el cubo corre solo; toca para saltar púas y bloques (mantener = sigue saltando), el trampolín amarillo lanza alto y el aro amarillo da un segundo salto en el aire si tocas al pasar. Si choca, vuelve a empezar; tienes 60 s. Pancita −10, fuerza +3, energía −10, felicidad +8, peso −1 (si llega a la meta: fuerza +4 y felicidad +10 extra). Necesita energía y pancita de al menos 10.</p>
   <p><b>Comida:</b> cada uno puede darle máximo 2 comidas por hora.</p>
   <p><b>Mensajes 💌:</b> cada uno elige un mensaje corto y el Virtual Monster se lo dice al otro cuando abra la app, con una animación. En la prueba, cambia a la otra persona con "Soy…" para recibirlo.</p>
   <p><b>Batallas:</b> desde Bebé I, con enemigos de su nivel. No cambian los indicadores, pero la fuerza, el nivel y la energía (velocidad) ayudan a ganar. Puede quedar herido 🩹.</p>
@@ -399,6 +400,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <button class="cerrar" style="width:100%">Entendido</button></div></div>
 
 <!-- Fruit Ninja -->
+<div class="full" id="dash"><canvas id="dcv"></canvas><div class="hud"><span id="dInt">Intento 1</span><button id="dSalir" style="pointer-events:auto;padding:6px 14px;font-size:14px;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);box-shadow:none">✕ Salir</button><span id="dT">60</span></div><div class="centro" id="dCentro"></div></div>
 <div class="full" id="ninja"><canvas id="cv"></canvas><div class="hud"><span id="nPts">0</span><button id="nSalir" style="pointer-events:auto;padding:6px 14px;font-size:14px;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);box-shadow:none">✕ Salir</button><span id="nT">30</span></div><div class="centro" id="nCentro"></div></div>
 
 <!-- Batalla -->
@@ -441,11 +443,12 @@ const EFECTO={
   proteina:{hambre:10,fuerza:15,energia:-5,felicidad:5,peso:2},
   dulce:{hambre:10,fuerza:0,energia:-5,felicidad:15,peso:4},
   verdura:{hambre:15,fuerza:5,energia:0,felicidad:0,peso:0},
-  ninja:{hambre:-10,fuerza:5,energia:-10,felicidad:5,peso:-1}};
+  ninja:{hambre:-10,fuerza:5,energia:-10,felicidad:5,peso:-1},
+  dash:{hambre:-10,fuerza:3,energia:-10,felicidad:8,peso:-1}};
 const NIVELES=[
   {id:'huevo',n:'Huevo',ent:'Tocar el huevo: con 10 vibraciones nace'},
   {id:'bebe1',n:'Bebé I',ent:'Cortafrutas (30 s)'},
-  {id:'bebe2',n:'Bebé II'},{id:'novato',n:'Novato'},{id:'rebelde',n:'Novato Rebelde'},{id:'campeon',n:'Campeón'},{id:'definitivo',n:'Definitivo'}];
+  {id:'bebe2',n:'Bebé II',ent:'Cubo Saltarín (60 s): toca para saltar'},{id:'novato',n:'Novato'},{id:'rebelde',n:'Novato Rebelde'},{id:'campeon',n:'Campeón'},{id:'definitivo',n:'Definitivo'}];
 /* Los enemigos son personajes chilenos en pixel art: ver CHILENOS más abajo */
 const ENEMIGOS={bebe1:[],bebe2:[],novato:[],rebelde:[],campeon:[],definitivo:[]};
 const nivelIdx=()=>NIVELES.findIndex(n=>n.id===S.fase);
@@ -779,8 +782,8 @@ function abrirEntreno(){if(!puede('entrenar'))return;
     const det=n.id==='huevo'?'Tocar el huevo · ya nació 🐣':juega?n.ent:i>yo?'Se desbloquea al llegar a '+n.n:'Entrenamiento próximamente';
     return`<button class="${i===yo?'tuyo':''}" ${juega?`data-juego="${n.id}"`:'disabled'}><span><b>${n.n}</b>${i===yo?' · su nivel':''}<small>${det}</small></span><span class="ico">${juega?'▶':i>yo?'🔒':n.id==='huevo'?'✓':'⏳'}</span></button>`}).join('');
   $$('[data-juego]').forEach(b=>b.onclick=()=>{cerrarHojas();JUEGOS[b.dataset.juego]()});abrir('#shEntrenar')}
-// Minijuego de entrenamiento de cada nivel (cuando existan los de Bebé II en adelante, se agregan aquí)
-const JUEGOS={bebe1:()=>ninja()};
+// Minijuego de entrenamiento de cada nivel (desde Novato se agregan aquí)
+const JUEGOS={bebe1:()=>ninja(),bebe2:()=>dash()};
 function diario(){$('#log').innerHTML=S.log.map(l=>`<li><time>${fmtD.format(new Date(l.t))}</time><span>${esc(l.txt)}</span></li>`).join('')||'<li>Todavía no pasa nada.</li>';abrir('#shDiario')}
 function comidasHora(q){const t=ahora();S.comidas=(S.comidas||[]).filter(c=>c.t>t-H&&c.t<=t);return S.comidas.filter(c=>c.q===q).map(c=>c.t).sort((a,b)=>a-b)}
 function abrirMensajes(){if(S.fase==='huevo')return toast('Primero tiene que nacer: él lleva los mensajes');
@@ -869,6 +872,142 @@ function ninja(){
       <div class="res"><span>🍽️ Pancita ${d.hambre}</span><span>💪 Fuerza +${d.fuerza}</span><span>⚡ Energía ${d.energia}</span><span>😊 Felicidad +${d.felicidad}</span><span>⚖️ Peso ${d.peso}</span></div>
       <button class="pri" id="nFin" style="width:100%">Volver</button></div>`;
     $('#nFin').onclick=()=>{box.classList.remove('on');bloquear(false);ocupado=false;aplicar(d);anota(nom(quien)+' lo entrenó: '+pts+' frutas 🍉');render()}}
+}
+
+/* ===== Entrenamiento Bebé II: Cubo Saltarín (misma mecánica que Geometry Dash, diseño propio) =====
+   Mundo en unidades: cada casilla mide 40. El cubo avanza solo; tocar = saltar; mantener = salta al caer.
+   DASH_FISICA:INICIO */
+const DT={T:40,P:34,vel:6.2,g:.95,salto:13.2,pad:17.2,orbe:13.6};
+// Trozos del nivel: [casilla, tipo, altura en casillas] · s = púa, b = bloque, p = trampolín, o = orbe (en el aire)
+const DASH_TROZOS={
+  s1:[[0,'s',0]], s2:[[0,'s',0],[1,'s',0]], s3:[[0,'s',0],[1,'s',0],[2,'s',0]],
+  mesa:[[0,'b',0],[1,'b',0],[2,'b',0],[3,'b',0],[4,'s',0],[5,'s',0]],
+  escalon:[[0,'b',0],[3,'b',0],[3,'b',1],[6,'b',0],[6,'b',1],[6,'b',2],[7,'s',0],[8,'s',0]],
+  pad:[[0,'p',0],[1,'s',0],[2,'s',0],[3,'s',0],[4,'s',0]],
+  orbe:[[0,'s',0],[1,'s',0],[2,'s',0],[3,'s',0],[4,'s',0],[5,'s',0],[2,'o',1.4]],
+  torre:[[0,'b',0],[0,'b',1],[1,'s',0],[2,'s',0],[3,'s',0]]};
+const DASH_ORDEN=['s1','s1','s2','mesa','s2','s3','escalon','pad','s2','orbe','s3','mesa','torre','pad','s1','s2','s3','escalon','orbe','s3'];
+function dashNivel(){const obs=[];let x=20;
+  for(const k of DASH_ORDEN){let fin=0;for(const [dx,t,h] of DASH_TROZOS[k]){obs.push({x:(x+dx)*DT.T,y:h*DT.T,t});fin=Math.max(fin,dx)}x+=fin+(k==='s1'?6:8)}
+  obs.sort((a,b)=>a.x-b.x);return{obs,meta:(x+6)*DT.T}}
+// Un paso de 1/60 s. st={x,y,vy,suelo,orbes:Set,muerto,gano,giro}. apreta = el dedo está abajo
+function dashPaso(st,apreta,N){const {T,P}=DT;
+  st.x+=DT.vel;
+  if(st.suelo&&apreta){st.vy=DT.salto;st.suelo=false;st.saltos=(st.saltos||0)+1}
+  const yAntes=st.y;st.vy-=DT.g;st.y+=st.vy;let piso=0;st.suelo=false;
+  const L=st.x,R=st.x+P;
+  for(let i=0;i<N.obs.length;i++){const o=N.obs[i];if(o.x>R+T)break;if(o.x+T<L)continue;
+    if(o.t==='b'){const top=o.y+T;
+      if(R>o.x+2&&L<o.x+T-2&&st.y<top&&st.y+P>o.y){
+        if(yAntes>=top-10&&st.vy<=0){st.y=top;st.vy=0;st.suelo=true}else{st.muerto=true;return st}}}
+    else if(o.t==='s'){ // caja chica al centro de la púa (más justa)
+      if(R-5>o.x+13&&L+5<o.x+T-13&&st.y+3<o.y+22&&st.y+P>o.y){st.muerto=true;return st}}
+    else if(o.t==='p'){if(R>o.x+4&&L<o.x+T-4&&st.y<=o.y+8&&st.vy<=0){st.vy=DT.pad;st.y=Math.max(st.y,o.y+1);st.pad=i}}
+    else if(o.t==='o'){const cx=o.x+T/2,cy=o.y+T/2;if(apreta&&!st.orbes.has(i)&&Math.abs(cx-(L+P/2))<T*.8&&Math.abs(cy-(st.y+P/2))<T*.8){st.orbes.add(i);st.vy=DT.orbe;st.orbe=i}}}
+  if(!st.suelo&&st.y<=piso&&st.vy<=0){st.y=piso;st.vy=0;st.suelo=true}
+  if(st.x>=N.meta)st.gano=true;
+  return st}
+/* DASH_FISICA:FIN */
+function dash(){
+  if(S.energia<10)return toast('Está muy cansado para entrenar: necesita dormir ⚡');
+  if(S.hambre<10)return toast('Tiene mucha hambre para entrenar 🍽️');
+  if(S.enfermo||S.herido)return toast('Primero hay que curarlo');
+  ocupado=true;const box=$('#dash'),cv=$('#dcv'),ctx=cv.getContext('2d');box.classList.add('on');bloquear(true);
+  const dpr=Math.min(2,devicePixelRatio||1);let W,Hh,esc,piso;
+  const size=()=>{const vv=window.visualViewport;W=vv?vv.width:innerWidth;Hh=vv?vv.height:innerHeight;cv.width=W*dpr;cv.height=Hh*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    esc=Math.min(W/380,Hh/340);piso=Hh*.66};size();addEventListener('resize',size);
+  // Colores del cubo: los de la mascota (o los del disfraz)
+  const cs=getComputedStyle(document.body),dz=DISFRACES[S.disfraz];
+  const c1=dz?dz.p1:(cs.getPropertyValue('--pet1').trim()||'#ffb3c7'),c2=dz?dz.p2:(cs.getPropertyValue('--pet2').trim()||'#ff6f96');
+  const N=dashNivel(),DUR=60000,inicio=performance.now();
+  let st,intento=0,mejor=0,apreta=false,vivo=true,muerte=0,giro=0,estela=[],trozos=[],sacude=0,completo=false,acc=0,ultimo=inicio,textos=[];
+  const nuevoIntento=()=>{intento++;st={x:0,y:0,vy:0,suelo:true,orbes:new Set()};giro=0;estela=[];$('#dInt').textContent='Intento '+intento};
+  nuevoIntento();textos=[{txt:'Intento 1',x:DT.T*7,y:DT.T*3}];$('#dCentro').innerHTML='';
+  // Toque: abajo = saltar (mantener = sigue saltando al caer). Espacio o flecha arriba en computador.
+  const on=()=>{apreta=true},off=()=>{apreta=false};
+  cv.ontouchstart=e=>{e.preventDefault();on()};cv.ontouchend=cv.ontouchcancel=e=>{e.preventDefault();if(!e.touches.length)off()};
+  cv.onpointerdown=e=>{if(e.pointerType==='mouse')on()};cv.onpointerup=cv.onpointercancel=e=>{if(e.pointerType==='mouse')off()};
+  const tecla=e=>{if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();e.type==='keydown'?on():off()}};
+  addEventListener('keydown',tecla);addEventListener('keyup',tecla);
+  const salir=()=>{vivo=false;removeEventListener('resize',size);removeEventListener('keydown',tecla);removeEventListener('keyup',tecla)};
+  $('#dSalir').onclick=()=>{salir();box.classList.remove('on');bloquear(false);ocupado=false;toast('Entrenamiento cancelado: no cuenta');render()};
+  const tono=(f,ms=.08)=>{try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const t=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='triangle';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*1.6,t+ms);g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+ms+.05);o.connect(g).connect(audioCtx.destination);o.start(t);o.stop(t+ms+.06)}catch(_){}};
+  // Dibujo: pasa de mundo (y hacia arriba) a pantalla
+  const sx=x=>(x-st.x)*esc+W*.26,sy=y=>piso-y*esc;
+  const hue=()=>(250+st.x/N.meta*200)%360;
+  function cubo(x,y,lado,ang,alfa=1){ctx.save();ctx.globalAlpha=alfa;ctx.translate(x,y);ctx.rotate(ang);const h=lado/2,r=lado*.18;
+    const gr=ctx.createLinearGradient(-h,-h,h,h);gr.addColorStop(0,c1);gr.addColorStop(1,c2);ctx.fillStyle=gr;ctx.strokeStyle='#1e1218';ctx.lineWidth=Math.max(2,lado*.07);
+    ctx.beginPath();ctx.roundRect(-h,-h,lado,lado,r);ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.roundRect(-h*.72,-h*.72,lado*.32,lado*.2,lado*.08);ctx.fill();
+    ctx.fillStyle='#2a1420';for(const dx of[-.3,.3]){ctx.beginPath();ctx.ellipse(dx*lado,-.02*lado,lado*.07,lado*.11,0,0,7);ctx.fill()}
+    ctx.fillStyle='#fff';for(const dx of[-.27,.33]){ctx.beginPath();ctx.arc(dx*lado,-.07*lado,lado*.03,0,7);ctx.fill()}
+    ctx.fillStyle='rgba(255,122,162,.6)';for(const dx of[-.36,.36]){ctx.beginPath();ctx.ellipse(dx*lado,.16*lado,lado*.08,lado*.05,0,0,7);ctx.fill()}
+    ctx.strokeStyle='#2a1420';ctx.lineWidth=lado*.05;ctx.lineCap='round';ctx.beginPath();ctx.arc(0,.14*lado,lado*.08,.2,Math.PI-.2);ctx.stroke();ctx.restore()}
+  function pintar(now){const T=DT.T*esc,h=hue();
+    // Fondo con degradado que cambia de color según el avance (color shift) y cuadros en parallax
+    const g=ctx.createLinearGradient(0,0,0,piso);g.addColorStop(0,`hsl(${h},70%,22%)`);g.addColorStop(1,`hsl(${(h+40)%360},75%,40%)`);ctx.fillStyle=g;ctx.fillRect(0,0,W,Hh);
+    ctx.strokeStyle=`hsla(${(h+40)%360},90%,75%,.14)`;ctx.lineWidth=2;const par=-(st.x*esc*.25)%(T*3);
+    for(let x=par-T*3;x<W+T*3;x+=T*3)for(let y=piso-T*3;y>-T*3;y-=T*3){ctx.strokeRect(x+T*.4,y,T*2.2,T*2.2)}
+    // Suelo con grilla que corre y borde brillante (glow)
+    ctx.fillStyle=`hsl(${(h+30)%360},60%,14%)`;ctx.fillRect(0,piso,W,Hh-piso);
+    ctx.strokeStyle=`hsla(${(h+40)%360},90%,70%,.25)`;ctx.lineWidth=1;const gx=-(st.x*esc)%T;
+    for(let x=gx;x<W;x+=T){ctx.beginPath();ctx.moveTo(x,piso);ctx.lineTo(x,Hh);ctx.stroke()}
+    ctx.shadowColor='#fff';ctx.shadowBlur=12;ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,piso);ctx.lineTo(W,piso);ctx.stroke();ctx.shadowBlur=0;
+    // Meta: franja a cuadros
+    const mx=sx(N.meta);if(mx<W+T){for(let i=0;i*T*.5<piso;i++){ctx.fillStyle=i%2?'#fff':'#1e1218';ctx.fillRect(mx,piso-(i+1)*T*.5,T*.5,T*.5);ctx.fillStyle=i%2?'#1e1218':'#fff';ctx.fillRect(mx+T*.5,piso-(i+1)*T*.5,T*.5,T*.5)}}
+    // Obstáculos
+    for(const o of N.obs){const x=sx(o.x);if(x>W+T||x<-T)continue;const y=sy(o.y);
+      if(o.t==='b'){ctx.fillStyle='#120a1a';ctx.strokeStyle=`hsl(${(h+40)%360},95%,72%)`;ctx.lineWidth=2.5;ctx.fillRect(x,y-T,T,T);ctx.strokeRect(x+1,y-T+1,T-2,T-2);ctx.strokeRect(x+T*.28,y-T*.72,T*.44,T*.44)}
+      else if(o.t==='s'){ctx.fillStyle='#120a1a';ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x+2,y);ctx.lineTo(x+T/2,y-T*.92);ctx.lineTo(x+T-2,y);ctx.closePath();ctx.fill();ctx.stroke()}
+      else if(o.t==='p'){ctx.shadowColor='#ffe14d';ctx.shadowBlur=16;ctx.fillStyle='#ffe14d';ctx.beginPath();ctx.ellipse(x+T/2,y,T*.42,T*.2,0,Math.PI,0);ctx.fill();ctx.shadowBlur=0}
+      else if(o.t==='o'){const cx=x+T/2,cy=y-T/2,usado=st.orbes.has(N.obs.indexOf(o)),p=1+.12*Math.sin(now/120);
+        ctx.shadowColor='#ffe14d';ctx.shadowBlur=usado?0:18;ctx.fillStyle=usado?'rgba(255,225,77,.25)':'#ffe14d';ctx.beginPath();ctx.arc(cx,cy,T*.26,0,7);ctx.fill();
+        ctx.strokeStyle='rgba(255,240,170,.8)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,T*.42*p,0,7);ctx.stroke();ctx.shadowBlur=0}}
+    // Estela (trail) del cubo
+    estela.forEach((e,i)=>{const a=i/estela.length;ctx.fillStyle=c2;ctx.globalAlpha=a*.5;const l=DT.P*esc*.5*a;ctx.fillRect(sx(e.x)-l/2,sy(e.y)-l/2,l,l)});ctx.globalAlpha=1;
+    // Textos que se quedan en el mundo ("Intento N")
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`900 ${Math.round(28*esc)}px Mulish,sans-serif`;
+    for(const t of textos){ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillText(t.txt,sx(t.x),sy(t.y))}
+    // Cubo
+    if(!muerte){const l=DT.P*esc;cubo(sx(st.x+DT.P/2),sy(st.y+DT.P/2),l,giro)}
+    for(const p of trozos){ctx.globalAlpha=Math.max(0,p.v);ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,p.l,p.l)}ctx.globalAlpha=1;
+    // Barra de avance arriba
+    const pct=Math.min(100,st.x/N.meta*100),bw=Math.min(W*.6,320),bx=(W-bw)/2,by=parseFloat(getComputedStyle($('#dash .hud')).paddingTop)+34;
+    ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.roundRect(bx,by,bw,12,6);ctx.fill();
+    ctx.fillStyle='#7dffa1';ctx.beginPath();ctx.roundRect(bx,by,Math.max(12,bw*pct/100),12,6);ctx.fill();
+    ctx.font='700 14px Mulish,sans-serif';ctx.fillStyle='#fff';ctx.fillText(Math.floor(pct)+'%',W/2,by+28)}
+  function morir(now){muerte=now;mejor=Math.max(mejor,Math.floor(st.x/N.meta*100));sacude=12;tono(110,.25);if(navigator.vibrate)navigator.vibrate(90);
+    const cx=sx(st.x+DT.P/2),cy=sy(st.y+DT.P/2);
+    for(let i=0;i<22;i++){const a=Math.random()*7,v=rnd(2,9);trozos.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v-3,l:rnd(4,11)*esc,v:1,c:i%3?c2:c1})}}
+  function loop(now){if(!vivo)return;const quedan=Math.max(0,DUR-(now-inicio));$('#dT').textContent=Math.ceil(quedan/1000);
+    // Paso fijo de 1/60 s: la física es igual en todos los celulares
+    acc+=Math.min(100,now-ultimo);ultimo=now;
+    while(acc>=16.67){acc-=16.67;
+      if(muerte){if(now-muerte>700){muerte=0;trozos=[];if(quedan<=0)return terminar();nuevoIntento();textos=[{txt:'Intento '+intento,x:st.x+DT.T*6,y:DT.T*3}]}continue}
+      if(completo)continue;
+      const antes={saltos:st.saltos,orbe:st.orbe,pad:st.pad};dashPaso(st,apreta,N);
+      if(st.saltos!==antes.saltos)tono(520);if(st.orbe!==antes.orbe)tono(760);if(st.pad!==antes.pad)tono(880);
+      // Giro de 90° por salto (rotación) que se endereza al aterrizar (snap)
+      if(st.suelo)giro=Math.round(giro/(Math.PI/2))*(Math.PI/2);else giro+=.115;
+      estela.push({x:st.x+DT.P/2,y:st.y+DT.P/2});if(estela.length>8)estela.shift();
+      if(st.muerto)morir(now);
+      else if(st.gano){completo=true;mejor=100;tono(660,.3);setTimeout(()=>tono(990,.3),180);
+        for(let i=0;i<40;i++)trozos.push({x:W/2,y:Hh*.35,vx:rnd(-8,8),vy:rnd(-10,-2),l:rnd(5,10),v:1.4,c:['#ffe14d','#7dffa1','#ff7ab8','#9ad9ff'][i%4]});
+        setTimeout(terminar,1400)}}
+    for(const p of trozos){p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.v-=.02}
+    ctx.save();if(sacude>0){ctx.translate(rnd(-sacude,sacude),rnd(-sacude,sacude));sacude*=.85;if(sacude<.5)sacude=0}
+    pintar(now);ctx.restore();
+    if(quedan<=0&&!muerte&&!completo)return terminar();
+    requestAnimationFrame(loop)}
+  requestAnimationFrame(loop);
+  function terminar(){if(!vivo)return;salir();mejor=Math.max(mejor,completo?100:Math.floor(st.x/N.meta*100));
+    const record=mejor>(S.recordDash||0);if(record)S.recordDash=mejor;
+    const d={...EFECTO.dash};if(completo){d.felicidad+=10;d.fuerza+=4}
+    $('#dCentro').innerHTML=`<div class="card"><p class="script" style="font-size:26px;margin:0;color:#ffb3c7">${completo?'¡Nivel completado!':record&&mejor?'¡Nuevo récord!':'¡Buen entrenamiento!'}</p><h2>${mejor}%</h2><p style="opacity:.75">${intento} intento${intento>1?'s':''} · Récord: ${S.recordDash||0}%</p>
+      <div class="res"><span>🍽️ Pancita ${d.hambre}</span><span>💪 Fuerza +${d.fuerza}</span><span>⚡ Energía ${d.energia}</span><span>😊 Felicidad +${d.felicidad}</span><span>⚖️ Peso ${d.peso}</span></div>
+      <button class="pri" id="dFin" style="width:100%">Volver</button></div>`;
+    $('#dFin').onclick=()=>{box.classList.remove('on');bloquear(false);ocupado=false;aplicar(d);anota(nom(quien)+' lo entrenó en Cubo Saltarín: '+mejor+'% '+(completo?'🏁':'🟪'));render()}}
 }
 
 /* ===== Batallas por turnos: tipos, ataques propios y animaciones ===== */
