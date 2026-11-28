@@ -242,6 +242,104 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 @keyframes chispa{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
 #despedida,#nacer{background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 @media(prefers-reduced-motion:reduce){.mesh,.pet,.ojos,.huevo-idle{animation:none}}
+/* ===== Estilos visuales (botón 🎨 Estilo). El estilo vive en body[data-e] y en las vistas previas .prev[data-e] ===== */
+.stage::before{content:"";position:absolute;inset:0;z-index:-1;transition:background .4s}
+[data-e=clay] .pet,[data-e=clay] .huevo,.prev[data-e=clay] .pet{filter:url(#fe-clay)}
+[data-e=kawaii] .pet,[data-e=kawaii] .huevo,.prev[data-e=kawaii] .pet{filter:url(#fe-kawaii)}
+[data-e=doodle] .pet,[data-e=doodle] .huevo,.prev[data-e=doodle] .pet{filter:url(#fe-doodle)}
+[data-e=acuarela] .pet,[data-e=acuarela] .huevo,.prev[data-e=acuarela] .pet{filter:url(#fe-acuarela)}
+[data-e=papel] .pet,[data-e=papel] .huevo,.prev[data-e=papel] .pet{filter:url(#fe-papel)}
+[data-e=cel] .pet,[data-e=cel] .huevo,.prev[data-e=cel] .pet{filter:url(#fe-cel)}
+[data-e=neon] .pet,[data-e=neon] .huevo,.prev[data-e=neon] .pet{filter:url(#fe-neon)}
+[data-e=lcd] .pet,[data-e=lcd] .huevo,.prev[data-e=lcd] .pet{filter:url(#fe-lcd)}
+[data-e=pix128] .pet,[data-e=pix128] .huevo,.prev[data-e=pix128] .pet{filter:url(#fe-pix128)}
+/* Animación "en dos" (stop-motion, ~12 cuadros por segundo) o por cuadros de pantalla LCD / pixel art */
+[data-e=clay] .pet,[data-e=papel] .pet,[data-e=doodle] .pet,[data-e=clay] .ojos,[data-e=papel] .ojos{animation-timing-function:steps(6,end)}
+[data-e=lcd] .pet,[data-e=lcd] .huevo-idle{animation-timing-function:steps(2,end)}
+[data-e=pix128] .pet{animation-timing-function:steps(8,end)}
+/* Sombra bajo la mascota: se adapta al estilo */
+[data-e=neon] .pet-wrap svg>ellipse,[data-e=lcd] .pet-wrap svg>ellipse,[data-e=doodle] .pet-wrap svg>ellipse{opacity:0}
+/* Escenario de la casa y de la batalla (cielo + piso) */
+[data-e=clay] .stage::before,[data-e=clay] #batalla{background:radial-gradient(ellipse 26% 9% at 22% 12%,#fff 60%,transparent 62%),radial-gradient(ellipse 18% 7% at 48% 6%,#fff 60%,transparent 62%),linear-gradient(180deg,#bde3f0 0,#efe2d0 50%,#b9d39a 50%,#8fb878 100%)}
+[data-e=kawaii] .stage::before,[data-e=kawaii] #batalla{background:radial-gradient(#fff 2.5px,transparent 3.5px) 0 0/24px 24px,linear-gradient(180deg,#ffe0ec 0,#ffeef4 50%,#c9f0dc 50%,#a8e6c6 100%)}
+[data-e=doodle] .stage::before,[data-e=doodle] #batalla{background:linear-gradient(90deg,transparent 26px,#f2a0a0 26px 28px,transparent 28px),repeating-linear-gradient(#fdfcf6 0 21px,#c9dcf2 21px 22px)}
+[data-e=acuarela] .stage::before,[data-e=acuarela] #batalla{background:radial-gradient(circle at 22% 28%,rgba(255,170,200,.35),transparent 42%),radial-gradient(circle at 78% 20%,rgba(150,200,255,.4),transparent 40%),radial-gradient(ellipse 80% 40% at 55% 92%,rgba(150,210,140,.55),transparent 70%),#fbf6ec}
+[data-e=papel] .stage::before,[data-e=papel] #batalla{background:radial-gradient(ellipse 75% 30% at 15% 100%,#9cc27f 98%,transparent 100%),radial-gradient(ellipse 75% 34% at 90% 100%,#7fae66 98%,transparent 100%),radial-gradient(ellipse 20% 8% at 26% 12%,#fffaf2 96%,transparent 100%),linear-gradient(#cfe4ee,#eadfcd)}
+[data-e=cel] .stage::before,[data-e=cel] #batalla{background:linear-gradient(180deg,#3fa9ff 0,#bfe6ff 50%,#7fd36a 50%,#4fae45 100%)}
+[data-e=neon] .stage::before,[data-e=neon] #batalla{background:linear-gradient(180deg,transparent 52%,rgba(255,95,210,.55) 52%,rgba(255,95,210,.55) calc(52% + 2px),transparent calc(52% + 2px)),repeating-linear-gradient(90deg,rgba(95,242,255,.16) 0 1px,transparent 1px 30px),repeating-linear-gradient(0deg,rgba(95,242,255,.1) 0 1px,transparent 1px 30px),#130a22}
+[data-e=lcd] .stage::before,[data-e=lcd] #batalla{background:linear-gradient(rgba(40,50,30,.08) 1px,transparent 1px) 0 0/6px 6px,linear-gradient(90deg,rgba(40,50,30,.08) 1px,transparent 1px) 0 0/6px 6px,#b9c7a0}
+[data-e=pix128] .stage::before,[data-e=pix128] #batalla{background:linear-gradient(180deg,#5fb8ff 0 14%,#78c4ff 14% 28%,#94d0ff 28% 40%,#b2ddff 40% 50%,#7cc95a 50% 62%,#64b64a 62% 78%,#4f9d3c 78%)}
+[data-e] .stage .piso{opacity:.35}[data-e=neon] .stage .piso,[data-e=lcd] .stage .piso{opacity:0}
+[data-e=lcd] .stage .reloj{background:#c7d3ae;color:#26301c}
+[data-e=lcd] .stage.noche .cielo{background:rgba(20,30,10,.28)}[data-e=lcd] .stage.noche .estrellas{opacity:0}
+/* Plataformas de la batalla */
+[data-e=clay] .ring{background:radial-gradient(#b5d49a,#7fa86a);box-shadow:0 8px 12px rgba(70,40,20,.3)}
+[data-e=kawaii] .ring{background:#bfeccf;border:3px solid #4a1f30}
+[data-e=doodle] .ring{background:none;border:2px solid #34343f;border-radius:50% 46% 52% 48%}
+[data-e=acuarela] .ring{background:rgba(120,190,120,.35);filter:blur(2px)}
+[data-e=papel] .ring{background:#7fae66;box-shadow:3px 4px 0 rgba(70,50,30,.35)}
+[data-e=cel] .ring{background:#4fae45;border:3px solid #111}
+[data-e=neon] .ring{background:none;border:2px solid #5ff2ff;box-shadow:0 0 12px #5ff2ff,inset 0 0 10px #5ff2ff}
+[data-e=lcd] .ring{background:rgba(38,48,28,.22);border-radius:0}
+[data-e=pix128] .ring{border-radius:0;background:#4f9d3c;box-shadow:0 4px 0 #2f6a24}
+/* Fichas, caja de texto y botones de la batalla */
+[data-e=clay] .ficha,[data-e=clay] .caja{background:#fff1e6;border:0;border-radius:22px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.07),0 8px 16px rgba(80,40,20,.3)}
+[data-e=clay] .menu button{border:0;border-radius:16px;background:#ffd9c7;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12),0 3px 6px rgba(80,40,20,.25)}
+[data-e=kawaii] .ficha,[data-e=kawaii] .caja{background:#fff5f8;border:3px solid #4a1f30;border-radius:20px;box-shadow:0 5px 0 #4a1f30}
+[data-e=kawaii] .menu button{border-color:#4a1f30;border-radius:16px;background:#ffe3ec;box-shadow:0 3px 0 #4a1f30}
+[data-e=doodle] .ficha,[data-e=doodle] .caja,[data-e=doodle] .menu button{background:#fffef8;border:2px solid #34343f;border-radius:255px 15px 225px 15px/15px 225px 15px 255px;box-shadow:none}
+[data-e=acuarela] .ficha,[data-e=acuarela] .caja{background:rgba(255,252,245,.93);border:2px solid rgba(214,120,150,.45);border-radius:18px;box-shadow:0 6px 18px rgba(214,120,150,.2)}
+[data-e=acuarela] .menu button{border:2px solid rgba(214,120,150,.45);box-shadow:none;background:#fff8f4}
+[data-e=papel] .ficha,[data-e=papel] .caja{background:#fffaf2;border:0;border-radius:4px;box-shadow:3px 5px 0 rgba(90,60,30,.35)}
+[data-e=papel] .menu button{border:0;border-radius:4px;background:#ffe4cf;box-shadow:2px 3px 0 rgba(90,60,30,.35)}
+[data-e=cel] .ficha,[data-e=cel] .caja{background:#fff;border:4px solid #111;border-radius:6px;box-shadow:6px 6px 0 #111}
+[data-e=cel] .menu button{border:3px solid #111;box-shadow:3px 3px 0 #111}
+[data-e=neon] .ficha,[data-e=neon] .caja{background:#1a0f2e;color:#f5e9ff;border:2px solid #ff5fd2;box-shadow:0 0 14px rgba(255,95,210,.7)}
+[data-e=neon] .menu button{background:#120a22;color:#5ff2ff;border:2px solid #5ff2ff;box-shadow:0 0 8px rgba(95,242,255,.7)}
+[data-e=neon] .menu button small,[data-e=neon] .hpn{color:#c9b6e6}
+[data-e=lcd] .ficha,[data-e=lcd] .caja{background:#c7d3ae;color:#26301c;border:3px solid #26301c;border-radius:4px;box-shadow:none}
+[data-e=lcd] .menu button{background:#c7d3ae;color:#26301c;border:2px solid #26301c;box-shadow:0 2px 0 #26301c;border-radius:4px}
+[data-e=lcd] .menu button small{color:#4a5a38}
+[data-e=lcd] .hp{background:#9aa880;border-color:#26301c}[data-e=lcd] .hp i{background:#26301c!important}
+[data-e=pix128] .ficha,[data-e=pix128] .caja{border-radius:0;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+[data-e=pix128] .menu button{border-radius:0}
+/* Enemigos (las hojas de sprites se rehacen para cada estilo) */
+.pix.suave{image-rendering:auto}
+[data-e=clay] .bicho .pix{filter:drop-shadow(3px 7px 4px rgba(70,40,20,.4))}
+[data-e=papel] .bicho .pix{filter:drop-shadow(3px 5px 0 rgba(90,60,30,.35))}
+[data-e=kawaii] .bicho .pix{filter:drop-shadow(0 5px 0 rgba(0,0,0,.14))}
+[data-e=clay] .bicho:not(.golpe):not(.ataca-e),[data-e=papel] .bicho:not(.golpe):not(.ataca-e),[data-e=doodle] .bicho:not(.golpe):not(.ataca-e){animation:tiemblo .5s steps(1) infinite}
+@keyframes tiemblo{0%{rotate:.6deg}25%{rotate:-.4deg;translate:1px 0}50%{rotate:.2deg;translate:0 1px}75%{rotate:-.6deg}}
+/* Efectos de los ataques (capas .fx, chispas y textos) */
+[data-e=clay] .fx,[data-e=clay] .chispa{filter:drop-shadow(2px 5px 3px rgba(70,40,20,.4)) saturate(.85)}
+[data-e=kawaii] .fx,[data-e=kawaii] .chispa{filter:drop-shadow(2px 0 0 #4a1f30) drop-shadow(-2px 0 0 #4a1f30) drop-shadow(0 2px 0 #4a1f30) drop-shadow(0 -2px 0 #4a1f30)}
+[data-e=doodle] .fx,[data-e=doodle] .chispa{filter:grayscale(.55) drop-shadow(1px 1px 0 #34343f) drop-shadow(-1px -1px 0 #34343f)}
+[data-e=acuarela] .fx,[data-e=acuarela] .chispa{filter:blur(.7px) saturate(.75);opacity:.88;mix-blend-mode:multiply}
+[data-e=papel] .fx,[data-e=papel] .chispa{filter:drop-shadow(3px 4px 0 rgba(90,60,30,.35))}
+[data-e=cel] .fx,[data-e=cel] .chispa{filter:saturate(1.35) contrast(1.15) drop-shadow(2px 0 0 #111) drop-shadow(-2px 0 0 #111) drop-shadow(0 2px 0 #111) drop-shadow(0 -2px 0 #111)}
+[data-e=neon] .fx,[data-e=neon] .chispa{filter:brightness(1.25) drop-shadow(0 0 4px #ff5fd2) drop-shadow(0 0 10px #5ff2ff)}
+[data-e=lcd] .fx,[data-e=lcd] .chispa{filter:grayscale(1) contrast(6) brightness(.85);mix-blend-mode:multiply}
+[data-e=pix128] .fx,[data-e=pix128] .chispa{filter:saturate(1.3) contrast(1.2) drop-shadow(3px 3px 0 rgba(0,0,0,.35))}
+/* Hoja de estilos: vistas previas */
+.estilos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.estilos button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px 8px;font-size:12px;line-height:1.2}
+.estilos button.on{border-color:var(--red);box-shadow:var(--neu-in)}
+.estilos .prev{width:100%;aspect-ratio:1;border-radius:12px;display:grid;place-items:center;overflow:hidden}
+.estilos .prev svg{width:82%;height:82%;overflow:visible}
+.estilos .prev .pet{animation:none}
+/* Papel y pixel: sin el brillo blanco del degradado (se vería como una mancha al reducir colores) */
+[data-e=papel] stop[offset="0"],[data-e=pix128] stop[offset="0"]{stop-opacity:0}
+.prev[data-e]:not([data-e=papel]):not([data-e=pix128]) stop[offset="0"]{stop-opacity:.85}
+[data-e=clay] .enfermo .pet{filter:url(#fe-clay) saturate(.4) hue-rotate(60deg)}
+[data-e=kawaii] .enfermo .pet{filter:url(#fe-kawaii) saturate(.4) hue-rotate(60deg)}
+[data-e=doodle] .enfermo .pet{filter:url(#fe-doodle) saturate(.4) hue-rotate(60deg)}
+[data-e=acuarela] .enfermo .pet{filter:url(#fe-acuarela) saturate(.4) hue-rotate(60deg)}
+[data-e=papel] .enfermo .pet{filter:url(#fe-papel) saturate(.4) hue-rotate(60deg)}
+[data-e=cel] .enfermo .pet{filter:url(#fe-cel) saturate(.4) hue-rotate(60deg)}
+[data-e=neon] .enfermo .pet{filter:url(#fe-neon) saturate(.4) hue-rotate(60deg)}
+[data-e=lcd] .enfermo .pet{filter:url(#fe-lcd) saturate(.4) hue-rotate(60deg)}
+[data-e=pix128] .enfermo .pet{filter:url(#fe-pix128) saturate(.4) hue-rotate(60deg)}
+
 /* Temas (copiados de /amor) */
 :root,body[data-tema=pasion]{color-scheme:dark;--bg:#0d0208;--ink:#fff0f4;--mute:#f2b6c8;--red:#ff2e5b;--acc2:#8a2be2;--pri-ink:#fff;
   --b1:rgba(224,16,47,.85);--b2:rgba(123,47,247,.75);--b3:rgba(255,122,24,.7);--b4:rgba(255,77,141,.6);--b5:rgba(0,0,0,.65);
@@ -274,7 +372,122 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
  if(t-u<350&&e.changedTouches.length===1&&!(el.closest&&el.closest('input,textarea,select,[contenteditable],video,audio'))){e.preventDefault();el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}))}u=t},{passive:false});
  document.addEventListener('dblclick',function(e){e.preventDefault()},{passive:false})})();</script>
 </head>
-<body data-tema="pasion">
+<body data-tema="pasion" data-e="clay">
+<!-- Filtros SVG de los 9 estilos visuales (se aplican a la mascota y al huevo) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<filter id="fe-clay" x="-25%" y="-20%" width="150%" height="150%" color-interpolation-filters="sRGB">
+ <feTurbulence class="hierve" type="fractalNoise" baseFrequency=".05" numOctaves="1" seed="1" result="tb"/>
+ <feDisplacementMap in="SourceGraphic" in2="tb" scale="2.2" xChannelSelector="R" yChannelSelector="G" result="src"/>
+ <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="ab"/>
+ <feDiffuseLighting in="ab" surfaceScale="7" diffuseConstant="1.18" lighting-color="#fff" result="dif"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting>
+ <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="4" result="n"/>
+ <feDiffuseLighting in="n" surfaceScale="1.1" diffuseConstant="1.12" lighting-color="#fff" result="tex"><feDistantLight azimuth="225" elevation="62"/></feDiffuseLighting>
+ <feBlend in="src" in2="dif" mode="multiply" result="b1"/>
+ <feBlend in="b1" in2="tex" mode="multiply" result="b2"/>
+ <feComposite in="b2" in2="src" operator="in" result="b3"/>
+ <feSpecularLighting in="ab" surfaceScale="7" specularConstant=".75" specularExponent="22" lighting-color="#fff" result="spec"><fePointLight x="50" y="20" z="140"/></feSpecularLighting>
+ <feComposite in="spec" in2="src" operator="in" result="sp"/>
+ <feComposite in="b3" in2="sp" operator="arithmetic" k2="1" k3=".55" result="c"/>
+ <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="sb"/><feOffset in="sb" dx="4" dy="8" result="so"/>
+ <feFlood flood-color="#4a2a20" flood-opacity=".38"/><feComposite in2="so" operator="in" result="sombra"/>
+ <feMerge><feMergeNode in="sombra"/><feMergeNode in="c"/></feMerge>
+</filter>
+<filter id="fe-kawaii" x="-20%" y="-20%" width="140%" height="145%" color-interpolation-filters="sRGB">
+ <feMorphology in="SourceAlpha" operator="dilate" radius="4.5" result="d1"/>
+ <feFlood flood-color="#4a1f30"/><feComposite in2="d1" operator="in" result="ol"/>
+ <feMorphology in="SourceAlpha" operator="dilate" radius="9" result="d2"/>
+ <feFlood flood-color="#ffffff"/><feComposite in2="d2" operator="in" result="wh"/>
+ <feOffset in="d2" dy="5" result="d3"/><feFlood flood-color="#000" flood-opacity=".16"/><feComposite in2="d3" operator="in" result="sh"/>
+ <feColorMatrix in="SourceGraphic" type="saturate" values="1.15" result="sat"/>
+ <feMerge><feMergeNode in="sh"/><feMergeNode in="wh"/><feMergeNode in="ol"/><feMergeNode in="sat"/></feMerge>
+</filter>
+<filter id="fe-doodle" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+ <feTurbulence class="hierve" type="fractalNoise" baseFrequency=".04" numOctaves="2" seed="1" result="t"/>
+ <feColorMatrix in="SourceGraphic" type="saturate" values=".55" result="ds"/>
+ <feComponentTransfer in="ds" result="claro"><feFuncR type="linear" slope=".45" intercept=".55"/><feFuncG type="linear" slope=".45" intercept=".55"/><feFuncB type="linear" slope=".45" intercept=".55"/></feComponentTransfer>
+ <feImage x="0" y="0" width="8" height="8" preserveAspectRatio="none" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M-2 2l4-4M0 8l8-8M6 10l4-4' stroke='%23000' stroke-width='1.6'/%3E%3C/svg%3E" result="h1"/>
+ <feTile in="h1" result="h2"/>
+ <feComposite in="ds" in2="h2" operator="in" result="rayas"/>
+ <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 .2  0 0 0 0 .2  0 0 0 0 .25  -2.2 -2.2 -2.2 1.7 0" result="rasgos"/>
+ <feMorphology in="SourceAlpha" operator="dilate" radius="2.4" result="d"/>
+ <feComposite in="d" in2="SourceAlpha" operator="out" result="anillo"/>
+ <feFlood flood-color="#34343f"/><feComposite in2="anillo" operator="in" result="linea"/>
+ <feMerge result="m"><feMergeNode in="claro"/><feMergeNode in="rayas"/><feMergeNode in="rasgos"/><feMergeNode in="linea"/></feMerge>
+ <feDisplacementMap in="m" in2="t" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+</filter>
+<filter id="fe-acuarela" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+ <feTurbulence class="hierve lento" type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="7" result="t"/>
+ <feDisplacementMap in="SourceGraphic" in2="t" scale="10" xChannelSelector="R" yChannelSelector="G" result="d"/>
+ <feGaussianBlur in="d" stdDeviation="1.7" result="bl"/>
+ <feMorphology in="bl" operator="erode" radius="3.5" result="er"/>
+ <feComposite in="bl" in2="er" operator="out" result="borde"/>
+ <feComponentTransfer in="borde" result="bordeO"><feFuncR type="linear" slope=".72"/><feFuncG type="linear" slope=".66"/><feFuncB type="linear" slope=".72"/><feFuncA type="linear" slope=".8"/></feComponentTransfer>
+ <feComponentTransfer in="bl" result="lav"><feFuncR type="linear" slope=".8" intercept=".2"/><feFuncG type="linear" slope=".8" intercept=".2"/><feFuncB type="linear" slope=".8" intercept=".2"/><feFuncA type="linear" slope=".86"/></feComponentTransfer>
+ <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="2" result="g"/>
+ <feColorMatrix in="g" type="matrix" values="0 0 0 0 .45  0 0 0 0 .3  0 0 0 0 .35  0 0 0 .35 -.05" result="g2"/>
+ <feComposite in="g2" in2="lav" operator="in" result="grano"/>
+ <feMerge><feMergeNode in="lav"/><feMergeNode in="grano"/><feMergeNode in="bordeO"/></feMerge>
+</filter>
+<filter id="fe-papel" x="-20%" y="-20%" width="140%" height="145%" color-interpolation-filters="sRGB">
+ <feColorMatrix in="SourceGraphic" type="matrix" values=".8 0 0 0 .08  0 .8 0 0 .08  0 0 .8 0 .08  0 0 0 1 0" result="suave"/><feComponentTransfer in="suave" result="post"><feFuncR type="discrete" tableValues=".1 .35 .55 .72 .86 1"/><feFuncG type="discrete" tableValues=".1 .35 .55 .72 .86 1"/><feFuncB type="discrete" tableValues=".1 .35 .55 .72 .86 1"/></feComponentTransfer>
+ <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="9" result="n"/>
+ <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .5 -.12" result="n2"/>
+ <feComposite in="n2" in2="SourceAlpha" operator="in" result="fibra"/>
+ <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="r"/>
+ <feFlood flood-color="#fff8ee"/><feComposite in2="r" operator="in" result="orilla"/>
+ <feOffset in="r" dx="3" dy="5" result="ro"/><feGaussianBlur in="ro" stdDeviation="1.5" result="rb"/>
+ <feFlood flood-color="#5a4030" flood-opacity=".4"/><feComposite in2="rb" operator="in" result="sombra"/>
+ <feMerge><feMergeNode in="sombra"/><feMergeNode in="orilla"/><feMergeNode in="post"/><feMergeNode in="fibra"/></feMerge>
+</filter>
+<filter id="fe-cel" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+ <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="ab"/>
+ <feDiffuseLighting in="ab" surfaceScale="9" lighting-color="#fff" result="dif"><feDistantLight azimuth="225" elevation="42"/></feDiffuseLighting>
+ <feComponentTransfer in="dif" result="dos"><feFuncR type="discrete" tableValues=".7 1 1"/><feFuncG type="discrete" tableValues=".66 1 1"/><feFuncB type="discrete" tableValues=".78 1 1"/></feComponentTransfer>
+ <feColorMatrix in="SourceGraphic" type="saturate" values="1.3" result="sat"/>
+ <feBlend in="sat" in2="dos" mode="multiply" result="b"/>
+ <feComposite in="b" in2="SourceAlpha" operator="in" result="c"/>
+ <feMorphology in="SourceAlpha" operator="dilate" radius="3.5" result="d"/>
+ <feFlood flood-color="#120a0e"/><feComposite in2="d" operator="in" result="ol"/>
+ <feMerge><feMergeNode in="ol"/><feMergeNode in="c"/></feMerge>
+</filter>
+<filter id="fe-neon" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+ <feMorphology in="SourceAlpha" operator="erode" radius="2.6" result="er"/>
+ <feComposite in="SourceAlpha" in2="er" operator="out" result="anillo"/>
+ <feFlood flood-color="#ff5fd2"/><feComposite in2="anillo" operator="in" result="r1"/>
+ <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 .37  0 0 0 0 .95  0 0 0 0 1  -2.2 -2.2 -2.2 1.6 0" result="rasgos"/>
+ <feMerge result="lin"><feMergeNode in="r1"/><feMergeNode in="rasgos"/></feMerge>
+ <feGaussianBlur in="lin" stdDeviation="4" result="g1"/>
+ <feMerge><feMergeNode in="g1"/><feMergeNode in="g1"/><feMergeNode in="lin"/></feMerge>
+</filter>
+<filter id="fe-lcd" filterUnits="userSpaceOnUse" x="-60" y="-60" width="320" height="320" color-interpolation-filters="sRGB">
+ <feMorphology in="SourceAlpha" operator="erode" radius="4" result="er"/>
+ <feComposite in="SourceAlpha" in2="er" operator="out" result="anillo"/>
+ <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.2 -2.2 -2.2 1.6 0" result="rasgos"/>
+ <feMerge result="on"><feMergeNode in="anillo"/><feMergeNode in="rasgos"/></feMerge>
+ <feFlood x="3" y="3" width="1" height="1" flood-color="#000" result="punto"/>
+ <feComposite in="punto" in2="punto" x="0" y="0" width="7" height="7" result="celda"/>
+ <feTile in="celda" result="grilla"/>
+ <feComposite in="on" in2="grilla" operator="in" result="muestra"/>
+ <feMorphology in="muestra" operator="dilate" radius="3" result="px"/>
+ <feComponentTransfer in="px" result="px2"><feFuncA type="discrete" tableValues="0 1 1 1"/></feComponentTransfer>
+ <feFlood flood-color="#26301c"/><feComposite in2="px2" operator="in" result="osc"/>
+ <feOffset in="osc" dx="1.6" dy="1.6" result="fan"/>
+ <feComponentTransfer in="fan" result="fan2"><feFuncA type="linear" slope=".22"/></feComponentTransfer>
+ <feMerge><feMergeNode in="fan2"/><feMergeNode in="osc"/></feMerge>
+</filter>
+<filter id="fe-pix128" filterUnits="userSpaceOnUse" x="-60" y="-60" width="320" height="320" color-interpolation-filters="sRGB">
+ <feFlood x="1" y="1" width="1" height="1" flood-color="#000" result="punto"/>
+ <feComposite in="punto" in2="punto" x="0" y="0" width="3" height="3" result="celda"/>
+ <feTile in="celda" result="grilla"/>
+ <feColorMatrix in="SourceGraphic" type="matrix" values=".85 0 0 0 .05  0 .85 0 0 .05  0 0 .85 0 .05  0 0 0 1 0" result="suave"/><feComponentTransfer in="suave" result="post"><feFuncR type="discrete" tableValues=".05 .2 .35 .5 .62 .74 .86 .95"/><feFuncG type="discrete" tableValues=".05 .2 .35 .5 .62 .74 .86 .95"/><feFuncB type="discrete" tableValues=".05 .2 .35 .5 .62 .74 .86 .95"/><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer>
+ <feComposite in="post" in2="grilla" operator="in" result="muestra"/>
+ <feMorphology in="muestra" operator="dilate" radius="1" result="px"/>
+ <feMorphology in="px" operator="dilate" radius="3" result="ol0"/>
+ <feFlood flood-color="#2a1420"/><feComposite in2="ol0" operator="in" result="ol"/>
+ <feMerge><feMergeNode in="ol"/><feMergeNode in="px"/></feMerge>
+</filter>
+</defs></svg>
+
 <div class="mesh" aria-hidden="true"></div>
 <main class="app">
   <a class="volver glass" id="volver" hidden href="../">← Volver al regalo</a>
@@ -314,6 +527,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
     <button data-a="diario"><span class="i">📖</span>Diario</button>
     <button data-a="ataques"><span class="i">🗡️</span>Ataques</button>
     <button data-a="disfraz"><span class="i">🎭</span>Disfraz</button>
+    <button data-a="estilo"><span class="i">🎨</span>Estilo</button>
   </nav>
 
   <section class="prueba glass">
@@ -347,6 +561,14 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <h3>Entrenamiento</h3>
   <div class="ent" id="niveles"></div>
   <button class="cerrar" style="width:100%">Cerrar</button>
+</div></div>
+
+<!-- Estilo visual -->
+<div class="sheet" id="shEstilo"><div>
+  <h3>Estilo</h3>
+  <p style="margin:-4px 0 10px;font-size:13px;color:var(--mute)">Cambia cómo se dibuja todo: tu Virtual Monster, los enemigos, los ataques y los escenarios.</p>
+  <div class="estilos" id="estLista"></div>
+  <button class="cerrar" style="width:100%;margin-top:10px">Listo</button>
 </div></div>
 
 <!-- Disfraces -->
@@ -662,7 +884,7 @@ function render(){
   if(S.fase==='abuelos'){despedida();guardar();return}
   if(faseDibujada!==S.fase)dibujarFase();
   const t=ahora(),noche=esNoche(t),niv=NIVELES.find(n=>n.id===S.fase);
-  document.body.dataset.tema=S.tema||'pasion';$('#selTema').value=S.tema||'pasion';
+  document.body.dataset.tema=S.tema||'pasion';$('#selTema').value=S.tema||'pasion';aplicarEstilo();
   $('#nom').textContent=S.fase==='huevo'?'Huevito':S.nombre;
   $('#fase').textContent=(niv?niv.n:'')+(S.listo?' · ¡lista la evolución!':'')+(S.gen>1?' · gen. '+S.gen:'');
   $('#edad').textContent=S.fase==='huevo'?0:Math.floor((t-S.nace)/(24*H));
@@ -810,7 +1032,7 @@ async function entregar(m){ocupado=true;const tpl=MENSAJES.find(x=>x.id===m.id)|
   const txt=tpl.dice(nom(m.de),nom(m.para)),sp=g.querySelector('span');for(const ch of txt){sp.textContent+=ch;await espera(28)}
   await espera(2600);g.classList.add('sale');petWrap.classList.remove(tpl.anim);await espera(300);g.remove();
   m.visto=true;anota(S.nombre+' le dijo a '+nom(m.para)+': '+tpl.t+' '+tpl.e);if(svg)delete svg.dataset.fijo;ocupado=false;guardar();render()}
-const ACC={ataques:()=>{if(S.fase==='huevo')return toast('Los ataques se aprenden desde Bebé I');elegirEquipo(true)},disfraz:abrirDisfraces,mensaje:abrirMensajes,comer:()=>{if(!puede('comer'))return;const n=MAX_COMIDAS-comidasHora(quien).length,o=MAX_COMIDAS-comidasHora(otro(quien)).length;$('#cupo').innerHTML=`${nom(quien)}: te quedan <b>${n}</b> de ${MAX_COMIDAS} comidas esta hora · ${nom(otro(quien))}: ${o}`;abrir('#shComer')},entrenar:abrirEntreno,batalla:()=>batalla(),limpiar,medicina,botiquin,luz,diario};
+const ACC={estilo:()=>abrirEstilos(),ataques:()=>{if(S.fase==='huevo')return toast('Los ataques se aprenden desde Bebé I');elegirEquipo(true)},disfraz:abrirDisfraces,mensaje:abrirMensajes,comer:()=>{if(!puede('comer'))return;const n=MAX_COMIDAS-comidasHora(quien).length,o=MAX_COMIDAS-comidasHora(otro(quien)).length;$('#cupo').innerHTML=`${nom(quien)}: te quedan <b>${n}</b> de ${MAX_COMIDAS} comidas esta hora · ${nom(otro(quien))}: ${o}`;abrir('#shComer')},entrenar:abrirEntreno,batalla:()=>batalla(),limpiar,medicina,botiquin,luz,diario};
 $$('#acciones button').forEach(b=>b.onclick=()=>{audioCtx=audioCtx||(window.AudioContext?new AudioContext():null);ACC[b.dataset.a]()});
 
 /* ===== Entrenamiento Bebé I: Cortafrutas (tipo Fruit Ninja) ===== */
@@ -1486,13 +1708,13 @@ Object.assign(PINTORES,{
    L.rect(11+x,3+y,11,3,'#f2c21a');[11,15,19,21].forEach(a=>L.px(a+x,2+y,'#f2c21a'));L.px(16+x,1+y,'#f2c21a');L.px(16+x,4+y,'#e83b3b');L.px(13+x,4+y,'#3a7ad0');L.px(19+x,4+y,'#3a7ad0');
    cara(L,12+x,10+y,f,{sep:6,cejaC:'#2a2008'})}
 });
-const HOJAS={};
+const HOJAS={},HOJAC={};
 function hojaSprites(id){if(HOJAS[id])return HOJAS[id];const cv=document.createElement('canvas');cv.width=PX*CUADROS.length;cv.height=PX;const ctx=cv.getContext('2d');
   CUADROS.forEach((f,i)=>{const L=lienzo();PINTORES[id](L,f);let g=contorno(L.g);if(f==='hit')g=g.map(r=>r.map(c=>c&&mezcla(c,'#ffffff',.4)));
     g.forEach((r,y)=>r.forEach((c,x)=>{if(c){ctx.fillStyle=c;ctx.fillRect(i*PX+x,y,1,1)}}))});
-  return HOJAS[id]=cv.toDataURL()}
-function spriteEl(id,escala=3){const d=document.createElement('div'),T=PX*escala;d.className='pix';
-  Object.assign(d.style,{width:T+'px',height:T+'px',backgroundImage:`url(${hojaSprites(id)})`,backgroundSize:`${T*CUADROS.length}px ${T}px`});
+  HOJAC[id]=cv;return HOJAS[id]=cv.toDataURL()}
+function spriteEl(id,escala=3){const d=document.createElement('div'),T=PX*escala,h=hojaEstilo(id);d.className='pix'+(h.pix?'':' suave');
+  Object.assign(d.style,{width:T+'px',height:T+'px',backgroundImage:`url(${h.url})`,backgroundSize:`${T*CUADROS.length}px ${T}px`});
   let pose='idle',t=0,visto=false;const set=n=>d.style.backgroundPosition=`${-n*T}px 0`;set(0);
   const iv=setInterval(()=>{if(d.isConnected)visto=true;else if(visto||t>20){clearInterval(iv);return}t++;if(pose==='idle')set(t%2)},380);
   d._px={async pose(p){pose=p;if(p==='atk'){set(2);await espera(160);set(3);await espera(300)}else if(p==='hit'){set(4);await espera(480)}pose='idle';set(t%2)}};
@@ -1554,6 +1776,102 @@ function evolucionar(forzar){
         const r=stage.getBoundingClientRect();flota('✨ ¡'+sig.n+'! ✨',r.width/2,r.height*.15,'#ffe14d');
         for(let k=0;k<10;k++)setTimeout(()=>flota(['✨','💖','⭐'][k%3],rnd(20,r.width-20),rnd(r.height*.2,r.height*.7)),k*90)},450)}},n<6?380:220);
 }
+/* ===== Estilos visuales: 9 maneras de dibujar todo (mascota, huevo, enemigos, ataques y escenarios) ===== */
+const ESTILOS=[
+ {k:'clay',n:'Plastilina',e:'🧸',d:'Claymation',bg:'#e9dccb'},
+ {k:'kawaii',n:'Kawaii',e:'🌸',d:'Sticker plano',bg:'#ffe3ee'},
+ {k:'doodle',n:'Doodle',e:'✏️',d:'Dibujo a lápiz',bg:'repeating-linear-gradient(#fdfcf6 0 15px,#c9dcf2 15px 16px)'},
+ {k:'acuarela',n:'Acuarela',e:'🎨',d:'Pintura al agua',bg:'#fbf6ec'},
+ {k:'papel',n:'Papel',e:'✂️',d:'Papercraft',bg:'#e9dfd0'},
+ {k:'cel',n:'Anime',e:'⚡',d:'Cel shading',bg:'#cfe8ff'},
+ {k:'neon',n:'Neón',e:'💡',d:'Líneas que brillan',bg:'#130a22'},
+ {k:'lcd',n:'Tamagotchi',e:'📟',d:'Pantalla LCD',bg:'#b9c7a0'},
+ {k:'pix128',n:'Pixel 128',e:'👾',d:'Pixel art HD',bg:'#94d0ff'}];
+const estilo=()=>ESTILOS.some(x=>x.k===S.estilo)?S.estilo:'clay';
+const PASOS={clay:83,papel:83,doodle:125,lcd:250,pix128:60};
+// Stop-motion: en estos estilos todas las animaciones (ataques, golpes, saltos) avanzan a saltos, como cuadros dibujados uno por uno
+{const _an=Element.prototype.animate;Element.prototype.animate=function(k,o){const p=PASOS[document.body.dataset.e];
+  if(p&&o!=null){if(typeof o==='number')o={duration:o};const d=+o.duration||0;if(d>=p*2&&!/steps/.test(o.easing||''))o=Object.assign({},o,{easing:`steps(${Math.round(d/p)},end)`})}
+  return _an.call(this,k,o)}}
+// Línea que "hierve" (boiling line): el ruido del filtro cambia de semilla varias veces por segundo
+{let s=1,n=0;setInterval(()=>{const e=document.body.dataset.e;if(e!=='doodle'&&e!=='clay'&&e!=='acuarela')return;n++;
+  s=s%5+1;document.querySelectorAll('#fe-'+e+' .hierve').forEach(t=>{if(!t.classList.contains('lento')||n%4===0)t.setAttribute('seed',s)})},125)}
+function aplicarEstilo(){document.body.dataset.e=estilo()}
+
+/* --- Enemigos: cada hoja de sprites de 32 px se rehace en el estilo elegido --- */
+const HOJAE={};
+const lienzoC=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+const azar=(x,y,i)=>{let h=(x*374761393+y*668265263+i*2147483647)|0;h=(h^(h>>>13))*1274126177|0;return((h^(h>>>16))>>>0)/4294967295};
+function desenfoca(a,w,h,r){const t=new Float32Array(w*h),o=new Float32Array(w*h),q=2*r+1;
+  for(let y=0;y<h;y++){let s=0;for(let x=-r;x<=r;x++)if(x>=0&&x<w)s+=a[y*w+x];for(let x=0;x<w;x++){t[y*w+x]=s/q;const xa=x+r+1,xr=x-r;if(xa<w)s+=a[y*w+xa];if(xr>=0)s-=a[y*w+xr]}}
+  for(let x=0;x<w;x++){let s=0;for(let y=-r;y<=r;y++)if(y>=0&&y<h)s+=t[y*w+x];for(let y=0;y<h;y++){o[y*w+x]=s/q;const ya=y+r+1,yr=y-r;if(ya<h)s+=t[ya*w+x];if(yr>=0)s-=t[yr*w+x]}}
+  return o}
+function dilata(M,w,h,r){let a=M.slice();for(let k=0;k<r;k++){const b=a.slice(),ocho=k%2;for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(a[y*w+x])continue;
+  let v=0;for(let j=-1;j<=1&&!v;j++)for(let i=-1;i<=1;i++){if(!ocho&&i&&j)continue;const X=x+i,Y=y+j;if(X>=0&&X<w&&Y>=0&&Y<h&&a[Y*w+X]){v=1;break}}if(v)b[y*w+x]=1}a=b}return a}
+function escala2x(s,w,h){const d=new Uint32Array(w*h*4),g=(x,y)=>s[Math.min(h-1,Math.max(0,y))*w+Math.min(w-1,Math.max(0,x))];
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const P=g(x,y),A=g(x,y-1),B=g(x+1,y),C=g(x-1,y),D=g(x,y+1);
+    const i=(2*y)*(2*w)+2*x;d[i]=(C===A&&C!==D&&A!==B)?A:P;d[i+1]=(A===B&&A!==C&&B!==D)?B:P;d[i+2*w]=(D===C&&D!==B&&C!==A)?C:P;d[i+2*w+1]=(B===D&&B!==A&&D!==C)?D:P}
+  return d}
+const esContorno=(p,i)=>{const r=p[i],g=p[i+1],b=p[i+2];return(Math.abs(r-30)+Math.abs(g-18)+Math.abs(b-24)<24)||(Math.abs(r-120)+Math.abs(g-113)+Math.abs(b-117)<24)};
+const BAYER=[0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5];
+function hojaEstilo(id){const k=estilo(),key=id+'|'+k;if(HOJAE[key])return HOJAE[key];
+  hojaSprites(id);const src=HOJAC[id],sc=src.getContext('2d'),n=CUADROS.length;
+  if(k==='lcd'){const out=lienzoC(PX*n,PX),o=out.getContext('2d'),im=sc.getImageData(0,0,PX*n,PX),p=im.data,q=o.createImageData(PX*n,PX),Q=q.data;
+    for(let i=0;i<p.length;i+=4){if(p[i+3]<100)continue;const L=(.3*p[i]+.59*p[i+1]+.11*p[i+2])/255,x=(i/4)%(PX*n),y=Math.floor(i/4/(PX*n));
+      if(L<.42||(L<.62&&BAYER[(y%4)*4+x%4]>11)){Q[i]=38;Q[i+1]=48;Q[i+2]=28;Q[i+3]=255}}
+    o.putImageData(q,0,0);
+    const fin=lienzoC(PX*n*2,PX*2),f=fin.getContext('2d');f.imageSmoothingEnabled=false;f.globalAlpha=.22;f.drawImage(out,1,1,PX*n*2,PX*2);f.globalAlpha=1;f.drawImage(out,0,0,PX*n*2,PX*2);
+    return HOJAE[key]={url:fin.toDataURL(),pix:true}}
+  const F=128,out=lienzoC(F*n,F),oc=out.getContext('2d');
+  for(let fi=0;fi<n;fi++){
+    if(k==='pix128'){const d=sc.getImageData(fi*PX,0,PX,PX);let a=new Uint32Array(d.data.slice().buffer),w=PX;a=escala2x(a,w,w);w*=2;a=escala2x(a,w,w);w*=2;
+      const P=new Uint8ClampedArray(a.buffer),M=new Float32Array(F*F);for(let j=0;j<F*F;j++)M[j]=P[j*4+3]>0?1:0;const B=desenfoca(M,F,F,6);
+      for(let y=0;y<F;y++)for(let x=0;x<F;x++){const j=y*F+x,i=j*4;if(!M[j]||esContorno(P,i))continue;
+        const s=((B[Math.max(0,y-3)*F+Math.max(0,x-3)]||0)-(B[Math.min(F-1,y+3)*F+Math.min(F-1,x+3)]||0))*2.6,b=BAYER[(y%4)*4+x%4]/16;
+        if(s<-.12&&b<-s*1.3){P[i]*=.76;P[i+1]*=.72;P[i+2]*=.8}else if(s>.35&&b<(s-.35)*1.6){P[i]+=(255-P[i])*.35;P[i+1]+=(255-P[i+1])*.35;P[i+2]+=(255-P[i+2])*.35}}
+      oc.putImageData(new ImageData(P,F,F),fi*F,0);continue}
+    // Suavizado: se quita el contorno de píxel, se amplía ×4 con interpolación y se recorta por umbral (bordes redondos)
+    const d=sc.getImageData(fi*PX,0,PX,PX),p=d.data,q=new Uint8ClampedArray(p);
+    for(let y=0;y<PX;y++)for(let x=0;x<PX;x++){const i=(y*PX+x)*4;if(!p[i+3]||!esContorno(p,i))continue;
+      const vac=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const X=x+a,Y=y+b;return X<0||Y<0||X>=PX||Y>=PX||!p[(Y*PX+X)*4+3]});if(vac)q[i+3]=0}
+    const t32=lienzoC(PX,PX);t32.getContext('2d').putImageData(new ImageData(q,PX,PX),0,0);
+    const t64=lienzoC(64,64),c64=t64.getContext('2d');c64.imageSmoothingEnabled=true;c64.drawImage(t32,0,0,64,64);
+    const t128=lienzoC(F,F),c=t128.getContext('2d');c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';c.drawImage(t64,0,0,F,F);
+    const P=c.getImageData(0,0,F,F).data,N=F*F,W=new Float32Array(N),A=new Float32Array(N);for(let j=0;j<N;j++){W[j]=P[j*4+3]>120?1:0;A[j]=P[j*4+3]/255}
+    // bordes redondeados: la silueta se desenfoca y se vuelve a cortar a la mitad (efecto "goo")
+    const Ab=desenfoca(desenfoca(A,F,F,3),F,F,2),M=new Float32Array(N);for(let j=0;j<N;j++)M[j]=Ab[j]>.5?1:0;
+    const rc=k==='acuarela'?4:k==='clay'?3:k==='neon'?2:2,ch=[0,1,2].map(o=>{const a=new Float32Array(N);for(let j=0;j<N;j++)a[j]=P[j*4+o]*W[j];return desenfoca(desenfoca(a,F,F,rc),F,F,1)}),mw=desenfoca(desenfoca(W,F,F,rc),F,F,1);
+    const B=desenfoca(desenfoca(M,F,F,5),F,F,5),O=new Uint8ClampedArray(N*4),col=j=>{const w=mw[j]||1;return[ch[0][j]/w,ch[1][j]/w,ch[2][j]/w]};
+    const sh=(x,y)=>((B[Math.max(0,y-4)*F+Math.max(0,x-4)])-(B[Math.min(F-1,y+4)*F+Math.min(F-1,x+4)]))*2.4;
+    const pon=(j,r,g,b,a=255)=>{O[j*4]=r;O[j*4+1]=g;O[j*4+2]=b;O[j*4+3]=a};
+    const lin=(a,b,t)=>a+(b-a)*t;
+    // bordes interiores (cambios fuertes de color) para doodle y neón
+    const borde=j=>{const x=j%F,y=(j/F)|0;if(x>=F-1||y>=F-1)return false;const a=col(j),b=col(j+1),c2=col(j+F);return M[j+1]&&M[j+F]&&(Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])+Math.abs(a[2]-b[2])>110||Math.abs(a[0]-c2[0])+Math.abs(a[1]-c2[1])+Math.abs(a[2]-c2[2])>110)};
+    for(let y=0;y<F;y++)for(let x=0;x<F;x++){const j=y*F+x;if(!M[j])continue;let [r,g,b]=col(j);const s=sh(x,y),z=azar(x,y,fi);
+      if(k==='clay'){const f=.86+.34*s+.18*(B[j]-.5);r*=f;g*=f;b*=f;if(s>.32&&B[j]>.7){const e=Math.min(1,(s-.32)*1.6)*.6;r=lin(r,255,e);g=lin(g,255,e);b=lin(b,255,e)}const nn=(z-.5)*14;pon(j,r+nn,g+nn,b+nn)}
+      else if(k==='kawaii'){r=Math.round(lin(r,255,.12)/22)*22;g=Math.round(lin(g,255,.12)/22)*22;b=Math.round(lin(b,255,.12)/22)*22;if(s>.45&&B[j]<.85){r=lin(r,255,.55);g=lin(g,255,.55);b=lin(b,255,.55)}pon(j,r,g,b)}
+      else if(k==='cel'){const L=(r+g+b)/3;r=lin(L,r,1.3);g=lin(L,g,1.3);b=lin(L,b,1.3);if(s<-.1){r*=.7;g*=.68;b*=.8}else if(s>.5&&B[j]>.6){r=lin(r,255,.4);g=lin(g,255,.4);b=lin(b,255,.4)}pon(j,r,g,b)}
+      else if(k==='papel'){r=Math.round(r/40)*40;g=Math.round(g/40)*40;b=Math.round(b/40)*40;if(B[j]<.5){r=lin(r,255,.18);g=lin(g,255,.18);b=lin(b,255,.18)}const nn=(z-.5)*12;pon(j,r+nn,g+nn,b+nn)}
+      else if(k==='acuarela'){if(B[j]+(z-.5)*.22<.36)continue;r=lin(r,255,.22);g=lin(g,255,.22);b=lin(b,255,.22);if(B[j]<.66){r*=.84;g*=.8;b*=.84}const nn=(z-.5)*16;pon(j,r+nn,g+nn,b+nn,228)}
+      else if(k==='doodle'){const L=(r+g+b)/3;let R=lin(lin(L,r,.6),255,.5),G=lin(lin(L,g,.6),255,.5),Bb=lin(lin(L,b,.6),255,.5);
+        if((x+y)%7<2&&s<.12){R=lin(L,r,.7)*.92;G=lin(L,g,.7)*.92;Bb=lin(L,b,.7)*.92}if(borde(j)&&z>.12){R=52;G=52;Bb=63}pon(j,R,G,Bb)}
+      else if(k==='neon'){if(B[j]<.74||borde(j)){const mx=Math.max(r,g,b,1),mn=Math.min(r,g,b);let R=r,G=g,Bb=b;if(mx-mn<40){R=95;G=242;Bb=255}else{const f=255/mx;R=r*f;G=g*f;Bb=b*f;R=lin(R,255,.25);G=lin(G,255,.25);Bb=lin(Bb,255,.25)}pon(j,R,G,Bb)}}}
+    // contornos agregados
+    if(k==='kawaii'||k==='cel'||k==='doodle'||k==='papel'){const r1=k==='kawaii'?4:k==='cel'?3:2,D=dilata(M,F,F,r1),c1=k==='doodle'?[52,52,63]:k==='cel'?[18,10,14]:k==='papel'?[255,248,238]:[74,31,48];
+      for(let j=0;j<N;j++)if(D[j]&&!M[j]&&(k!=='doodle'||azar(j,7,fi)>.1))pon(j,...c1);
+      if(k==='kawaii'){const D2=dilata(D,F,F,3);for(let j=0;j<N;j++)if(D2[j]&&!D[j])pon(j,255,255,255)}}
+    if(k==='neon'){const A=new Float32Array(N);for(let j=0;j<N;j++)A[j]=O[j*4+3]/255;const G=desenfoca(desenfoca(A,F,F,4),F,F,4),cr=[0,1,2].map(o=>{const a=new Float32Array(N);for(let j=0;j<N;j++)a[j]=O[j*4+o]*A[j];return desenfoca(desenfoca(a,F,F,4),F,F,4)});
+      for(let j=0;j<N;j++){if(O[j*4+3])continue;const g=G[j];if(g<.01)continue;O[j*4]=cr[0][j]/g;O[j*4+1]=cr[1][j]/g;O[j*4+2]=cr[2][j]/g;O[j*4+3]=Math.min(255,g*900)}}
+    oc.putImageData(new ImageData(O,F,F),fi*F,0)}
+  return HOJAE[key]={url:out.toDataURL(),pix:k==='pix128'}}
+
+/* --- Hoja para elegir el estilo, con vista previa de la mascota en cada uno --- */
+function abrirEstilos(){const fase=S.fase==='huevo'||S.fase==='abuelos'?'bebe1':S.fase,act=estilo();
+  $('#estLista').innerHTML=ESTILOS.map(x=>`<button data-k="${x.k}" class="${x.k===act?'on':''}"><div class="prev" data-e="${x.k}" style="background:${x.bg}">${petSVG('pv'+x.k,fase)}</div><b>${x.e} ${x.n}</b><small style="color:var(--mute)">${x.d}</small></button>`).join('');
+  $$('#estLista button').forEach(b=>b.onclick=()=>{S.estilo=b.dataset.k;$$('#estLista button').forEach(x=>x.classList.toggle('on',x===b));
+    const x=ESTILOS.find(e=>e.k===S.estilo);anota(nom(quien)+' cambió el estilo a '+x.n+' '+x.e);aplicarEstilo();guardar();render()});
+  abrir('#shEstilo')}
+
 function abrirDisfraces(){if(S.fase==='huevo')return toast('Primero tiene que nacer');
   const ops=[['', 'Sin disfraz','🙂'],...Object.entries(DISFRACES).map(([k,d])=>[k,d.n,d.e])],antes=S.disfraz;
   $('#disfLista').innerHTML=ops.map(([k,n,e])=>{S.disfraz=k;return`<button data-d="${k}" class="${(antes||'')===k?'on':''}">${petSVG('dz'+(k||'0'))}<span>${e} ${n}</span></button>`}).join('');S.disfraz=antes;
@@ -1572,13 +1890,13 @@ function despedida(){if($('#despedida').classList.contains('on'))return;
    <div class="res"><span>Vivió ${dias} día${dias===1?'':'s'}</span><span>Peso ${S.peso} kg</span><span>${S.victorias} victoria${S.victorias===1?'':'s'}</span><span>Récord ${S.record} frutas</span></div>
    <p style="opacity:.75">Lo van a cuidar bien. Y llegó un huevo nuevo…</p><button class="pri" id="btnHuevo" style="width:100%">Recibir el huevo nuevo</button>`;
   $('#despedida').classList.add('on');
-  $('#btnHuevo').onclick=()=>{const log=S.log;S=nuevo(S.gen+1,S.offset,S.tema);S.log=log;anota('Llegó un huevo nuevo 🥚');$('#despedida').classList.remove('on');faseDibujada='';guardar();render()}}
+  $('#btnHuevo').onclick=()=>{const log=S.log;const est=S.estilo;S=nuevo(S.gen+1,S.offset,S.tema);S.log=log;S.estilo=est;anota('Llegó un huevo nuevo 🥚');$('#despedida').classList.remove('on');faseDibujada='';guardar();render()}}
 
 /* ===== Modo prueba ===== */
 $$('[data-skip]').forEach(b=>b.onclick=()=>{if(ocupado)return;S.offset=(S.offset||0)+(+b.dataset.skip)*H;toast('⏩ Adelantaste '+b.textContent.replace('+',''));render()});
 $$('[data-q]').forEach(b=>b.onclick=()=>{quien=b.dataset.q;$$('[data-q]').forEach(x=>x.classList.toggle('on',x===b));localStorage.setItem(CLAVE+'-quien',quien);render()});
 for(const [id,q] of [['#nomEl','Él'],['#nomElla','Ella']])$(id).oninput=e=>{S.nombres[q]=e.target.value.trim().slice(0,14)||(q==='Él'?'Matías':'Sofía');render()};
-$('#btnReset').onclick=()=>{if(!confirm('¿Reiniciar la mascota desde el huevo?'))return;S=nuevo(1,0,S.tema);faseDibujada='';guardar();render()};
+$('#btnReset').onclick=()=>{if(!confirm('¿Reiniciar la mascota desde el huevo?'))return;const est=S.estilo;S=nuevo(1,0,S.tema);S.estilo=est;faseDibujada='';guardar();render()};
 $('#btnReglas').onclick=()=>abrir('#shReglas');
 // Para revisar Limpiar, Botiquín y Medicina sin esperar
 const prueba=f=>()=>{if(ocupado)return;if(!vive()||S.fase==='huevo')return toast('Primero tiene que nacer');f();guardar();render()};
