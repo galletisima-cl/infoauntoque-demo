@@ -10,7 +10,15 @@
 //   POST {accion:"perfil", id, token, email?, off?, passActual?, passNueva?} → perfil, contraseña y deshabilitar
 //   POST {accion:"crear", datos}     → (antiguo) crea un regalo sin tarjeta, con link secreto de edición
 //   POST {accion:"guardar"|"subir"|"borrar", id, token, ...}
-//   POST {accion:"cuaderno", r:SLUG, op}  → cuaderno de citas compartido (lo editan los dos con el link del regalo)
+//   POST {accion:"cuaderno", r:SLUG, s?, op}  → cuaderno de citas compartido (lo editan los dos con el link del regalo)
+//   POST {accion:"mascota", r, s?, op:"leer", v?}  → estado compartido del Virtual Monster ({v, estado} o {v, igual:true})
+//   POST {accion:"mascota", r, s?, op:"guardar", v, estado} → guarda si v es la versión actual; si no, 409 con lo último
+//   POST {accion:"entrarPara", r, pass} → sesión de quien recibe (si le puso contraseña a su regalo)
+//   POST {accion:"clavePara", r, s?, passActual?, passNueva?, email?, quitar?} → quien recibe pone, cambia o quita su contraseña
+// Sesión: header "X-Sesion" en el GET y campo "s" en el POST. Con contraseña de quien recibe, el regalo, el cuaderno
+// y la mascota solo se abren con la sesión de quien recibe o la de quien regala.
+// Los datos privados van en llaves que parten con "_" (_priv, _mascota): nunca salen en la vista pública
+// y el editor no los pisa. Toda escritura usa updated_at como control de versión para no pisar cambios simultáneos.
 // Requiere SUPABASE_URL y SUPABASE_SERVICE_KEY (las mismas de /api/track).
 const crypto = require("crypto");
 
@@ -45,8 +53,33 @@ function sesionOk(id, token, th) {
   const a = Buffer.from(f), b = Buffer.from(firma(id, +v, th));
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
+// Sesión de quien recibe: p.VENCE.FIRMA, firmada con el hash de su contraseña (cambiarla o quitarla cierra las sesiones)
+const firmaPara = (id, vence, ph) => crypto.createHmac("sha256", "amor-para:" + process.env.SUPABASE_SERVICE_KEY).update(id + "." + vence + "." + ph).digest("hex");
+const sesionPara = (id, ph) => { const v = Date.now() + 90 * 864e5; return "p." + v + "." + firmaPara(id, v, ph); };
+function paraOk(id, token, ph) {
+  const [p0, v, f] = String(token || "").split(".");
+  if (p0 !== "p" || !ph || !(+v > Date.now()) || !f) return false;
+  const a = Buffer.from(f), b = Buffer.from(firmaPara(id, +v, ph));
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+const privDe = d => (d && d._priv) || {};
+const protegido = d => !!privDe(d).passPara;
+// ¿Quién es? "de" (quien regala), "para" (quien recibe con contraseña) o null
+function quienEs(fila, token) {
+  token = String(token || "");
+  if (!fila || !token) return null;
+  if (token.startsWith("s.")) return sesionOk(fila.id, token, fila.token_hash) ? "de" : null;
+  if (token.startsWith("p.")) return paraOk(fila.id, token, privDe(fila.datos).passPara) ? "para" : null;
+  if (/^[0-9a-f]{48}$/.test(token)) { // link secreto antiguo
+    const a = Buffer.from(fila.token_hash), b = Buffer.from(hash(token));
+    return a.length === b.length && crypto.timingSafeEqual(a, b) ? "de" : null;
+  }
+  return null;
+}
 const CODIGO = /^[a-z0-9][a-z0-9-]{7,59}$/; // códigos de tarjeta: 8+ caracteres
-const publico = d => { const o = Object.assign({}, d); delete o._priv; return o; };
+const publico = d => { const o = Object.assign({}, d); Object.keys(o).forEach(k => { if (k[0] === "_") delete o[k]; }); return o; };
+const privados = d => Object.keys(d || {}).reduce((o, k) => (k[0] === "_" ? (o[k] = d[k], o) : o), {});
+const slugOk = r => String(r || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 60);
 const rand = n => crypto.randomBytes(n).toString("hex");
 const esId = s => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(String(s || ""));
 const RUTA = /^[0-9a-f-]{36}\/[a-z]+-[0-9a-f]+\.[a-z0-9]+$/;
@@ -75,6 +108,36 @@ async function llamar(base, path, opt = {}) {
 }
 const db = (p, o) => llamar("/rest/v1/", p, o);
 const st = (p, o) => llamar("/storage/v1/", p, o);
+
+/* Cambia una fila sin pisar lo que otro guardó entremedio: lee, aplica fn y guarda solo si updated_at sigue igual.
+   fn(fila) devuelve {status, j} para cortar con esa respuesta, o {cambio, ok} para guardar `cambio` y responder `ok`. */
+const marca = () => new Date().toISOString().replace("Z", String(Math.floor(Math.random() * 1000)).padStart(3, "0") + "Z");
+async function cambiar(filtro, fn, err) {
+  for (let i = 0; i < 6; i++) {
+    const r0 = await db("amor_regalos?select=id,slug,token_hash,datos,updated_at&" + filtro);
+    if (!r0.ok) return { status: 502, j: { error: "No se pudo leer el regalo" } };
+    const fila = Array.isArray(r0.j) && r0.j[0];
+    const out = await fn(fila || null);
+    if (out.status) return out;
+    const r = await db("amor_regalos?select=id&id=eq." + fila.id + "&updated_at=eq." + encodeURIComponent(fila.updated_at), {
+      method: "PATCH", headers: { Prefer: "return=representation" },
+      body: JSON.stringify(Object.assign({}, out.cambio, { updated_at: marca() })) });
+    if (!r.ok) return { status: 502, j: { error: err || "No se pudo guardar" } };
+    if (Array.isArray(r.j) && r.j.length) return { status: 200, j: out.ok };
+    await new Promise(ok => setTimeout(ok, 40 + Math.random() * 120)); // otro guardó justo ahora: reintenta
+  }
+  return { status: 409, j: { error: "Se cruzaron dos cambios; intenta otra vez" } };
+}
+const corta = (status, error, extra) => ({ status, j: Object.assign({ error }, extra || {}) });
+// Revisa que el regalo exista, esté habilitado y que la sesión sirva si tiene contraseña de quien recibe
+function revisar(fila, s) {
+  if (!fila) return corta(404, "Este regalo no existe");
+  if (privDe(fila.datos).off) return corta(403, "Este regalo está deshabilitado");
+  const soy = quienEs(fila, s);
+  if (protegido(fila.datos) && !soy) return corta(401, "Este regalo tiene contraseña", { bloqueado: true });
+  return { soy };
+}
+const MAX_MASCOTA = 60000; // caracteres del estado de la mascota
 
 async function duenio(id, token) {
   if (!esId(id) || !token) return null;
@@ -177,8 +240,8 @@ module.exports = async (req, res) => {
       const q = req.query || {};
       if (q.ping) { res.status(200).json({ ok: true }); return; }
       if (q.r) {
-        const slug = String(q.r).toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 60);
-        const r = await db("amor_regalos?select=slug,datos&slug=eq." + slug);
+        const slug = slugOk(q.r);
+        const r = await db("amor_regalos?select=id,slug,token_hash,datos&slug=eq." + slug);
         if (!r.ok) { res.status(502).json({ error: "No se pudo leer el regalo" }); return; }
         const row = Array.isArray(r.j) && r.j[0];
         if (!row) {
@@ -187,14 +250,21 @@ module.exports = async (req, res) => {
         }
         const d = row.datos || {};
         if (d._priv && d._priv.off) { res.status(200).json({ off: true, slug: row.slug, de: d.de || "" }); return; }
-        res.status(200).json({ slug: row.slug, datos: publico(d), base });
+        const soy = quienEs(row, (req.headers || {})["x-sesion"]);
+        if (protegido(d) && !soy) {
+          // Con contraseña de quien recibe: solo lo justo para la pantalla del candado
+          const t = tipoDe(d);
+          res.status(200).json({ bloqueado: true, slug: row.slug, de: d.de || "", para: d.para || "", tipo: t.tipo, rolDe: t.rolDe, rolPara: t.rolPara, tema: d.tema || "pasion", fondo: d.fondo || "corazones" });
+          return;
+        }
+        res.status(200).json({ slug: row.slug, datos: publico(d), base, soy, protegido: protegido(d) });
         return;
       }
       const row = await duenio(q.id, q.k);
       if (!row) { res.status(401).json({ error: "El link de edición no es válido" }); return; }
       const pv = (row.datos && row.datos._priv) || {};
       res.status(200).json({ id: row.id, slug: row.slug, datos: publico(row.datos), base,
-        perfil: { email: pv.email || "", off: !!pv.off, conClave: String(row.token_hash).startsWith("scrypt$") } });
+        perfil: { email: pv.email || "", off: !!pv.off, conClave: String(row.token_hash).startsWith("scrypt$"), paraClave: !!pv.passPara } });
       return;
     }
 
@@ -251,32 +321,97 @@ module.exports = async (req, res) => {
     }
 
     if (b.accion === "cuaderno") {
-      const slug = String(b.r || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 60);
-      const r0 = await db("amor_regalos?select=id,datos&slug=eq." + slug);
+      const slug = slugOk(b.r), op = b.op || {};
+      if (op.tipo === "leer") {
+        const r0 = await db("amor_regalos?select=id,token_hash,datos&slug=eq." + slug);
+        const fila = r0.ok && Array.isArray(r0.j) && r0.j[0];
+        const rv = revisar(fila, b.s); if (rv.status) { res.status(rv.status).json(rv.j); return; }
+        res.status(200).json({ cuaderno: cuadernoDe(fila.datos) }); return;
+      }
+      const out = await cambiar("slug=eq." + slug, fila => {
+        const rv = revisar(fila, b.s); if (rv.status) return rv;
+        const cu = cuadernoDe(fila.datos), i = cu.findIndex(c => c.id === op.id);
+        if (op.tipo === "agregar") {
+          const t = String(op.t || "").trim().slice(0, 80);
+          if (!t) return corta(400, "Escribe la cita");
+          if (cu.length >= MAX_CITAS) return corta(413, "El cuaderno está lleno (40 citas)");
+          cu.push(citaLimpia({ t, f: op.f }));
+        } else if (op.tipo === "editar" && i >= 0) {
+          const c = op.cambios || {};
+          cu[i] = citaLimpia(Object.assign({}, cu[i], ["e", "f", "n"].reduce((o, k) => (k in c ? (o[k] = c[k], o) : o), {})));
+        } else if (op.tipo === "borrar" && i >= 0) {
+          cu.splice(i, 1);
+        } else return corta(400, "Esa cita ya no existe");
+        return { cambio: { datos: Object.assign({}, fila.datos, { cuaderno: cu }) }, ok: { cuaderno: cu } };
+      }, "No se pudo guardar el cuaderno");
+      res.status(out.status).json(out.j);
+      return;
+    }
+
+    /* Virtual Monster compartido: el estado completo lo arma el celular; el servidor guarda la versión más nueva
+       y rechaza una escritura hecha sobre una versión vieja (así no se pisan los dos celulares). */
+    if (b.accion === "mascota") {
+      const slug = slugOk(b.r);
+      if (b.op === "leer") {
+        const r0 = await db("amor_regalos?select=id,token_hash,datos&slug=eq." + slug);
+        if (!r0.ok) { res.status(502).json({ error: "No se pudo leer la mascota" }); return; }
+        const fila = Array.isArray(r0.j) && r0.j[0];
+        const rv = revisar(fila, b.s); if (rv.status) { res.status(rv.status).json(rv.j); return; }
+        const m = fila.datos._mascota;
+        if (!m) { res.status(200).json({ v: 0, estado: null, soy: rv.soy }); return; }
+        if (b.v != null && +b.v === m.v) { res.status(200).json({ v: m.v, igual: true, soy: rv.soy }); return; }
+        res.status(200).json({ v: m.v, estado: m.s, at: m.at, soy: rv.soy }); return;
+      }
+      if (b.op !== "guardar") { res.status(400).json({ error: "Acción desconocida" }); return; }
+      const e = b.estado;
+      if (!e || typeof e !== "object" || Array.isArray(e) || typeof e.fase !== "string") { res.status(400).json({ error: "Estado de la mascota no válido" }); return; }
+      const txt = JSON.stringify(e);
+      if (txt.length > MAX_MASCOTA) { res.status(413).json({ error: "La mascota tiene demasiados datos" }); return; }
+      const out = await cambiar("slug=eq." + slug, fila => {
+        const rv = revisar(fila, b.s); if (rv.status) return rv;
+        const m = fila.datos._mascota || { v: 0 };
+        if (Math.round(+b.v || 0) !== m.v) return { status: 409, j: { error: "La mascota cambió en el otro celular", conflicto: true, v: m.v, estado: m.s || null } };
+        const nuevo = { v: m.v + 1, s: JSON.parse(txt), at: Date.now() };
+        return { cambio: { datos: Object.assign({}, fila.datos, { _mascota: nuevo }) }, ok: { v: nuevo.v, at: nuevo.at } };
+      }, "No se pudo guardar la mascota");
+      res.status(out.status).json(out.j);
+      return;
+    }
+
+    /* Contraseña de quien recibe (opcional): con ella, nadie más abre el regalo aunque toque la tarjeta */
+    if (b.accion === "entrarPara") {
+      const r0 = await db("amor_regalos?select=id,datos&slug=eq." + slugOk(b.r));
       const fila = r0.ok && Array.isArray(r0.j) && r0.j[0];
       if (!fila) { res.status(404).json({ error: "Este regalo no existe" }); return; }
-      if (fila.datos && fila.datos._priv && fila.datos._priv.off) { res.status(403).json({ error: "Este regalo está deshabilitado" }); return; }
-      const op = b.op || {}, cu = cuadernoDe(fila.datos), i = cu.findIndex(c => c.id === op.id);
-      if (op.tipo === "agregar") {
-        const t = String(op.t || "").trim().slice(0, 80);
-        if (!t) { res.status(400).json({ error: "Escribe la cita" }); return; }
-        if (cu.length >= MAX_CITAS) { res.status(413).json({ error: "El cuaderno está lleno (40 citas)" }); return; }
-        cu.push(citaLimpia({ t, f: op.f }));
-      } else if (op.tipo === "editar" && i >= 0) {
-        const c = op.cambios || {};
-        cu[i] = citaLimpia(Object.assign({}, cu[i], ["e", "f", "n"].reduce((o, k) => (k in c ? (o[k] = c[k], o) : o), {})));
-      } else if (op.tipo === "borrar" && i >= 0) {
-        cu.splice(i, 1);
-      } else if (op.tipo !== "leer") { res.status(400).json({ error: "Esa cita ya no existe" }); return; }
-      if (op.tipo !== "leer") {
-        const datos = Object.assign({}, fila.datos, { cuaderno: cu });
-        const r = await db("amor_regalos?id=eq." + fila.id, {
-          method: "PATCH", headers: { Prefer: "return=minimal" },
-          body: JSON.stringify({ datos, updated_at: new Date().toISOString() })
-        });
-        if (!r.ok) { res.status(502).json({ error: "No se pudo guardar el cuaderno" }); return; }
-      }
-      res.status(200).json({ cuaderno: cu });
+      const pv = privDe(fila.datos);
+      if (pv.off) { res.status(403).json({ error: "Este regalo está deshabilitado" }); return; }
+      if (!pv.passPara) { res.status(400).json({ error: "Este regalo no tiene contraseña" }); return; }
+      if (!passOk(String(b.pass || ""), pv.passPara)) { res.status(401).json({ error: "La contraseña no es correcta" }); return; }
+      res.status(200).json({ token: sesionPara(fila.id, pv.passPara) });
+      return;
+    }
+    if (b.accion === "clavePara") {
+      const out = await cambiar("slug=eq." + slugOk(b.r), async fila => {
+        if (!fila) return corta(404, "Este regalo no existe");
+        const pv = Object.assign({}, privDe(fila.datos));
+        if (pv.off) return corta(403, "Este regalo está deshabilitado");
+        const soy = quienEs(fila, b.s);
+        if (soy === "de") return corta(403, "Esta contraseña es solo de quien recibe el regalo");
+        if (pv.passPara && !(soy === "para" && passOk(String(b.passActual || ""), pv.passPara))) return corta(401, "La contraseña actual no es correcta");
+        let ok;
+        if (b.quitar) { delete pv.passPara; delete pv.emailPara; ok = { ok: true, protegido: false }; }
+        else {
+          const nueva = String(b.passNueva || "");
+          if (nueva.length < 6) return corta(400, "La contraseña debe tener al menos 6 caracteres");
+          const email = String(b.email || "").trim().toLowerCase().slice(0, 120);
+          if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return corta(400, "Revisa el correo");
+          pv.passPara = passHash(nueva);
+          if ("email" in b) pv.emailPara = email;
+          ok = { ok: true, protegido: true, token: sesionPara(fila.id, pv.passPara) };
+        }
+        return { cambio: { datos: Object.assign({}, fila.datos, { _priv: pv }) }, ok };
+      }, "No se pudo guardar la contraseña");
+      res.status(out.status).json(out.j);
       return;
     }
 
@@ -284,41 +419,42 @@ module.exports = async (req, res) => {
     if (!row) { res.status(401).json({ error: "El link de edición no es válido" }); return; }
 
     if (b.accion === "guardar") {
-      const datos = limpiar(b.datos, row.id);
-      datos.cuaderno = ajustarCuaderno(row.datos, datos); // el cuaderno lo editan los dos: no se pisa
-      if (row.datos && row.datos._priv) datos._priv = row.datos._priv; // correo y estado: solo por "perfil"
-      if (JSON.stringify(datos).length > 80000) { res.status(413).json({ error: "El regalo tiene demasiado texto" }); return; }
+      const limpio = limpiar(b.datos, row.id);
+      if (JSON.stringify(limpio).length > 80000) { res.status(413).json({ error: "El regalo tiene demasiado texto" }); return; }
       const peso = pesoDe(await archivos(row.id));
-      const r = await db("amor_regalos?id=eq." + row.id, {
-        method: "PATCH", headers: { Prefer: "return=minimal" },
-        body: JSON.stringify({ datos, peso, updated_at: new Date().toISOString() })
+      const out = await cambiar("id=eq." + row.id, fila => {
+        if (!fila || quienEs(fila, b.token) !== "de") return corta(401, "El link de edición no es válido");
+        const datos = Object.assign({}, limpio, privados(fila.datos)); // correo, contraseña de quien recibe y mascota: no se pisan
+        datos.cuaderno = ajustarCuaderno(fila.datos, limpio); // el cuaderno lo editan los dos: no se pisa
+        return { cambio: { datos, peso }, ok: { ok: true, peso } };
       });
-      if (!r.ok) { res.status(502).json({ error: "No se pudo guardar" }); return; }
-      res.status(200).json({ ok: true, peso });
+      res.status(out.status).json(out.j);
       return;
     }
 
     if (b.accion === "perfil") {
-      const pv = Object.assign({}, (row.datos && row.datos._priv) || {}), cambio = {};
-      if ("email" in b) {
-        const email = String(b.email || "").trim().toLowerCase().slice(0, 120);
-        if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { res.status(400).json({ error: "Revisa el correo" }); return; }
-        pv.email = email;
-      }
-      if ("off" in b) pv.off = !!b.off;
-      let th = row.token_hash;
-      if (b.passNueva != null) {
-        const nueva = String(b.passNueva);
-        if (nueva.length < 6) { res.status(400).json({ error: "La contraseña debe tener al menos 6 caracteres" }); return; }
-        if (String(th).startsWith("scrypt$") && !passOk(String(b.passActual || ""), th)) { res.status(401).json({ error: "La contraseña actual no es correcta" }); return; }
-        th = cambio.token_hash = passHash(nueva);
-      }
-      cambio.datos = Object.assign({}, row.datos, { _priv: pv });
-      cambio.updated_at = new Date().toISOString();
-      const r = await db("amor_regalos?id=eq." + row.id, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(cambio) });
-      if (!r.ok) { res.status(502).json({ error: "No se pudo guardar el perfil" }); return; }
-      res.status(200).json({ ok: true, perfil: { email: pv.email || "", off: !!pv.off, conClave: String(th).startsWith("scrypt$") },
-        token: cambio.token_hash ? sesion(row.id, th) : undefined });
+      const out = await cambiar("id=eq." + row.id, fila => {
+        if (!fila || quienEs(fila, b.token) !== "de") return corta(401, "El link de edición no es válido");
+        const pv = Object.assign({}, privDe(fila.datos)), cambio = {};
+        if ("email" in b) {
+          const email = String(b.email || "").trim().toLowerCase().slice(0, 120);
+          if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return corta(400, "Revisa el correo");
+          pv.email = email;
+        }
+        if ("off" in b) pv.off = !!b.off;
+        if (b.quitarPara) { delete pv.passPara; delete pv.emailPara; } // si quien recibe olvidó su contraseña
+        let th = fila.token_hash;
+        if (b.passNueva != null) {
+          const nueva = String(b.passNueva);
+          if (nueva.length < 6) return corta(400, "La contraseña debe tener al menos 6 caracteres");
+          if (String(th).startsWith("scrypt$") && !passOk(String(b.passActual || ""), th)) return corta(401, "La contraseña actual no es correcta");
+          th = cambio.token_hash = passHash(nueva);
+        }
+        cambio.datos = Object.assign({}, fila.datos, { _priv: pv });
+        return { cambio, ok: { ok: true, perfil: { email: pv.email || "", off: !!pv.off, conClave: String(th).startsWith("scrypt$"), paraClave: !!pv.passPara },
+          token: cambio.token_hash ? sesion(fila.id, th) : undefined } };
+      }, "No se pudo guardar el perfil");
+      res.status(out.status).json(out.j);
       return;
     }
 

@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Arima:wght@400;500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Demo de la mascota de pareja ("el hijo de los dos"). Se guarda en este navegador (localStorage).
+/* Virtual Monster. Desde un regalo (?r=CODIGO) se comparte entre los dos por /api/regalo (acción "mascota"); suelto, se guarda en este navegador (localStorage).
    Mismos temas que /amor: gradient mesh, vidrio y neumorfismo. */
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overscroll-behavior:none}
@@ -40,6 +40,9 @@ button:disabled{opacity:.4}
 /* Cabecera */
 .volver{display:inline-block;margin:0 0 8px;padding:8px 14px;border-radius:999px;color:inherit;text-decoration:none;font-size:14px}
 .volver[hidden]{display:none}
+.barra-top{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin:0 0 8px}.barra-top .volver{margin:0}
+.sync{display:inline-block;padding:6px 12px;border-radius:999px;font-size:12px;opacity:.85}.sync[hidden]{display:none}.sync.mal{color:#ffd27a}
+#quienSoy .card button{width:100%;margin-top:8px}
 .head{display:flex;align-items:center;gap:10px;padding:10px 14px}
 .head .nom{font-family:"Arima",serif;font-size:28px;color:var(--red);line-height:1}
 .head .fase{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em}
@@ -240,7 +243,7 @@ svg[data-mood=normal] .m-normal,svg[data-mood=feliz] .m-feliz,svg[data-mood=tris
 .menu button{padding:8px 6px!important;font-size:14px!important;min-width:0}
 .chispa{position:absolute;font-size:34px;pointer-events:none;animation:chispa .6s ease-out forwards;z-index:5}
 @keyframes chispa{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
-#despedida,#nacer{background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#despedida,#nacer,#quienSoy{background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 @media(prefers-reduced-motion:reduce){.mesh,.pet,.ojos,.huevo-idle{animation:none}}
 /* ===== Estilos visuales (botón 🎨 Estilo). El estilo vive en body[data-e] y en las vistas previas .prev[data-e] ===== */
 .stage::before{content:"";position:absolute;inset:0;z-index:-1;transition:background .4s}
@@ -490,7 +493,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
 <div class="mesh" aria-hidden="true"></div>
 <main class="app">
-  <a class="volver glass" id="volver" hidden href="../">← Volver al regalo</a>
+  <div class="barra-top"><a class="volver glass" id="volver" hidden href="../">← Volver al regalo</a><span class="sync glass" id="sync" hidden></span></div>
   <header class="head glass">
     <div><div class="nom" id="nom">Huevito</div><div class="fase" id="fase">Huevo</div></div>
     <div class="info">
@@ -531,7 +534,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   </nav>
 
   <section class="prueba glass">
-    <b>Modo prueba</b> · se guarda solo en este celular
+    <b>Modo prueba</b> · <span id="pruebaTxt">se guarda solo en este celular</span>
     <div class="quien" style="margin-top:8px"><button data-q="Él" class="on">💙 Soy <span data-n="Él">Matías</span></button><button data-q="Ella">💗 Soy <span data-n="Ella">Sofía</span></button></div>
     <div class="fila"><input id="nomEl" maxlength="14" aria-label="Nombre de él" placeholder="Él"><input id="nomElla" maxlength="14" aria-label="Nombre de ella" placeholder="Ella"></div>
     <p id="buzon" style="margin:8px 0 0;font-size:12px;color:var(--mute)"></p>
@@ -644,6 +647,12 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
   <button class="pri" id="btnNom" style="width:100%">Ponerle nombre</button>
 </div></div></div>
 
+<div class="full" id="quienSoy"><div class="centro"><div class="card">
+  <p class="script" style="font-size:26px;margin:0;color:#ffb3c7">Virtual Monster</p>
+  <h2>¿Quién eres?</h2><p style="opacity:.8;margin-top:0">Lo cuidan entre los dos, cada uno desde su celular.</p>
+  <button class="pri" data-yo="Él"></button><button class="pri" data-yo="Ella"></button>
+</div></div></div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -711,9 +720,94 @@ function nuevo(gen=1,offset=0,tema='pasion'){return{
   herido:false,heridoDesde:0,
   luz:true,dur:false,malaNoche:false,log:[]}}
 function cargar(){try{S=JSON.parse(localStorage.getItem(CLAVE))}catch(_){S=null}if(!S||!S.fase)S=nuevo()}
-function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(S))}catch(_){}}
+function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(S))}catch(_){}if(SYNC)cambioLocal()}
 const ahora=()=>Date.now()+(S.offset||0);
 function anota(txt,t){S.log.unshift({t:t||ahora(),txt});S.log.length=Math.min(S.log.length,40)}
+
+/* ===== Mascota compartida: el estado vive en el servidor y cada celular lo sincroniza =====
+   - El estado completo se sube cuando hay un cambio de verdad (la "huella" no mira los indicadores que bajan solos con el tiempo).
+   - El servidor guarda una versión (v). Si el otro celular guardó antes, responde "conflicto" con lo último y se mezcla
+     a 3 bandas: lo que había (base), lo mío y lo suyo. Los indicadores se suman como diferencias (si los dos le dieron
+     de comer, cuentan las dos comidas), las listas (diario, mensajes, comidas) se unen y en lo demás gana lo que cambió.
+   - Cada 5 s se pregunta si hay algo nuevo. El estilo y el tema son de cada celular. */
+const SYNC=REGALO?{v:0,base:null,huella:'',listo:false,enVuelo:false,otra:false,timer:0,pend:null,s:'',soy:null,red:true}:null;
+const LOCAL=['estilo','tema'],SIN_HUELLA=['hambre','fuerza','energia','felicidad','t','dur','malaNoche'];
+const DELTA=['hambre','fuerza','energia','felicidad','peso','batallas','victorias','toques'];
+const LISTAS={log:-1,mensajes:1,comidas:1};
+const copia=o=>o==null?o:JSON.parse(JSON.stringify(o));
+function compartido(){const o={};for(const k in S)if(!LOCAL.includes(k))o[k]=S[k];return copia(o)}
+function huella(){const o=compartido();SIN_HUELLA.forEach(k=>delete o[k]);return JSON.stringify(o)}
+function sesionMascota(){try{const e=JSON.parse(localStorage.getItem('amor_ed')||'null');if(e&&e.slug===REGALO&&e.token)return e.token}catch(_){}
+  try{return localStorage.getItem('amor_para_'+REGALO)||''}catch(_){return ''}}
+async function apiM(cuerpo){
+  const r=await fetch('/api/regalo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({accion:'mascota',r:REGALO,s:SYNC.s},cuerpo))});
+  const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.error||'Error '+r.status);Object.assign(e,j,{status:r.status});throw e}return j}
+function pintarSync(txt,ok){const el=$('#sync');if(!el)return;el.hidden=false;el.textContent=txt;el.classList.toggle('mal',!ok)}
+const syncOk=()=>pintarSync('☁️ Con '+nom(otro(quien))+' · al día',true);
+// Avanza una copia del estado en el tiempo sin tocar la mascota de verdad
+function simCopia(base,hasta){const keep=S;try{S=copia(base);if(!Array.isArray(S.log))S.log=[];simular(hasta);return S}finally{S=keep}}
+function unir(a,b,orden){
+  const m=new Map(),clave=x=>Math.round((+x.t||0)/600000)+'|'+(x.txt||x.id||'')+'|'+(x.de||x.q||'');
+  for(const x of[...(a||[]),...(b||[])]){if(!x||typeof x!=='object')continue;const k=clave(x),y=m.get(k);m.set(k,y?Object.assign({},y,x,{visto:!!(y.visto||x.visto)}):x)}
+  return[...m.values()].sort((p,q)=>orden*((+p.t||0)-(+q.t||0)))}
+function mezclar(base,mio,suyo){
+  if(!suyo)return mio;if(!base)return suyo;
+  const nueva=x=>x.gen!==base.gen||x.nace!==base.nace;
+  if(nueva(mio)||nueva(suyo))return nueva(mio)&&!nueva(suyo)?mio:suyo; // huevo nuevo o recién nacido: no se mezcla
+  const sb=simCopia(base,mio.t),out=copia(suyo);
+  for(const k of new Set([...Object.keys(mio),...Object.keys(sb)])){
+    if(LOCAL.includes(k)||k==='t'||k==='dur'||k==='malaNoche')continue;
+    if(k in LISTAS){out[k]=unir(suyo[k],mio[k],LISTAS[k]);if(k==='log')out.log=out.log.slice(0,40);if(k==='mensajes')out.mensajes=out.mensajes.slice(-30);continue}
+    if(DELTA.includes(k)&&typeof mio[k]==='number'&&typeof sb[k]==='number'){const d=mio[k]-sb[k];if(Math.abs(d)>1e-6)out[k]=(+suyo[k]||0)+d;continue}
+    if(JSON.stringify(mio[k])!==JSON.stringify(sb[k]))out[k]=mio[k];
+  }
+  for(const k of['hambre','fuerza','energia','felicidad'])out[k]=clamp(out[k]);
+  out.peso=Math.max(1,Math.round((+out.peso||1)*10)/10);out.caca=Math.max(0,Math.min(3,+out.caca||0));
+  return out}
+// Cambia la mascota por un estado que vino del servidor (mantiene el estilo y el tema de este celular)
+function poner(estado,v){
+  const antes={f:S.fase,d:S.disfraz,t:S.toques},loc={};LOCAL.forEach(k=>loc[k]=S[k]);
+  S=Object.assign(copia(estado),loc);normalizar();
+  SYNC.v=v;SYNC.base=copia(estado);SYNC.huella=huella();
+  if(antes.f!==S.fase||antes.d!==S.disfraz||antes.t!==S.toques)faseDibujada='';
+  try{localStorage.setItem(CLAVE,JSON.stringify(S))}catch(_){}
+}
+function cambioLocal(){
+  if(!SYNC.listo)return;const h=huella();if(h===SYNC.huella)return;
+  SYNC.huella=h;clearTimeout(SYNC.timer);SYNC.timer=setTimeout(subir,600)}
+async function subir(){
+  SYNC.timer=0;if(SYNC.enVuelo){SYNC.otra=true;return}
+  SYNC.enVuelo=true;const enviado=compartido();
+  try{const j=await apiM({op:'guardar',v:SYNC.v,estado:enviado});SYNC.v=j.v;SYNC.base=enviado;SYNC.red=true;syncOk()}
+  catch(e){
+    if(e.conflicto)SYNC.pend={v:e.v,estado:e.estado};
+    else if(e.bloqueado)return irAlRegalo();
+    else{SYNC.red=false;SYNC.huella='';pintarSync(e.status===403?'Este regalo está deshabilitado':'⚠️ Sin conexión: se guarda en este celular y se comparte al volver',false)}}
+  finally{SYNC.enVuelo=false}
+  resolver();
+  if(SYNC.otra){SYNC.otra=false;cambioLocal()}
+}
+// Si el otro celular guardó antes: mezcla y vuelve a subir (espera a que termine la batalla o el juego en curso)
+function resolver(){
+  if(!SYNC.pend||ocupado)return;const {v,estado}=SYNC.pend;SYNC.pend=null;
+  const mio=compartido(),mez=mezclar(SYNC.base,mio,estado);
+  poner(mez,v);SYNC.huella='';render();
+  toast('🔄 '+nom(otro(quien))+' también lo estaba cuidando: se juntaron los cambios de los dos');
+}
+async function revisarServidor(){
+  if(!SYNC.listo||document.hidden||SYNC.enVuelo||SYNC.timer)return;
+  if(SYNC.pend){resolver();return}
+  if(ocupado)return;
+  try{const j=await apiM({op:'leer',v:SYNC.v});SYNC.red=true;
+    if(!j.igual&&j.estado&&!ocupado&&!SYNC.enVuelo&&!SYNC.timer){
+      const mio=compartido(),pendiente=huella()!==SYNC.huella;
+      poner(pendiente?mezclar(SYNC.base,mio,j.estado):j.estado,j.v);if(pendiente)SYNC.huella='';render()}
+    if(!SYNC.timer)syncOk();
+    if(huella()!==SYNC.huella)cambioLocal();
+  }catch(e){if(e.bloqueado)irAlRegalo();else{SYNC.red=false;pintarSync(e.status===403?'Este regalo está deshabilitado':'⚠️ Sin conexión: se guarda en este celular y se comparte al volver',false)}}
+}
+const irAlRegalo=()=>location.replace('../?r='+encodeURIComponent(REGALO));
+function normalizar(){const d=nuevo();for(const k in d)if(S[k]===undefined||S[k]===null&&typeof d[k]==='number')S[k]=d[k];if(!Array.isArray(S.comidas))S.comidas=[];if(!Array.isArray(S.mensajes))S.mensajes=[];if(!Array.isArray(S.log))S.log=[];if(!S.nombres)S.nombres={'Él':'Matías','Ella':'Sofía'}}
 
 /* ===== Paso del tiempo: avanza de a 5 minutos hasta "ahora" ===== */
 function hashN(t){let x=Math.floor(t/1000)%2147483647;x=(x*48271)%2147483647;return x}
@@ -911,7 +1005,7 @@ function render(){
   avisoPrev=clave;
   $$('[data-n]').forEach(e=>e.textContent=nom(e.dataset.n));
   const pend=S.mensajes.filter(x=>!x.visto&&x.para===otro(quien)).length;
-  $('#buzon').textContent=pend?`💌 ${pend} mensaje${pend>1?'s':''} esperando a ${nom(otro(quien))} (cambia a "Soy ${nom(otro(quien))}" para recibirlo)`:'';
+  $('#buzon').textContent=pend?`💌 ${pend} mensaje${pend>1?'s':''} esperando a ${nom(otro(quien))} `+(SYNC?`(se lo dirá cuando abra el Virtual Monster en su celular)`:`(cambia a "Soy ${nom(otro(quien))}" para recibirlo)`):'';
   const mio=vive()&&!ocupado&&S.mensajes.find(x=>!x.visto&&x.para===quien);
   if(mio&&!document.querySelector('.sheet.on'))entregar(mio);
   guardar();
@@ -1908,14 +2002,38 @@ $('#selTema').onchange=e=>{S.tema=e.target.value;render()};
 /* ===== Inicio ===== */
 cargar();
 if(REGALO){const v=document.getElementById('volver');v.href='../?r='+encodeURIComponent(REGALO);v.hidden=false}
-// El hijo vive mientras el regalo exista y esté habilitado
-if(REGALO)fetch('/api/regalo?r='+encodeURIComponent(REGALO)).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;
-  if(j.registro===false){location.replace('../?r='+encodeURIComponent(REGALO));return}
-  if(j.off){document.body.insertAdjacentHTML('beforeend','<main style="position:fixed;inset:0;z-index:9999;display:grid;place-items:center;text-align:center;padding:24px;font-family:system-ui;color:#fff;background:#14123a"><div><div style="font-size:64px">🥚</div><h1>Este regalo no está disponible</h1><p>Quien lo regaló lo deshabilitó.</p></div></main>');document.body.style.overflow='hidden'}}).catch(()=>{});
+// El Virtual Monster vive mientras el regalo exista y esté habilitado; desde un regalo se comparte entre los dos
+async function iniciarCompartido(){
+  SYNC.s=sesionMascota();pintarSync('☁️ Conectando…',true);
+  let j;try{const r=await fetch('/api/regalo?r='+encodeURIComponent(REGALO),SYNC.s?{headers:{'X-Sesion':SYNC.s}}:{});j=r.ok?await r.json():null}catch(_){j=null}
+  if(!j){SYNC.listo=true;SYNC.red=false;pintarSync('⚠️ Sin conexión: se guarda en este celular y se comparte al volver',false);return}
+  if(j.registro===false||j.bloqueado)return irAlRegalo();
+  if(j.off){document.body.insertAdjacentHTML('beforeend','<main style="position:fixed;inset:0;z-index:9999;display:grid;place-items:center;text-align:center;padding:24px;font-family:system-ui;color:#fff;background:#14123a"><div><div style="font-size:64px">🥚</div><h1>Este regalo no está disponible</h1><p>Quien lo regaló lo deshabilitó.</p></div></main>');document.body.style.overflow='hidden';return}
+  const d=j.datos||{};SYNC.soy=j.soy||null;
+  const nombres={'Él':String(d.de||'').slice(0,14)||'Quien regala','Ella':String(d.para||'').slice(0,14)||'Quien recibe'};
+  // Con sesión se sabe quién es; si no, se pregunta una vez en este celular
+  if(SYNC.soy){quien=SYNC.soy==='de'?'Él':'Ella';localStorage.setItem(CLAVE+'-quien',quien);$('.prueba .quien').hidden=true}
+  $('.prueba .fila').hidden=true;$('#pruebaTxt').textContent='lo que hagas aquí también le llega a '+nombres[otro(quien)];
+  try{
+    const m=await apiM({op:'leer'});
+    if(m.estado)poner(m.estado,m.v);
+    else{SYNC.v=0;SYNC.base=null;SYNC.huella=''} // primera vez: se sube lo que haya en este celular
+  }catch(e){if(e.bloqueado)return irAlRegalo();S.nombres=nombres;SYNC.listo=true;SYNC.red=false;pintarSync('⚠️ Sin conexión: se guarda en este celular y se comparte al volver',false);return}
+  S.nombres=nombres;SYNC.listo=true; // si cambiaron los nombres del regalo, cambioLocal() los sube
+  $$('[data-q]').forEach(x=>x.classList.toggle('on',x.dataset.q===quien));
+  if(!SYNC.soy&&!localStorage.getItem(CLAVE+'-quien')){
+    $$('#quienSoy [data-yo]').forEach(b=>{b.textContent='Soy '+nombres[b.dataset.yo];b.onclick=()=>{quien=b.dataset.yo;localStorage.setItem(CLAVE+'-quien',quien);
+      $$('[data-q]').forEach(x=>x.classList.toggle('on',x.dataset.q===quien));$('#quienSoy').classList.remove('on');$('#pruebaTxt').textContent='lo que hagas aquí también le llega a '+nombres[otro(quien)];syncOk();render()}});
+    $('#quienSoy').classList.add('on')}
+  render();syncOk();cambioLocal();
+  setInterval(revisarServidor,5000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)revisarServidor()});
+}
+if(REGALO)iniciarCompartido();
 quien=localStorage.getItem(CLAVE+'-quien')||'Él';$('#nomEl').value=nom('Él');$('#nomElla').value=nom('Ella');$$('[data-q]').forEach(x=>x.classList.toggle('on',x.dataset.q===quien));
 {const es=$('#estrellas');let h='';for(let i=0;i<40;i++)h+=`<i style="left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*2.4}s"></i>`;es.innerHTML=h}
 if(vive()&&!S.nombre){S.nombre='Mochi'}
-if(!Array.isArray(S.comidas))S.comidas=[];if(!Array.isArray(S.mensajes))S.mensajes=[];if(!S.nombres)S.nombres={'Él':'Matías','Ella':'Sofía'};
+normalizar();
 render();
 setInterval(()=>{if(!ocupado&&!document.hidden)render()},1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});

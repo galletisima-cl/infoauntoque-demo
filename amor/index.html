@@ -111,6 +111,9 @@ p,.hint,.note,.paper,.cita p,small,li{text-align:justify;-webkit-hyphens:auto;hy
 .sec.apagada>*:not(h2):not(.sec-sw){opacity:.4;pointer-events:none}
 .sec.apagada h2::after{content:" · oculta";font-size:.6em;color:var(--mute)}
 .quien{background:rgba(255,255,255,.18);color:inherit;border:1.5px solid currentColor;border-radius:999px;min-height:40px;padding:6px 14px;font-size:14px;box-shadow:none}
+.top .quien+.quien{margin-inline-start:-8px}
+@media (max-width:440px){.top{column-gap:12px}.top .brand{font-size:22px}.top .quien{font-size:13px;padding:5px 10px;min-height:38px}}
+@media (max-width:372px){.top{padding-inline:10px}.top .brand{font-size:19px}.top .quien{font-size:12px;padding:5px 8px}}
 .sheet-bg{position:fixed;inset:0;z-index:50;background:rgba(10,0,8,.55);display:grid;place-items:center;padding:16px;backdrop-filter:blur(6px)}
 .sheet-bg>div{background:var(--card);color:var(--ink);border-radius:24px;padding:24px;width:min(420px,100%);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
 .sheet-bg h2{margin:0 0 6px}
@@ -359,6 +362,7 @@ body[data-tema=navidad] h1,body[data-tema=navidad] h2{color:#ffe7a8}
 <header class="top">
   <span class="brand" id="marca">Con amor</span>
   <nav class="tabs"><a href="#crear" id="tCrear">Crear regalo</a><a href="#regalo" id="tRegalo">Ver regalo</a></nav>
+  <button class="quien hide" id="tPara" type="button">🔒 Proteger</button>
   <button class="quien hide" id="tQuien" type="button">👤 Quien regala</button>
   <div class="quota" id="quotaTop"><span id="estado">Sin guardar</span><span>·</span><span>Espacio</span><span class="bar"><i id="qBar"></i></span><span id="qTxt">0 KB de 15 MB</span></div>
 </header>
@@ -388,6 +392,7 @@ body[data-tema=navidad] h1,body[data-tema=navidad] h2{color:#ffe7a8}
       <button class="ghost" id="pPassOk">Cambiar contraseña</button>
     </details>
     <div class="estado-regalo" id="pEstado"></div>
+    <div class="estado-regalo" id="pPara"></div>
     <p class="note" id="pMsg" aria-live="polite"></p>
     <button class="x" id="pSalir">Cerrar sesión en este celular</button>
   </section>
@@ -565,6 +570,8 @@ const $=s=>document.querySelector(s);
 const KB=1024,MB=1048576,QUOTA=15*MB,API='/api/regalo';
 const fmt=b=>b<=0?'0 KB':b<MB?Math.max(1,Math.round(b/KB))+' KB':(b/MB).toFixed(1)+' MB';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* Sesión de quien recibe (si le puso contraseña a su regalo), una por regalo en este celular */
+const paraSes={get:s=>{try{return localStorage.getItem('amor_para_'+s)||''}catch(e){return ''}},set:(s,v)=>{try{v?localStorage.setItem('amor_para_'+s,v):localStorage.removeItem('amor_para_'+s)}catch(e){}}};
 const store={get(){try{return JSON.parse(localStorage.getItem('amor_ed'))}catch(e){return null}},set(v){try{v?localStorage.setItem('amor_ed',JSON.stringify(v)):localStorage.removeItem('amor_ed')}catch(e){}}};
 
 /* ---------- catálogos ---------- */
@@ -734,7 +741,9 @@ const S={
   final:'Estos juegos son para los dos. Nos toca cuidar juntos a nuestra mascota virtual: darle de comer, entrenarla y verla crecer. Te amo.',
   cartas:[{t:'Abre cuando me extrañes',x:'Cierra los ojos y piensa en nuestro último abrazo. Ya falta menos para el próximo. Te amo.'},{t:'Buenos días, mi amor',x:'Que tengas un día lindo. Acuérdate de que alguien está pensando en ti y sonriendo.'}]
 };
-let ED=null,online=false,RECIP=false;
+let ED=null,online=false,RECIP=false,SOY=null,PROT=false;
+// Con qué sesión se abre el regalo en este celular: la de quien regala o la de quien recibe
+const sesVer=slug=>{const e=store.get();if(e&&e.slug===slug&&e.token)return e.token;return paraSes.get(slug)};
 /* ---------- cuaderno de citas (compartido) ---------- */
 const rid=()=>Math.random().toString(36).slice(2,10);
 const semilla=c=>(c||[]).map(t=>({id:rid(),t,e:'p',f:'',n:''}));
@@ -1122,6 +1131,10 @@ function pintarPerfil(){
   $('#pEstado').innerHTML=PERFIL.off
     ?`<span>🚫 <b>Regalo deshabilitado.</b> Quien lo recibe ve un aviso en vez del regalo.</span><button class="pri" data-off="0">Volver a habilitar</button>`
     :`<span>✅ <b>Regalo habilitado.</b> ${esc(P().offTxt)}</span><button class="ghost" data-off="1">Deshabilitar regalo</button>`;
+  $('#pPara').innerHTML=PERFIL.paraClave
+    ?`<span>🔒 <b>${esc(S.para||'Quien recibe')} le puso contraseña a su regalo.</b> Para abrirlo hay que escribirla (tú entras con tu sesión). Si se le olvidó, puedes quitarla y volver a quedar abierto.</span><button class="ghost" id="pQuitarPara">Quitar su contraseña</button>`
+    :`<span>🔓 <b>Regalo sin contraseña de quien recibe.</b> ${esc(S.para||'Quien recibe')} puede ponerle una desde el regalo (botón 🔒 Proteger) para que nadie más lo abra aunque toque la tarjeta.</span>`;
+  const q=$('#pQuitarPara');if(q)q.onclick=()=>{if(!confirm('¿Quitar la contraseña de '+(S.para||'quien recibe')+'? El regalo vuelve a abrirse sin contraseña; después puede ponerle una nueva.'))return;perfilApi({quitarPara:true},'Listo: el regalo quedó sin contraseña de quien recibe.')};
 }
 async function perfilApi(cambios,msg){
   const m=$('#pMsg');m.textContent='Guardando…';
@@ -1233,7 +1246,7 @@ async function cuadOp(op){
   if(!quieto)pintarCuaderno();
   const slug=slugActual();
   if(!slug||!online){if(op.tipo!=='leer')$('#cuadMsg').textContent=RECIP?'Sin conexión: el cambio no se guardó.':'Vista previa: el cuaderno se comparte cuando el regalo está guardado.';return}
-  try{const j=await api({accion:'cuaderno',r:slug,op});S.cuaderno=j.cuaderno;$('#cuadMsg').textContent=op.tipo==='leer'?'':'Guardado ✓ Los dos ven este cuaderno.';if(!quieto)pintarCuaderno()}
+  try{const j=await api({accion:'cuaderno',r:slug,s:sesVer(slug),op});S.cuaderno=j.cuaderno;$('#cuadMsg').textContent=op.tipo==='leer'?'':'Guardado ✓ Los dos ven este cuaderno.';if(!quieto)pintarCuaderno()}
   catch(e){$('#cuadMsg').textContent='No se pudo guardar: '+e.message}
 }
 function pintarCuaderno(){
@@ -1391,7 +1404,7 @@ function vistaRegistro(codigo){
   <section class="sec"><h2 id="rHPara">Quien recibe</h2>
     <div class="row"><div><label for="rPara">Su nombre</label><input id="rPara" type="text" required maxlength="40"></div>
     <div><label for="rTelPara">Su WhatsApp (opcional)</label><input id="rTelPara" type="tel" inputmode="tel" placeholder="9 1234 5678"></div></div></section>
-  <section class="sec"><h2>Contraseña para editar</h2><p class="hint">Con ella entras a editar tu regalo desde la pestaña <b>👤 Quien regala</b>. Quien recibe no la necesita.</p>
+  <section class="sec"><h2>Contraseña para editar</h2><p class="hint">Con ella entras a editar tu regalo desde la pestaña <b>👤 Quien regala</b>. Quien recibe no la necesita (si quiere, después le pone su propia contraseña al regalo).</p>
     <div class="row"><div><label for="rPass">Contraseña (mínimo 6)</label><input id="rPass" type="password" required minlength="6" autocomplete="new-password"></div>
     <div><label for="rPass2">Repítela</label><input id="rPass2" type="password" required minlength="6" autocomplete="new-password"></div></div>
     <button class="pri" style="margin-top:16px;width:100%">Registrar tarjeta y armar mi regalo</button><p class="note" id="regMsg" aria-live="polite"></p></section>
@@ -1413,6 +1426,58 @@ function vistaRegistro(codigo){
 function vistaOff(j){
   document.body.dataset.tema='noche';
   $('#regalo').innerHTML=`<section class="scene s-env"><div><p class="script" style="font-size:30px;margin:0">Lo sentimos</p><h1>Este regalo no está disponible</h1><p class="hint">Quien lo regaló lo deshabilitó.</p></div></section>`;
+}
+/* Regalo con contraseña de quien recibe: candado antes de mostrar nada */
+function vistaCandado(j){
+  S.tipo=j.tipo;S.rolDe=j.rolDe;S.rolPara=j.rolPara;S.de=j.de;S.para=j.para;
+  document.body.dataset.tema=j.tema||'pasion';$('#marca').textContent=P().marca;document.title=P().titulo;
+  $('#regalo').innerHTML=`<section class="scene s-env"><div style="width:min(420px,100%)"><div style="font-size:56px;line-height:1">🔒</div><p class="script" style="font-size:28px;margin:.2em 0 0">Hola${j.para?', '+esc(j.para):''}</p>
+    <h1 style="margin:.1em 0 .3em">Este regalo tiene contraseña</h1><p class="hint">Escribe la contraseña que le pusiste para abrirlo.</p>
+    <form id="candForm" style="text-align:left"><label for="candPass">Contraseña</label><input type="password" id="candPass" required autocomplete="current-password">
+    <button class="pri" style="width:100%;margin-top:14px">Abrir mi regalo</button><p class="note" id="candMsg" aria-live="polite"></p></form>
+    <p class="note">¿La olvidaste? Pídele a ${esc(j.de||'quien te lo regaló')} que la quite desde su editor; después puedes ponerle una nueva.</p></div></section>`;
+  $('#candForm').onsubmit=async e=>{e.preventDefault();$('#candMsg').textContent='Revisando…';
+    try{const r=await api({accion:'entrarPara',r:j.slug,pass:$('#candPass').value});paraSes.set(j.slug,r.token);location.reload()}
+    catch(err){$('#candMsg').textContent=err.message}};
+}
+/* Botón "🔒 Proteger" / "🔒 Mi contraseña" de quien recibe */
+function pintarTPara(slug){
+  const b=$('#tPara');b.classList.toggle('hide',SOY==='de');b.textContent=PROT?'🔒 Mi contraseña':'🔒 Proteger';b.onclick=()=>abrirClavePara(slug);
+  $('#tQuien').classList.toggle('hide',SOY==='para');
+}
+function abrirClavePara(slug){
+  const bg=document.createElement('div');bg.className='sheet-bg';
+  const de=esc(S.de||'Quien te lo regaló');
+  bg.innerHTML=PROT
+    ?`<div role="dialog" aria-modal="true" aria-labelledby="cpT"><p class="script" style="font-size:24px;margin:0;color:var(--red)">Quien recibe</p><h2 id="cpT">Tu contraseña</h2>
+      <p class="hint">Tu regalo está protegido: para abrirlo (con el cuaderno y el Virtual Monster) hay que escribir tu contraseña. ${de} entra con la suya.</p>
+      <form id="cpForm"><label for="cpAct">Contraseña actual</label><input type="password" id="cpAct" required autocomplete="current-password">
+      <label for="cpNueva">Nueva contraseña (mínimo 6)</label><input type="password" id="cpNueva" minlength="6" autocomplete="new-password">
+      <div class="cbt" style="margin-top:14px"><button class="pri">Cambiar contraseña</button><button type="button" class="ghost" id="cpQuitar">Quitar contraseña</button></div>
+      <p class="note" id="cpMsg" aria-live="polite"></p></form>
+      <div class="cbt" style="margin-top:6px"><button type="button" class="x" id="cpSalir">Cerrar sesión en este celular</button><button type="button" class="x" id="cpNo">Cerrar</button></div></div>`
+    :`<div role="dialog" aria-modal="true" aria-labelledby="cpT"><p class="script" style="font-size:24px;margin:0;color:var(--red)">Quien recibe</p><h2 id="cpT">Protege tu regalo</h2>
+      <p class="hint">Ponle una contraseña y nadie más podrá abrir tu regalo, el cuaderno ni el Virtual Monster, aunque toque la tarjeta. ${de} sigue entrando con la suya.</p>
+      <form id="cpForm"><div class="row"><div><label for="cpNueva">Contraseña (mínimo 6)</label><input type="password" id="cpNueva" required minlength="6" autocomplete="new-password"></div>
+      <div><label for="cpNueva2">Repítela</label><input type="password" id="cpNueva2" required minlength="6" autocomplete="new-password"></div></div>
+      <label for="cpEmail">Tu correo (opcional)</label><input type="email" id="cpEmail" autocomplete="email" placeholder="Para recuperarla más adelante">
+      <div class="cbt" style="margin-top:14px"><button class="pri">Poner contraseña</button><button type="button" class="ghost" id="cpNo">Cancelar</button></div>
+      <p class="note" id="cpMsg" aria-live="polite"></p><p class="note">Si la olvidas, ${de} puede quitarla desde su editor.</p></form></div>`;
+  document.body.appendChild(bg);
+  const cerrar=()=>bg.remove(),m=$('#cpMsg');$('#cpNo').onclick=cerrar;bg.onclick=e=>{if(e.target===bg)cerrar()};
+  const listo=(r,txt)=>{paraSes.set(slug,r.token||'');PROT=r.protegido;m.textContent=txt;pintarTPara(slug);setTimeout(()=>location.reload(),900)};
+  $('#cpForm').onsubmit=async e=>{e.preventDefault();
+    if(!PROT&&$('#cpNueva').value!==$('#cpNueva2').value){m.textContent='Las contraseñas no coinciden.';return}
+    if(PROT&&$('#cpNueva').value.length<6){m.textContent='Escribe la nueva contraseña (mínimo 6).';return}
+    m.textContent='Guardando…';
+    try{const r=await api(Object.assign({accion:'clavePara',r:slug,s:sesVer(slug),passNueva:$('#cpNueva').value},PROT?{passActual:$('#cpAct').value}:{email:$('#cpEmail').value}));
+      listo(r,PROT?'Contraseña cambiada ✓':'¡Listo! Tu regalo quedó protegido 🔒')}catch(err){m.textContent=err.message}};
+  if(PROT){
+    $('#cpQuitar').onclick=async()=>{if(!$('#cpAct').value){m.textContent='Escribe tu contraseña actual para quitarla.';return}
+      if(!confirm('¿Quitar la contraseña? El regalo vuelve a abrirse para cualquiera que toque la tarjeta.'))return;m.textContent='Guardando…';
+      try{const r=await api({accion:'clavePara',r:slug,s:sesVer(slug),passActual:$('#cpAct').value,quitar:true});listo(r,'Listo: tu regalo quedó sin contraseña.')}catch(err){m.textContent=err.message}};
+    $('#cpSalir').onclick=()=>{paraSes.set(slug,'');location.reload()};
+  }
 }
 /* Pestaña "👤 Quien regala": pide la contraseña y abre el editor */
 function abrirAcceso(slug,de){
@@ -1447,14 +1512,17 @@ async function init(){
   if(p.get('r')){
     RECIP=true;
     try{
-      const r=await fetch(API+'?r='+encodeURIComponent(p.get('r')));const j=await r.json();
+      const tok=sesVer(p.get('r').toLowerCase());
+      const r=await fetch(API+'?r='+encodeURIComponent(p.get('r')),tok?{headers:{'X-Sesion':tok}}:{});const j=await r.json();
       if(!r.ok)throw new Error(j.error||'No se encontró el regalo');
       $('#crear').style.display='none';$('.tabs').style.display='none';$('#quotaTop').style.display='none';$('#regalo').style.display='block';
       if(j.registro===false){vistaRegistro(j.codigo);return}
-      const q=$('#tQuien');q.classList.remove('hide');q.onclick=()=>abrirAcceso(j.slug,j.off?j.de:(j.datos&&j.datos.de));
+      const q=$('#tQuien');q.classList.remove('hide');q.onclick=()=>abrirAcceso(j.slug,(j.datos&&j.datos.de)||j.de);
       const ses=store.get();if(ses&&ses.slug===j.slug)q.textContent='✏️ Editar mi regalo';
       if(j.off){vistaOff(j);return}
-      unpack(j.datos,j.base);renderAll();
+      if(j.bloqueado){paraSes.set(j.slug,'');vistaCandado(j);return}
+      SOY=j.soy||null;PROT=!!j.protegido;if(!PROT)paraSes.set(j.slug,'');
+      unpack(j.datos,j.base);renderAll();pintarTPara(j.slug);
     }catch(e){$('#crear').style.display='none';$('.tabs').style.display='none';$('#quotaTop').style.display='none';$('#regalo').style.display='block';$('#regalo').innerHTML=`<section class="scene s-env"><div><h1>Ups</h1><p>${esc(e.message)}</p></div></section>`}
     return;
   }
