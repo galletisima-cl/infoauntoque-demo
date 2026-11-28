@@ -1347,7 +1347,7 @@ function marcarAbierto(juegos){
 function renderMenu(){
   clearInterval(tick);
   const slug=slugActual(),TX=P(),ok=juegosOk(),yo=SOY==='de'?S.de:S.para;
-  const href='mascota/'+(slug?'?r='+encodeURIComponent(slug):'');
+  const href='/amor/mascota/'+(slug?'?r='+encodeURIComponent(slug):'');
   $('#regalo').innerHTML=`<section class="scene s-env hero menu-hero" id="hero">${heroLayers(7)}<div>
     <p class="script" style="font-size:28px;margin:0">Hola${yo?', '+esc(yo):''}</p>
     <h1 style="margin:.1em 0 .4em">¿Qué quieres hacer hoy?</h1>
@@ -1424,7 +1424,7 @@ function renderRegalo(){
     $('#quiz').innerHTML=`<p class="script" style="font-size:30px;margin:0">El último regalo</p><h2 style="margin:.2em 0 .4em">¡Desbloqueaste 2 juegos!</h2>
     ${S.final?`<div class="paper" style="text-align:center;white-space:pre-wrap;margin-bottom:18px">${esc(S.final)}</div>`:''}
     <div class="juegos${nuevo?' unlock':''}">
-      <a class="juego" href="mascota/${slug?'?r='+encodeURIComponent(slug):''}"><span class="ico">🥚</span><b>Virtual Monster</b><small>Una mascota virtual que cuidamos entre los dos: comida, entrenamientos, batallas y evoluciones.</small><span class="btn pri">Hacerlo nacer</span></a>
+      <a class="juego" href="/amor/mascota/${slug?'?r='+encodeURIComponent(slug):''}"><span class="ico">🥚</span><b>Virtual Monster</b><small>Una mascota virtual que cuidamos entre los dos: comida, entrenamientos, batallas y evoluciones.</small><span class="btn pri">Hacerlo nacer</span></a>
       <div class="juego pronto"><span class="ico">🗝️</span><b>${esc(P().escape)}</b><small>${esc(P().escapeTxt)}</small><span class="tag">Próximamente</span></div>
     </div>`;if(nuevo)rain(60)};
   const showQ=()=>{

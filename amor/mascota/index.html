@@ -9,9 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Virtual Monster">
 <script>/* Desde un regalo, es la misma app del regalo (manifest de ese regalo); suelto, la app del Virtual Monster */
-(function(){var r=(new URLSearchParams(location.search).get('r')||'').toLowerCase().replace(/[^a-z0-9-]/g,'');var l=document.createElement('link');l.rel='manifest';l.href=r?'/api/regalo?manifest='+encodeURIComponent(r):'manifest.json';document.head.appendChild(l)})();</script>
+(function(){var r=(new URLSearchParams(location.search).get('r')||'').toLowerCase().replace(/[^a-z0-9-]/g,'');var l=document.createElement('link');l.rel='manifest';l.href=r?'/api/regalo?manifest='+encodeURIComponent(r):'/amor/mascota/manifest.json';document.head.appendChild(l)})();</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="icono-180.png">
+<link rel="apple-touch-icon" href="/amor/mascota/icono-180.png">
 <title>Virtual Monster</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Arima:wght@400;500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -496,7 +496,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
 <div class="mesh" aria-hidden="true"></div>
 <main class="app">
-  <div class="barra-top"><a class="volver glass" id="volver" hidden href="../">← Volver al regalo</a><span class="sync glass" id="sync" hidden></span><button class="sync glass btn-avisos" id="btnAvisos" type="button" hidden></button></div>
+  <div class="barra-top"><a class="volver glass" id="volver" hidden href="/amor/">← Volver al regalo</a><span class="sync glass" id="sync" hidden></span><button class="sync glass btn-avisos" id="btnAvisos" type="button" hidden></button></div>
   <header class="head glass">
     <div><div class="nom" id="nom">Huevito</div><div class="fase" id="fase">Huevo</div></div>
     <div class="info">
@@ -858,7 +858,7 @@ async function tocarAvisos(){
     await APP.activar(ctx);toast(`🔔 Listo: te aviso cuando ${S.nombre||'tu Virtual Monster'} te necesite o ${nom(otro(quien))} te escriba`);cambioLocal(true);
   }catch(err){toast(err.message)}finally{pintarAvisos()}
 }
-const irAlRegalo=()=>location.replace('../?r='+encodeURIComponent(REGALO));
+const irAlRegalo=()=>location.replace('/amor/?r='+encodeURIComponent(REGALO));
 function normalizar(){const d=nuevo();for(const k in d)if(S[k]===undefined||S[k]===null&&typeof d[k]==='number')S[k]=d[k];if(!Array.isArray(S.comidas))S.comidas=[];if(!Array.isArray(S.mensajes))S.mensajes=[];if(!Array.isArray(S.log))S.log=[];if(!S.nombres)S.nombres={'Él':'Matías','Ella':'Sofía'}}
 
 /* ===== Paso del tiempo: avanza de a 5 minutos hasta "ahora" ===== */
@@ -2053,7 +2053,7 @@ $('#selTema').onchange=e=>{S.tema=e.target.value;render()};
 
 /* ===== Inicio ===== */
 cargar();
-if(REGALO){const v=document.getElementById('volver');v.href='../?r='+encodeURIComponent(REGALO);v.hidden=false}
+if(REGALO){const v=document.getElementById('volver');v.href='/amor/?r='+encodeURIComponent(REGALO);v.hidden=false}
 // El Virtual Monster vive mientras el regalo exista y esté habilitado; desde un regalo se comparte entre los dos
 async function iniciarCompartido(){
   SYNC.s=sesionMascota();pintarSync('☁️ Conectando…',true);
