@@ -213,6 +213,16 @@ input[type=time],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:
 .juego .tag{align-self:flex-start;border:1.5px dashed var(--mute);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--mute)}
 .juegos.unlock .juego{animation:unlock .7s cubic-bezier(.3,1.5,.5,1) both}
 .juegos.unlock .juego:nth-child(2){animation-delay:.25s}
+.juegos.unlock .juego:nth-child(3){animation-delay:.5s}
+/* Menú del regalo ya abierto: 3 tarjetas */
+.menu{grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-top:8px}
+.menu .juego{border:0;font:inherit;text-align:left;text-align-last:left;align-items:flex-start;justify-content:flex-start;min-height:0;cursor:pointer;width:100%;padding:18px;gap:6px;transition:transform .2s}
+.menu .juego small{text-align-last:left}
+.menu .juego .ico{font-size:38px}
+#hero.menu-hero>.layer{inset:-6% -12%}
+.menu .juego:not(.pronto):active{transform:scale(.97)}
+.menu .juego.bloq .ico{filter:grayscale(1);opacity:.6}
+.vmenu{margin-top:6px}
 .juegos.unlock .ico{animation:wiggle .6s .5s both}
 @keyframes unlock{from{opacity:0;transform:translateY(30px) scale(.8)}}
 @keyframes wiggle{0%,100%{transform:none}25%{transform:rotate(-14deg) scale(1.2)}75%{transform:rotate(12deg) scale(1.2)}}
@@ -749,7 +759,7 @@ const S={
   final:'Estos juegos son para los dos. Nos toca cuidar juntos a nuestra mascota virtual: darle de comer, entrenarla y verla crecer. Te amo.',
   cartas:[{t:'Abre cuando me extrañes',x:'Cierra los ojos y piensa en nuestro último abrazo. Ya falta menos para el próximo. Te amo.'},{t:'Buenos días, mi amor',x:'Que tengas un día lindo. Acuérdate de que alguien está pensando en ti y sonriendo.'}]
 };
-let ED=null,online=false,RECIP=false,SOY=null,PROT=false;
+let ED=null,online=false,RECIP=false,SOY=null,PROT=false,ABIERTO=false,JUEGOS=false,MENU=false;
 // Con qué sesión se abre el regalo en este celular: la de quien regala o la de quien recibe
 const sesVer=slug=>{const e=store.get();if(e&&e.slug===slug&&e.token)return e.token;return paraSes.get(slug)};
 /* ---------- cuaderno de citas (compartido) ---------- */
@@ -1319,6 +1329,39 @@ function girar(){
     }else $('#premio').innerHTML=`Te tocó: <b>${esc(x.t)}</b>${S.telDe?` <a class="btn wa" style="margin-top:10px" target="_blank" rel="noopener" href="${wa(S.telDe,`¡Gané en la rueda! 🎡 Quiero canjear: ${x.t}`)}">Canjear por WhatsApp</a>`:''}`;
   },4300);
 }
+/* ---------- regalo ya abierto: menú al volver a cargarlo ---------- */
+const claveAb=()=>'amor-abierto-'+(slugActual()||'prueba');
+const hayMenu=()=>{if(!RECIP)return false;if(ABIERTO)return true;try{return !!localStorage.getItem(claveAb())}catch(e){return false}};
+function juegosOk(){
+  const qs=S.qs.filter(q=>q.q&&q.ops.filter(o=>o.trim()).length>1&&(q.ops[q.ok]||'').trim());
+  let ok=false;try{ok=!!localStorage.getItem('amor-ok-'+(slugActual()||'prueba'))}catch(e){}
+  return JUEGOS||ok||SOY==='de'||!qs.length||!vis('sorpresa');
+}
+function marcarAbierto(juegos){
+  if(!RECIP||SOY==='de')return; // quien regala revisando su regalo no cuenta como abierto
+  try{localStorage.setItem(claveAb(),'1')}catch(e){}
+  if(ABIERTO&&(JUEGOS||!juegos))return;
+  ABIERTO=true;if(juegos)JUEGOS=true;
+  const slug=slugActual();if(slug&&online)api({accion:'abierto',r:slug,s:sesVer(slug),juegos:!!juegos}).catch(()=>{});
+}
+function renderMenu(){
+  clearInterval(tick);
+  const slug=slugActual(),TX=P(),ok=juegosOk(),yo=SOY==='de'?S.de:S.para;
+  const href='mascota/'+(slug?'?r='+encodeURIComponent(slug):'');
+  $('#regalo').innerHTML=`<section class="scene s-env hero menu-hero" id="hero">${heroLayers(7)}<div>
+    <p class="script" style="font-size:28px;margin:0">Hola${yo?', '+esc(yo):''}</p>
+    <h1 style="margin:.1em 0 .4em">¿Qué quieres hacer hoy?</h1>
+    <div class="juegos menu unlock">
+      <button class="juego" id="mRegalo" type="button"><span class="ico">🎁</span><b>Ver regalo</b><small>${SOY==='de'?'El regalo que armaste para '+esc(S.para||'quien recibe')+'.':'Lo que te preparó '+esc(S.de||'quien te lo regaló')+': fotos, '+esc(TX.razones)+' y más.'}</small><span class="btn pri">Ver regalo</span></button>
+      ${ok?`<a class="juego" href="${href}"><span class="ico">🥚</span><b>Jugar con VirPet Monster</b><small>Su mascota virtual: comida, entrenamientos, batallas y evoluciones. La cuidan entre los dos.</small><span class="btn pri">Jugar</span></a>`
+        :`<button class="juego bloq" id="mBloq" type="button"><span class="ico">🥚</span><b>Jugar con VirPet Monster</b><small>🔒 Para desbloquearlo, responde las preguntas al final del regalo.</small><span class="btn ghost">Ir a las preguntas</span></button>`}
+      <div class="juego pronto"><span class="ico">🗝️</span><b>Jugar Escape Room</b><small>${esc(TX.escapeTxt)}</small><span class="tag">Próximamente</span></div>
+    </div>
+    <p class="script" style="font-size:22px;margin-top:18px">${SOY==='de'?'para '+esc(S.para):'de '+esc(S.de)}</p>
+  </div></section>`;
+  $('#mRegalo').onclick=()=>{MENU=false;route()};
+  const bq=$('#mBloq');if(bq)bq.onclick=()=>{MENU=false;route();const env=$('#env');if(env)env.click();setTimeout(()=>{const q=$('#quiz');if(q)q.scrollIntoView({behavior:'smooth',block:'center'})},1100)};
+}
 function renderRegalo(){
   const r=$('#regalo'),sp=spot(S.cancion||''),yS=ytId(S.cancion||''),yV=ytId(S.yt||'');
   const fotos=S.fotos.filter(f=>!f.subiendo),rz=S.razones.filter(x=>x.t||x.url);
@@ -1336,6 +1379,7 @@ function renderRegalo(){
     </button>
     <p style="color:var(--mute)" id="envTxt">Toca el sello para abrir tu regalo</p>
     <p class="script" style="font-size:22px">de ${esc(S.de)}</p>
+    ${hayMenu()?'<button class="ghost vmenu" data-menu>← Volver al menú</button>':''}
   </div></section>
   <div id="inside" class="hide">
   ${S.wrapped&&vis('juegos')?`<section class="scene"><div class="wrapped-cta"><p class="script" style="font-size:26px;margin:0">Nuestro Wrapped</p><h2 style="margin:.3em 0 .6em">${esc(TX.wrapped)}</h2><button id="btnWrapped" class="pri">Ver nuestro Wrapped</button></div></section>`:''}
@@ -1355,11 +1399,12 @@ function renderRegalo(){
     <p class="note" id="cuadMsg" aria-live="polite"></p></div></section>
   <section class="scene" id="secRueda"><div><h2>Rueda de la fortuna</h2><div class="seg" id="ruedaModos"></div><p style="color:var(--mute)" id="ruedaTxt"></p><div class="wheel-wrap"><div class="pointer"></div><div id="ruedaSvg"></div></div><button id="btnGirar" class="pri">Girar</button><div class="premio" id="premio" aria-live="polite"></div></div></section>
   <section class="scene s-env${vis('sorpresa')?'':' hide'}"><div id="quiz"></div></section>
-  ${S.telDe?`<div class="foot"><a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,TX.waResp)}">Responder a ${esc(S.de)} por WhatsApp</a></div>`:''}
+  ${S.telDe||hayMenu()?`<div class="foot">${S.telDe?`<a class="btn wa" target="_blank" rel="noopener" href="${wa(S.telDe,TX.waResp)}">Responder a ${esc(S.de)} por WhatsApp</a>`:''}${hayMenu()?'<button class="ghost vmenu" data-menu>← Volver al menú</button>':''}</div>`:''}
   </div>`;
   parallax($('#hero'));
+  r.querySelectorAll('[data-menu]').forEach(b=>b.onclick=()=>{MENU=true;route()});
   const env=$('#env');
-  env.onclick=()=>{if(env.classList.contains('open'))return;env.classList.add('open');$('#envTxt').textContent='Desliza hacia abajo ↓';$('#inside').classList.remove('hide');rain(26);setTimeout(()=>($('#inside').firstElementChild).scrollIntoView({behavior:'smooth'}),900)};
+  env.onclick=()=>{if(env.classList.contains('open'))return;env.classList.add('open');marcarAbierto(false);$('#envTxt').textContent='Desliza hacia abajo ↓';$('#inside').classList.remove('hide');rain(26);setTimeout(()=>($('#inside').firstElementChild).scrollIntoView({behavior:'smooth'}),900)};
   if($('#btnWrapped'))$('#btnWrapped').onclick=openWrapped;
   const al=$('#album');
   if(al){const go=d=>al.scrollBy({left:d*al.clientWidth*.8,behavior:'smooth'});$('#prev').onclick=()=>go(-1);$('#next').onclick=()=>go(1);al.tabIndex=0;al.onkeydown=e=>{if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1)}}
@@ -1375,6 +1420,7 @@ function renderRegalo(){
   const slug=slugActual(),claveOk='amor-ok-'+(slug||'prueba');
   const showFinal=nuevo=>{
     try{localStorage.setItem(claveOk,'1')}catch(e){}
+    marcarAbierto(true);
     $('#quiz').innerHTML=`<p class="script" style="font-size:30px;margin:0">El último regalo</p><h2 style="margin:.2em 0 .4em">¡Desbloqueaste 2 juegos!</h2>
     ${S.final?`<div class="paper" style="text-align:center;white-space:pre-wrap;margin-bottom:18px">${esc(S.final)}</div>`:''}
     <div class="juegos${nuevo?' unlock':''}">
@@ -1517,7 +1563,7 @@ function route(){
   $('.tabs').style.display=RECIP?'none':'';
   $('#tCrear').classList.toggle('on',!g);$('#tRegalo').classList.toggle('on',g);
   document.body.dataset.tema=S.tema||'pasion';document.title=P().titulo;$('#marca').textContent=P().marca;
-  if(g)renderRegalo();else{clearInterval(tick);parallax($('#heroEd'))}
+  if(g)(RECIP&&MENU?renderMenu:renderRegalo)();else{clearInterval(tick);parallax($('#heroEd'))}
   scrollTo(0,0);
 }
 function edHero(){const t=document.createElement('div');t.innerHTML=heroLayers(3);const h=$('#heroEd');h.querySelectorAll(':scope>.layer').forEach(l=>l.remove());h.prepend(...t.children)}
@@ -1539,7 +1585,8 @@ async function init(){
       if(j.off){vistaOff(j);return}
       if(j.bloqueado){paraSes.set(j.slug,'');vistaCandado(j);appRegalo(j.slug);return}
       SOY=j.soy||null;PROT=!!j.protegido;if(!PROT)paraSes.set(j.slug,'');
-      unpack(j.datos,j.base);renderAll();pintarTPara(j.slug);appRegalo(j.slug);
+      ABIERTO=!!j.abierto;JUEGOS=!!j.juegos;
+      unpack(j.datos,j.base);MENU=hayMenu();renderAll();pintarTPara(j.slug);appRegalo(j.slug);
     }catch(e){$('#crear').style.display='none';$('.tabs').style.display='none';$('#quotaTop').style.display='none';$('#regalo').style.display='block';$('#regalo').innerHTML=`<section class="scene s-env"><div><h1>Ups</h1><p>${esc(e.message)}</p></div></section>`}
     return;
   }

@@ -13,6 +13,7 @@
 //   POST {accion:"cuaderno", r:SLUG, s?, op}  → cuaderno de citas compartido (lo editan los dos con el link del regalo)
 //   POST {accion:"mascota", r, s?, op:"leer", v?}  → estado compartido del Virtual Monster ({v, estado} o {v, igual:true})
 //   POST {accion:"mascota", r, s?, op:"guardar", v, estado} → guarda si v es la versión actual; si no, 409 con lo último
+//   POST {accion:"abierto", r, s?, juegos?} → anota que quien recibe ya abrió el regalo (y si desbloqueó los juegos)
 //   POST {accion:"entrarPara", r, pass} → sesión de quien recibe (si le puso contraseña a su regalo)
 //   POST {accion:"clavePara", r, s?, passActual?, passNueva?, email?, quitar?} → quien recibe pone, cambia o quita su contraseña
 //   POST {accion:"push", r, s?, op:"alta", sub, quien} | {op:"baja", ep} → avisos (notificaciones) en este celular
@@ -312,7 +313,8 @@ module.exports = async (req, res) => {
           res.status(200).json({ bloqueado: true, slug: row.slug, de: d.de || "", para: d.para || "", tipo: t.tipo, rolDe: t.rolDe, rolPara: t.rolPara, tema: d.tema || "pasion", fondo: d.fondo || "corazones" });
           return;
         }
-        res.status(200).json({ slug: row.slug, datos: publico(d), base, soy, protegido: protegido(d) });
+        const ab = d._abierto || null;
+        res.status(200).json({ slug: row.slug, datos: publico(d), base, soy, protegido: protegido(d), abierto: !!ab, juegos: !!(ab && ab.juegos) });
         return;
       }
       const row = await duenio(q.id, q.k);
@@ -463,6 +465,23 @@ module.exports = async (req, res) => {
         if (nueva) subs = [nueva, ...subs].slice(0, PUSH.MAX_SUBS);
         return { cambio: { datos: Object.assign({}, fila.datos, { _push: subs }) }, ok: { ok: true, activos: !!nueva } };
       }, "No se pudieron guardar los avisos");
+      res.status(out.status).json(out.j);
+      return;
+    }
+
+    /* Regalo abierto: al volver a cargarlo se muestra el menú (Ver regalo, VirPet Monster, Escape Room) en cualquier celular.
+       Se guarda en datos._abierto = { at (primera vez), juegos (desbloqueó los juegos), atJuegos }. Quien regala no lo marca. */
+    if (b.accion === "abierto") {
+      const slug = slugOk(b.r);
+      const out = await cambiar("slug=eq." + slug, fila => {
+        const rv = revisar(fila, b.s); if (rv.status) return rv;
+        const ab = fila.datos._abierto || null;
+        if (rv.soy === "de") return { status: 200, j: { abierto: !!ab, juegos: !!(ab && ab.juegos) } };
+        if (ab && (ab.juegos || !b.juegos)) return { status: 200, j: { abierto: true, juegos: !!ab.juegos } }; // nada nuevo: no escribe
+        const nuevo = Object.assign({ at: Date.now() }, ab || {});
+        if (b.juegos) { nuevo.juegos = true; nuevo.atJuegos = Date.now(); }
+        return { cambio: { datos: Object.assign({}, fila.datos, { _abierto: nuevo }) }, ok: { abierto: true, juegos: !!nuevo.juegos } };
+      }, "No se pudo guardar");
       res.status(out.status).json(out.j);
       return;
     }
