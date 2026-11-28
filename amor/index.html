@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Regalo de amor</title>
+<meta name="theme-color" content="#b0103a">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Con amor">
+<link rel="apple-touch-icon" href="/amor/icono-180.png"><link rel="icon" href="/amor/icono-192.png">
+<script>/* App instalable: cada regalo tiene su propio manifest (abre ese regalo) */
+(function(){var r=(new URLSearchParams(location.search).get('r')||'').toLowerCase().replace(/[^a-z0-9-]/g,'');var l=document.createElement('link');l.rel='manifest';l.href='/api/regalo?manifest='+encodeURIComponent(r);document.head.appendChild(l)})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Arima:wght@400;500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -563,6 +570,7 @@ body[data-tema=navidad] h1,body[data-tema=navidad] h2{color:#ffe7a8}
 <div id="regalo"></div>
 <div class="hearts" id="hearts"></div>
 
+<script src="/amor/app.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
 {
@@ -1246,7 +1254,7 @@ async function cuadOp(op){
   if(!quieto)pintarCuaderno();
   const slug=slugActual();
   if(!slug||!online){if(op.tipo!=='leer')$('#cuadMsg').textContent=RECIP?'Sin conexión: el cambio no se guardó.':'Vista previa: el cuaderno se comparte cuando el regalo está guardado.';return}
-  try{const j=await api({accion:'cuaderno',r:slug,s:sesVer(slug),op});S.cuaderno=j.cuaderno;$('#cuadMsg').textContent=op.tipo==='leer'?'':'Guardado ✓ Los dos ven este cuaderno.';if(!quieto)pintarCuaderno()}
+  try{const j=await api({accion:'cuaderno',r:slug,s:sesVer(slug),ep:window.APP?APP.ep():'',op});S.cuaderno=j.cuaderno;$('#cuadMsg').textContent=op.tipo==='leer'?'':'Guardado ✓ Los dos ven este cuaderno.';if(!quieto)pintarCuaderno()}
   catch(e){$('#cuadMsg').textContent='No se pudo guardar: '+e.message}
 }
 function pintarCuaderno(){
@@ -1493,6 +1501,15 @@ function abrirAcceso(slug,de){
     catch(err){$('#accMsg').textContent=err.message}};
 }
 
+/* ---------- app instalable: "Guárdalo como app" / "Activa los avisos" ---------- */
+function appRegalo(slug){
+  if(!window.APP)return;
+  const yo=()=>SOY==='de'?'Él':SOY==='para'?'Ella':(localStorage.getItem('mascota-'+slug+'-quien')||'Ella');
+  $('meta[name=apple-mobile-web-app-title]').content=P().marca;
+  APP.banner({r:slug,s:()=>sesVer(slug),quien:yo,espera:2600,textoApp:'Ábrelo desde un ícono en tu pantalla de inicio, sin buscar el link.'});
+  if(SOY||!PROT)APP.renovar({r:slug,s:sesVer(slug),quien:yo()});
+}
+
 /* ---------- vistas y carga ---------- */
 function route(){
   const g=RECIP||location.hash==='#regalo';
@@ -1520,9 +1537,9 @@ async function init(){
       const q=$('#tQuien');q.classList.remove('hide');q.onclick=()=>abrirAcceso(j.slug,(j.datos&&j.datos.de)||j.de);
       const ses=store.get();if(ses&&ses.slug===j.slug)q.textContent='✏️ Editar mi regalo';
       if(j.off){vistaOff(j);return}
-      if(j.bloqueado){paraSes.set(j.slug,'');vistaCandado(j);return}
+      if(j.bloqueado){paraSes.set(j.slug,'');vistaCandado(j);appRegalo(j.slug);return}
       SOY=j.soy||null;PROT=!!j.protegido;if(!PROT)paraSes.set(j.slug,'');
-      unpack(j.datos,j.base);renderAll();pintarTPara(j.slug);
+      unpack(j.datos,j.base);renderAll();pintarTPara(j.slug);appRegalo(j.slug);
     }catch(e){$('#crear').style.display='none';$('.tabs').style.display='none';$('#quotaTop').style.display='none';$('#regalo').style.display='block';$('#regalo').innerHTML=`<section class="scene s-env"><div><h1>Ups</h1><p>${esc(e.message)}</p></div></section>`}
     return;
   }

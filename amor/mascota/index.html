@@ -8,7 +8,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Virtual Monster">
-<link rel="manifest" href="manifest.json">
+<script>/* Desde un regalo, es la misma app del regalo (manifest de ese regalo); suelto, la app del Virtual Monster */
+(function(){var r=(new URLSearchParams(location.search).get('r')||'').toLowerCase().replace(/[^a-z0-9-]/g,'');var l=document.createElement('link');l.rel='manifest';l.href=r?'/api/regalo?manifest='+encodeURIComponent(r):'manifest.json';document.head.appendChild(l)})();</script>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icono-180.png">
 <title>Virtual Monster</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,6 +43,7 @@ button:disabled{opacity:.4}
 .volver{display:inline-block;margin:0 0 8px;padding:8px 14px;border-radius:999px;color:inherit;text-decoration:none;font-size:14px}
 .volver[hidden]{display:none}
 .barra-top{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin:0 0 8px}.barra-top .volver{margin:0}
+.btn-avisos{border:1px solid rgba(255,255,255,.25);color:inherit;font:inherit;font-size:12px;cursor:pointer;min-height:32px;opacity:1}
 .sync{display:inline-block;padding:6px 12px;border-radius:999px;font-size:12px;opacity:.85}.sync[hidden]{display:none}.sync.mal{color:#ffd27a}
 #quienSoy .card button{width:100%;margin-top:8px}
 .head{display:flex;align-items:center;gap:10px;padding:10px 14px}
@@ -493,7 +496,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
 <div class="mesh" aria-hidden="true"></div>
 <main class="app">
-  <div class="barra-top"><a class="volver glass" id="volver" hidden href="../">← Volver al regalo</a><span class="sync glass" id="sync" hidden></span></div>
+  <div class="barra-top"><a class="volver glass" id="volver" hidden href="../">← Volver al regalo</a><span class="sync glass" id="sync" hidden></span><button class="sync glass btn-avisos" id="btnAvisos" type="button" hidden></button></div>
   <header class="head glass">
     <div><div class="nom" id="nom">Huevito</div><div class="fase" id="fase">Huevo</div></div>
     <div class="info">
@@ -655,6 +658,7 @@ body[data-tema=vintage]{color-scheme:light;--bg:#f1e8d9;--ink:#3d2418;--mute:#7a
 
 <div class="toast" id="toast"></div>
 
+<script src="/amor/app.js"></script>
 <script>
 'use strict';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -772,13 +776,14 @@ function poner(estado,v){
   if(antes.f!==S.fase||antes.d!==S.disfraz||antes.t!==S.toques)faseDibujada='';
   try{localStorage.setItem(CLAVE,JSON.stringify(S))}catch(_){}
 }
-function cambioLocal(){
-  if(!SYNC.listo)return;const h=huella();if(h===SYNC.huella)return;
+function cambioLocal(forzar){
+  if(!SYNC.listo)return;const h=huella();if(h===SYNC.huella&&!forzar)return;
   SYNC.huella=h;clearTimeout(SYNC.timer);SYNC.timer=setTimeout(subir,600)}
 async function subir(){
   SYNC.timer=0;if(SYNC.enVuelo){SYNC.otra=true;return}
   SYNC.enVuelo=true;const enviado=compartido();
-  try{const j=await apiM({op:'guardar',v:SYNC.v,estado:enviado});SYNC.v=j.v;SYNC.base=enviado;SYNC.red=true;syncOk()}
+  let extra={};try{extra={avisos:proximosAvisos(),ya:inmediatos(SYNC.base,enviado),ep:window.APP?APP.ep():''}}catch(_){}
+  try{const j=await apiM(Object.assign({op:'guardar',v:SYNC.v,estado:enviado},extra));SYNC.v=j.v;SYNC.base=enviado;SYNC.red=true;syncOk()}
   catch(e){
     if(e.conflicto)SYNC.pend={v:e.v,estado:e.estado};
     else if(e.bloqueado)return irAlRegalo();
@@ -805,6 +810,53 @@ async function revisarServidor(){
     if(!SYNC.timer)syncOk();
     if(huella()!==SYNC.huella)cambioLocal();
   }catch(e){if(e.bloqueado)irAlRegalo();else{SYNC.red=false;pintarSync(e.status===403?'Este regalo está deshabilitado':'⚠️ Sin conexión: se guarda en este celular y se comparte al volver',false)}}
+}
+/* Avisos al celular del otro (o de los dos) */
+// Lo que dice la mascota en la notificación cuando necesita algo
+const PIDE={comer:'🍽️ Tengo hambre… ¿me das algo rico?',limpiar:'💩 Uy, hice caca. ¿Me limpias?',luz:'💡 Ya es hora de dormir: ¿me apagas la luz?',
+  entrenar:'💔 Estoy aburrido… ¿jugamos un rato?',medicina:'🤒 Me siento mal: necesito mi medicina',botiquin:'🩹 Me hice una herida: ¿me curas?'};
+// Simula las próximas 24 h en una copia y anota cuándo aparece cada necesidad nueva (el servidor los manda a su hora)
+function proximosAvisos(){
+  if(!vive()||S.fase==='huevo')return[];
+  const t0=ahora(),keep=S,out=[];
+  try{S=copia(keep);if(!Array.isArray(S.log))S.log=[];
+    const ya=new Set(necesidades(t0).map(n=>n.a));
+    for(let d=15*60000;d<=24*H&&out.length<8;d+=15*60000){
+      simular(t0+d);if(!vive())break;
+      const hay=necesidades(t0+d),hr=horaCL(t0+d);
+      if(hr>=23||hr<8)continue; // de noche no se manda nada: lo que siga pendiente se avisa a las 8:00
+      for(const n of hay)if(!ya.has(n.a)){ya.add(n.a);out.push({t:t0+d-(keep.offset||0),txt:PIDE[n.a]||n.i+' '+n.m,para:'',k:n.a})}
+      const hayA=new Set(hay.map(n=>n.a));for(const a of[...ya])if(!hayA.has(a))ya.delete(a); // si se resolvió solo, puede volver a avisar
+    }
+  }finally{S=keep}
+  return out}
+// Cambios que se avisan al tiro: mensaje nuevo, lista para evolucionar, nació o evolucionó
+function inmediatos(base,nuevo){
+  if(!base)return[];const out=[],n=nuevo.nombre||'Tu Virtual Monster',clave=m=>m.t+'|'+m.de;
+  const antes=new Set((base.mensajes||[]).map(clave));
+  for(const m of nuevo.mensajes||[])if(!m.visto&&!antes.has(clave(m))){const tp=MENSAJES.find(x=>x.id===m.id);
+    out.push({para:m.para,title:n,body:`💌 Tengo un mensaje de ${nom(m.de)} para ti${tp?': «'+tp.t+' '+tp.e+'»':''}`,k:'msg'})}
+  if(nuevo.listo&&!base.listo)out.push({para:otro(nuevo.listoPor||quien),title:n,body:`✨ ¡Estoy listo para evolucionar! Solo tú puedes hacerlo.`,k:'evo'});
+  if(base.fase==='huevo'&&nuevo.fase!=='huevo'&&nuevo.fase!=='abuelos')out.push({para:otro(quien),title:'¡Nació! 🐣',body:`${nom(quien)} hizo nacer a su Virtual Monster. ¡Ven a conocerlo!`,k:'nacio'});
+  else{const i0=NIVELES.findIndex(x=>x.id===base.fase),i1=NIVELES.findIndex(x=>x.id===nuevo.fase);
+    if(i0>0&&i1>i0)out.push({para:otro(quien),title:n,body:`🌟 ¡Evolucioné! Ahora soy ${NIVELES[i1].n}.`,k:'evo'})}
+  if(nuevo.fase==='abuelos'&&base.fase!=='abuelos')out.push({para:otro(quien),title:n,body:'👵👴 Me fui con los abuelos… y llegó un huevo nuevo.',k:'fin'});
+  return out.slice(0,3)}
+// Botón 🔔 de arriba
+async function pintarAvisos(){
+  const b=$('#btnAvisos');if(!b||!SYNC||!window.APP)return;
+  const e=await APP.estadoAvisos();
+  b.hidden=e==='no';b.dataset.e=e;
+  b.textContent={on:'🔔 Avisos activos',off:'🔔 Activar avisos',instalar:'📲 Guardar como app',bloqueado:'🔕 Avisos bloqueados'}[e]||'';
+}
+async function tocarAvisos(){
+  const e=$('#btnAvisos').dataset.e,ctx={r:REGALO,s:SYNC.s,quien};
+  try{
+    if(e==='instalar'){await APP.instalar();return}
+    if(e==='bloqueado')return toast('Los avisos están bloqueados: actívalos en los ajustes del celular, en Notificaciones.');
+    if(e==='on'){if(!confirm('¿Quitar los avisos en este celular?'))return;await APP.desactivar(ctx);toast('🔕 Avisos quitados en este celular');return}
+    await APP.activar(ctx);toast(`🔔 Listo: te aviso cuando ${S.nombre||'tu Virtual Monster'} te necesite o ${nom(otro(quien))} te escriba`);cambioLocal(true);
+  }catch(err){toast(err.message)}finally{pintarAvisos()}
 }
 const irAlRegalo=()=>location.replace('../?r='+encodeURIComponent(REGALO));
 function normalizar(){const d=nuevo();for(const k in d)if(S[k]===undefined||S[k]===null&&typeof d[k]==='number')S[k]=d[k];if(!Array.isArray(S.comidas))S.comidas=[];if(!Array.isArray(S.mensajes))S.mensajes=[];if(!Array.isArray(S.log))S.log=[];if(!S.nombres)S.nombres={'Él':'Matías','Ella':'Sofía'}}
@@ -959,7 +1011,7 @@ function aplicar(d){for(const k in d){if(k==='peso')S.peso=Math.max(1,S.peso+d[k
 function beep(){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const t=audioCtx.currentTime;
   for(const i of[0,.18]){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='square';o.frequency.value=1320;g.gain.setValueAtTime(.06,t+i);g.gain.exponentialRampToValueAtTime(.0001,t+i+.12);o.connect(g).connect(audioCtx.destination);o.start(t+i);o.stop(t+i+.13)}}catch(_){}
   if(navigator.vibrate)navigator.vibrate([80,60,80])}
-function necesidades(){if(!vive())return[];const n=[],t=ahora();
+function necesidades(tt){if(!vive())return[];const n=[],t=tt||ahora();
   if(S.enfermo)n.push({i:'💊',a:'medicina',m:'Está enfermo'+(S.proxDosis>t?'':': dale medicina')});
   if(S.herido)n.push({i:'🩹',a:'botiquin',m:'Está herido'});
   if(S.caca)n.push({i:'💩',a:'limpiar',m:'Hay que limpiar'});
@@ -2026,6 +2078,9 @@ async function iniciarCompartido(){
       $$('[data-q]').forEach(x=>x.classList.toggle('on',x.dataset.q===quien));$('#quienSoy').classList.remove('on');$('#pruebaTxt').textContent='lo que hagas aquí también le llega a '+nombres[otro(quien)];syncOk();render()}});
     $('#quienSoy').classList.add('on')}
   render();syncOk();cambioLocal();
+  if(window.APP){$('#btnAvisos').onclick=tocarAvisos;APP.alCambiar(pintarAvisos);pintarAvisos();
+    APP.renovar({r:REGALO,s:SYNC.s,quien});
+    APP.banner({r:REGALO,s:()=>SYNC.s,quien:()=>quien,espera:3500,textoApp:'Cuídalo desde un ícono en tu pantalla de inicio y recibe sus avisos.',textoAvisos:'Te aviso cuando '+(S.nombre||'tu Virtual Monster')+' te necesite o te llegue un mensaje.'})}
   setInterval(revisarServidor,5000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)revisarServidor()});
 }
